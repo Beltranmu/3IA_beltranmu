@@ -1,10 +1,12 @@
 
-#include <stdint.h>
-#include "SFML/Graphics.hpp"
+
 
 #ifndef __GAME_H__
 #define __GAME_H__ 1
 
+#include <stdint.h>
+#include "SFML/Graphics.hpp"
+#include "board.h"
 
 
 class Game
@@ -27,6 +29,9 @@ class Game
     int32_t w_width_;
     int32_t w_height_;
   
+    //Board
+    Board board_;
+
     //Events
     sf::Event events_;
 
@@ -38,6 +43,7 @@ class Game
     sf::RectangleShape rect_;
     float x_;
     float y_;
+    int mode_mov;
 
     float delta_time_;
     float fixed_delta_time_;
