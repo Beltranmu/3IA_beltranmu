@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
-#include "board.h"
-
 
 class Game
 {
@@ -24,13 +22,22 @@ class Game
     void draw();
     void end();
     
+
+    //FrameControl
+    struct FramesPerModule {
+      float main_game;
+      float world;
+      float input;
+      float draw;
+      float ai;
+      float second_per_frame;
+    };
+
+    FramesPerModule fps;
     //Window
     sf::RenderWindow w_;
     int32_t w_width_;
     int32_t w_height_;
-  
-    //Board
-    Board board_;
 
     //Events
     sf::Event events_;
@@ -39,16 +46,10 @@ class Game
     sf::Texture tex_;
     sf::Sprite sprite_;
 
-    //Shape
-    sf::RectangleShape rect_;
-    float x_;
-    float y_;
-    int mode_mov;
 
     float delta_time_;
     float fixed_delta_time_;
-    int32_t fps;
-    float second_per_frame_;
+ 
   private:
 };
 
