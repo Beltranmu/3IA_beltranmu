@@ -1,11 +1,30 @@
-
-
-
 #ifndef __BOARD_H__
 #define __BOARD_H__ 1
 
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
+
+const int kBoardMaxSize = 128;
+const int kBoardMinSize = 16;
+//const int kBoardMaxUnits = 48;  // EVEN PLEASE
+
+typedef enum TileType {
+  //Non Walkables
+  kTileType_Void = 0, 
+  kTileType_Wall,
+  //Walkables
+  kTileType_Normal, 
+  kTileType_Door, 
+  kTileType_End, 
+};
+
+/**/
+
+
+typedef struct Cell{
+  int value;
+  int height;
+};
 
 class Board
 {
@@ -13,16 +32,20 @@ class Board
 
     Board();
     ~Board();
+    int width_;
+    int height_;
+   
+    void initBoard(int width = kBoardMaxSize/4, int height = kBoardMaxSize / 4);
 
-    const uint32_t x_cell = 8;
-    const uint32_t y_cell = 6;
-    uint32_t w_cell ;
-    uint32_t h_cell ;
-    sf::RectangleShape rect_[8 * 6];
-    void initBoard(uint32_t b_width, uint32_t b_height);
+    Cell& cell(int row, int col);
+
+    Cell cell_[kBoardMaxSize * kBoardMaxSize];
+
+    void drawLogic(sf::RenderWindow* window);
+    void drawBoard(sf::RenderWindow* window);
   protected:
    
   private:
 };
 
-#endif //__GAME_H__
+#endif //__BOARD_H__

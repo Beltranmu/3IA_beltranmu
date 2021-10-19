@@ -1,11 +1,9 @@
-
-
-
 #ifndef __GAME_H__
 #define __GAME_H__ 1
 
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
+#include "board.h"
 
 class Game
 {
@@ -46,6 +44,11 @@ class Game
     sf::Texture tex_;
     sf::Sprite sprite_;
 
+    
+    //Board
+    Board board_;
+    sf::Texture map_texture_;
+    sf::Sprite map_sprite_;
 
     float delta_time_;
     float fixed_delta_time_;

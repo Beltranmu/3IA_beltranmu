@@ -5,7 +5,7 @@ workspace ("Artificial Intellgence")
   platforms { "Win32", "Win64" }	
   configurations ({ "Debug", "Release" })
   defines {"SFML_STATIC" , "_CRT_SECURE_NO_WARNINGS"}
-  includedirs { "./deps/x86/SFML/include"} 
+  includedirs { "./deps/x86/SFML/include", "./deps/imgui", "./deps/imgui-SFML"} 
   includedirs { "./include"}
   links {"opengl32", "winmm", "freetype" }
   --defines { "_GLFW_WIN32" }
@@ -49,4 +49,7 @@ workspace ("Artificial Intellgence")
     location ("./build/ai-workspace")
     kind "ConsoleApp"
     files {"./src/**.c*", "./include/**.h*",
-            "./deps/x86/SFML/include/SFML/**.h*"}
+           "./deps/x86/SFML/include/SFML/**.h*",
+           "./deps/imgui/**.c*", "./deps/imgui-SFML/**.c*",
+           "./deps/imgui/**.h*", "./deps/imgui-SFML/**.h*"}
+           
