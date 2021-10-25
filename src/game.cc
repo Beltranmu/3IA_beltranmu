@@ -11,7 +11,7 @@ Game::Game(){
 
   fps.main_game = 60.0f;
   fps.input = 1.0f;
-  fps.ai = -1.0f;
+  fps.ai = 1.0f;
   fps.world = 1.0f;
   fps.draw = -1.0f;
 
@@ -28,7 +28,7 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   w_width_ = w_width;
   w_height_ = w_height;
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
-
+  srand(time(NULL));
   if(!tex_.loadFromFile("../../data/textures/ricky.png")){
     printf("Imagen no cargada");
   }
@@ -39,7 +39,6 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   map_texture_.loadFromFile("../../data/gfx/maps/map_03_960x704_layout ABGS.png");
   map_sprite_ = sf::Sprite(map_texture_);
   //Board
-  //board_.initBoard(w_width_, w_height_);
   BoardFromImage(&board_, "../../data/gfx/maps/map_03_120x88_cost.png");
   
 
@@ -69,6 +68,7 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 void Game::draw() {
 
   //w_.draw(sprite_);
+  //board_.drawLBoard(&w_);
   //w_.draw(map_sprite_);
   board_.drawBoard(&w_);
   
@@ -82,7 +82,7 @@ void Game::end() {
 void Game::mainLoop(){
 
   init(960, 704);
-  float my_values[3];
+  //float my_values[3];
   sf::Clock sec_clock, main_clock, ia_clock, input_clock;
   sf::Clock world_clock, draw_clock, imgui_clock;
   int frames=0;
@@ -101,7 +101,7 @@ void Game::mainLoop(){
     if(ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || 
        fps.ai == -1.0f){
       ia_clock.restart();
-      //printf("AI\n");
+      board_.randomMove();
     }
 
     if (world_clock.getElapsedTime().asSeconds() > 1.0f / fps.world|| 
@@ -117,7 +117,7 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1),"FPS panel");
     ImGui::TextColored(ImVec4(1, 0, 1, 1),"FPS:%d", imguifps);
     ImGui::SliderFloat("Input", &fps.input, -1.0f, 60.0f);
-    ImGui::SliderFloat("AI", &fps.ai, -1.0f, 06.0f);
+    ImGui::SliderFloat("AI", &fps.ai, -1.0f, 60.0f);
     ImGui::SliderFloat("World", &fps.world, -1.0f, 60.0f);
     ImGui::SliderFloat("Draw", &fps.draw, -1.0f, 61.0f);
    

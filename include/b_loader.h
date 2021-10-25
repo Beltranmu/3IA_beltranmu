@@ -43,6 +43,7 @@ static void BoardFromImage(Board* board, const char* filename)  {
       }
     }
   }
+  board->initUnits();
 }
 
 #endif //__B_LOADER_H__
