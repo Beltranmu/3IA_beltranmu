@@ -116,8 +116,11 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1),"FPS panel");
     ImGui::TextColored(ImVec4(1, 0, 1, 1),"FPS:%d", imguifps);
     ImGui::SliderInt("Input", &fps.input_, -1, 60);
+    if (fps.input_ == 0) fps.input_ = -1;
     ImGui::SliderInt("AI", &fps.ai, -1, 60.0f);
+    if (fps.ai== 0) fps.ai = -1;
     ImGui::SliderInt("World", &fps.world, -1, 60);
+    if (fps.world == 0) fps.world = -1;
     ImGui::SliderInt("Draw", &fps.draw_, -1, 60);
     if(fps.draw_ == 0)
       fps.draw_ = -1;

@@ -47,6 +47,8 @@ workspace ("Artificial Intellgence")
   
   project "AI Workspce"
     location ("./build/ai-workspace")
+    targetdir ("./bin/debug")
+    debugdir "bin/debug"
     kind "ConsoleApp"
     files {"./src/**.c*", "./include/**.h*",
            "./deps/x86/SFML/include/SFML/**.h*",
