@@ -142,7 +142,7 @@ void Game::mainLoop(){
    
    
     if (sec_clock.getElapsedTime().asSeconds() > 1.0f ) {
-      printf("frames: %d\n", frames);
+      //printf("frames: %d\n", frames);
       imguifps = frames;
       frames = 0;
       sec_clock.restart();
