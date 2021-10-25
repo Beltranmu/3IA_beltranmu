@@ -9,9 +9,10 @@ const int kBoardMinSize = 16;
 const int kBoardMaxUnits = 10;  // EVEN PLEASE
 
 enum TileType {
-  //Non Walkables
+  //Non-Walkables
   kTileType_Void = 0, 
   kTileType_Wall,
+
   //Walkables
   kTileType_Normal, 
   kTileType_Door, 
@@ -19,8 +20,6 @@ enum TileType {
 };
 
 /**/
-
-
 struct Cell{
   int value;
   int height;

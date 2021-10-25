@@ -11,8 +11,8 @@ class Game
     void mainLoop();
     Game();
     ~Game();
-  protected:
-   
+
+  protected:   
     void init(uint32_t w_width, uint32_t w_height);
     void input();
     void update(float delta_time);
@@ -20,18 +20,18 @@ class Game
     void draw();
     void end();
     
-
     //FrameControl
     struct FramesPerModule {
-      float main_game;
-      float world;
-      float input;
-      float draw;
-      float ai;
+      int main_game;
+      int world;
+      int input_;
+      int draw_;
+      int ai;
       float second_per_frame;
     };
 
     FramesPerModule fps;
+
     //Window
     sf::RenderWindow w_;
     int32_t w_width_;
