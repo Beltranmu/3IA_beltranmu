@@ -206,4 +206,21 @@ void Board::drawBoard(sf::RenderWindow* window){
    
 }
 
+int32_t Board::manhantanDistance(int32_t origin_cell, int32_t dst_cell){
+  int r1, r2, c1, c2;
+  index2RowCol(&r1, &c1, origin_cell);
+  index2RowCol(&r2, &c2, dst_cell);
 
+  return (abs(r2 - r1) + abs(c2 - c1));
+}
+
+float Board::euclidianDistance(int32_t origin_cell, int32_t dst_cell){
+  int r1, r2, c1, c2;
+  index2RowCol(&r1, &c1, origin_cell);
+  index2RowCol(&r2, &c2, dst_cell);
+
+  int dx = (r2 - r1) * width_tile_;
+  int dy = (c2 - c1) * height_tile_;
+  
+  return sqrt(dx * dx + dy * dy);
+}

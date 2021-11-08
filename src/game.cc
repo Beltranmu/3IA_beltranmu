@@ -43,6 +43,11 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   map_sprite_ = sf::Sprite(map_texture_);
   //Board
   BoardFromImage(&board_, "../../data/gfx/maps/map_03_120x88_cost.png");
+
+  int c1 = rand()%(120*88);
+  int c2 = rand()%(120*88);
+  printf("C1: %d C2: %d", c1, c2);
+  printf("Distance Manhatan distance: %d  and euclidean: %f", board_.manhantanDistance(c1, c2), board_.euclidianDistance(c1, c2));
   
 
 }

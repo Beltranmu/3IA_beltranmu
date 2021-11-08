@@ -60,6 +60,8 @@ class Board
     void drawLBoard(sf::RenderWindow* window);
     void drawBoard(sf::RenderWindow* window);
 
+    int32_t manhantanDistance(int32_t origin_cell, int32_t dst_cell);
+    float euclidianDistance(int32_t origin_cell, int32_t dst_cell);
 
     Cell cell_[kBoardMaxSize * kBoardMaxSize];
     int units_[kBoardMaxSize * kBoardMaxSize];
