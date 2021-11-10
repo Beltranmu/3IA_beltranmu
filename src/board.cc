@@ -1,5 +1,6 @@
 #include "board.h"
 
+
 Board::Board(){
 
 }
@@ -15,8 +16,11 @@ void Board::initBoard(int width, int height){
   for (int col = 0; col < kBoardMaxSize * kBoardMaxSize; ++col){
     cell_[col].height = 0;
     cell_[col].value = kTileType_Void;
-    units_[col] = -1; // No units here;
-  } 
+  }
+  for(int c = 0; c <  kBoardMaxSize; ++c){
+    units_[c].init(); // No units here;
+    units_[c].currentPos = -1; // No units here;
+  }
 
   width_tile_  = 8;
   height_tile_ = 8;
@@ -36,7 +40,7 @@ void Board::initUnits(){
   for (int i = 0; i < kBoardMaxUnits; ++i) {
 
     int unit_pos = randomWalkableCell();
-    units_[i] = unit_pos;
+    units_[i].currentPos = unit_pos;
 
   }
 
@@ -55,8 +59,8 @@ Cell& Board::cell(int row, int col){ return cell_[row * width_ + col];}
 
 int Board::north(int id){
 
-  int col =0;
-  int row =0;
+  int col = 0;
+  int row = 0;
 
   index2RowCol(&row, &col, id);
 
@@ -127,7 +131,8 @@ void Board::checkAndMove(int unit_id, int id_origin_cell, int id_end_cell){
   // Can move
   if(cell_[id_end_cell].value >= kTileType_Normal){
 
-    units_[unit_id] = id_end_cell;
+    units_[unit_id].currentPos = id_end_cell;
+
     // Graphically move the unit
     //units_[id_origin_cell] = -1;
 
@@ -135,32 +140,64 @@ void Board::checkAndMove(int unit_id, int id_origin_cell, int id_end_cell){
 
 }
 
-void Board::killUnit(int target_idx){ units_[target_idx] = -1;}
+void Board::killUnit(int target_idx){ units_[target_idx].currentPos = -1;}
+
+void Board::unitMovement() {
+  for (int i = 0; i < kBoardMaxUnits; ++i) {
+    int mov = 0;
+    int next_tile;
+    bool will_move = false;
+
+    switch (units_[i].movementType) {
+    case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
+      case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
+      //case Agent::kMovement_Track: mov = units_[i].trackMov(); break;
+    }
+    if (will_move) {
+      switch (mov) {
+      case 0:
+        next_tile = north(units_[i].currentPos);
+        break;
+      case 1:
+        next_tile = south(units_[i].currentPos);
+        break;
+      case 2:
+        next_tile = west(units_[i].currentPos);
+        break;
+      case 3:
+        next_tile = east(units_[i].currentPos);
+        break;
+      }
+
+      checkAndMove(i, units_[i].currentPos, next_tile);
+    }
+  }
+}
 
 void Board::randomMove(){
 
   for(int i = 0; i < kBoardMaxUnits; ++i){
 
     int mov = rand() % 4;
+
     int next_tile ;
 
     switch (mov) {
       case 0:
-        next_tile = north(units_[i]);
+        next_tile = north(units_[i].currentPos);
         break;
       case 1:
-        next_tile = south(units_[i]);
+        next_tile = south(units_[i].currentPos);
         break;
       case 2:
-        next_tile = west(units_[i]);
+        next_tile = west(units_[i].currentPos);
         break;
-
       case 3:
-        next_tile = east(units_[i]);
+        next_tile = east(units_[i].currentPos);
         break;
     }
 
-    checkAndMove(i, units_[i], next_tile);
+    checkAndMove(i, units_[i].currentPos, next_tile);
   
   }
 
@@ -196,7 +233,7 @@ void Board::drawBoard(sf::RenderWindow* window){
   for(int i = 0; i < kBoardMaxUnits; ++i){
 
     int row = 0, col = 0;
-    index2RowCol(&row, &col, units_[i]);
+    index2RowCol(&row, &col, units_[i].currentPos);
     float posx = col * width_tile_ + desp_x_tile_;
     float posy = row * height_tile_ + desp_y_tile_;
     agent_s_.setPosition(posx, posy);

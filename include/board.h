@@ -3,10 +3,11 @@
 
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
+#include "agent.h"
 
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
-const int kBoardMaxUnits = 10;  // EVEN PLEASE
+const int kBoardMaxUnits = 1;  // EVEN PLEASE
 
 enum TileType {
   //Non-Walkables
@@ -55,6 +56,7 @@ class Board
     void checkAndMove(int unit_id, int id_origin_cell, int id_end_cell);
     void killUnit(int target_idx);
 
+    void unitMovement();
     void randomMove();
 
     void drawLBoard(sf::RenderWindow* window);
@@ -64,7 +66,8 @@ class Board
     float euclidianDistance(int32_t origin_cell, int32_t dst_cell);
 
     Cell cell_[kBoardMaxSize * kBoardMaxSize];
-    int units_[kBoardMaxSize * kBoardMaxSize];
+    Agent units_[kBoardMaxSize];
+
     int width_;
     int height_;
 

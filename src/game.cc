@@ -3,6 +3,7 @@
 #include "imgui-SFML.h"
 #include "SFML/System.hpp"
 #include "b_loader.h"
+#include "agent.h"
 
 Game::Game(){
 
@@ -44,11 +45,14 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   //Board
   BoardFromImage(&board_, "../../data/gfx/maps/map_03_120x88_cost.png");
 
-  int c1 = rand()%(120*88);
-  int c2 = rand()%(120*88);
-  printf("C1: %d C2: %d", c1, c2);
-  printf("Distance Manhatan distance: %d  and euclidean: %f", board_.manhantanDistance(c1, c2), board_.euclidianDistance(c1, c2));
-  
+ //initEnemy
+  board_.units_->movementType = Agent::Movement::kMovement_Pattern;
+
+  board_.units_->movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
+  board_.units_->movementCounterArray[0] = 3;
+  board_.units_->movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
+  board_.units_->movementCounterArray[1] = 1;
+
 
 }
 
@@ -106,7 +110,7 @@ void Game::mainLoop(){
     // IA Update
     if(ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || fps.ai == -1){
       ia_clock.restart();
-      board_.randomMove();
+      board_.unitMovement();
     }
 
     // World Update

@@ -1,3 +1,4 @@
+bin/
 build/
 *.dmg
 *.vs *.sln *.vcxproj
