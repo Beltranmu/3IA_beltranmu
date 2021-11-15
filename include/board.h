@@ -51,13 +51,14 @@ class Board
     //Return true if the type of the cell is the same that the one you give
     uint8_t cellType(int id, int cell_type);
 
-    bool checkUnitMovement(int unit_id, int id_origin_cell, int id_end_cell);
+    bool checkUnitMovement(int id_end_cell);
     void moveUnit(int unit_id, int id_origin_cell, int id_end_cell);
     void checkAndMove(int unit_id, int id_origin_cell, int id_end_cell);
     void killUnit(int target_idx);
 
     void unitMovement();
     void randomMove();
+    int pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, int32_t* fwY);
 
     void drawLBoard(sf::RenderWindow* window);
     void drawBoard(sf::RenderWindow* window);

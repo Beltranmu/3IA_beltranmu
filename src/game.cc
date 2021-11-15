@@ -46,12 +46,14 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   BoardFromImage(&board_, "../../data/gfx/maps/map_03_120x88_cost.png");
 
  //initEnemy
-  board_.units_->movementType = Agent::Movement::kMovement_Pattern;
+  //board_.units_->movementType = Agent::Movement::kMovement_Pattern;
+  board_.units_->movementType = Agent::Movement::kMovement_Track;
+/*
 
   board_.units_->movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
   board_.units_->movementCounterArray[0] = 3;
   board_.units_->movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
-  board_.units_->movementCounterArray[1] = 1;
+  board_.units_->movementCounterArray[1] = 1;*/
 
 
 }

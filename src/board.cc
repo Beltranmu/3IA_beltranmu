@@ -126,6 +126,10 @@ int Board::randomWalkableCell(){
 
 uint8_t Board::cellType(int id, int cell_type){ return cell_[id].value == cell_type;}
 
+bool Board::checkUnitMovement(int id_end_cell) {
+  return (cell_[id_end_cell].value >= kTileType_Normal);
+}
+
 void Board::checkAndMove(int unit_id, int id_origin_cell, int id_end_cell){
 
   // Can move
@@ -149,9 +153,14 @@ void Board::unitMovement() {
     bool will_move = false;
 
     switch (units_[i].movementType) {
-    case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
+      case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
       case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
-      //case Agent::kMovement_Track: mov = units_[i].trackMov(); break;
+      case Agent::kMovement_Track: mov = pacmanMovement(units_[i].currentPos, 
+      units_[i].currentTarget,
+      &units_[i].currentForwardX,
+        &units_[i].currentForwardY);/*units_[i].trackMov();*/
+        will_move = true; 
+        break;
     }
     if (will_move) {
       switch (mov) {
@@ -201,6 +210,136 @@ void Board::randomMove(){
   
   }
 
+}
+
+int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, int32_t* fwY) {
+  
+  float euclideanDistance = 99999.f;
+  int dst_desp = 0;
+  // South
+  if(*fwX == 0 && *fwY == 1){
+    if(checkUnitMovement(south(org_cell))){
+
+      euclideanDistance = euclidianDistance(target_cell, south(org_cell));
+      dst_desp = 1;
+    }
+    if (checkUnitMovement(east(org_cell))) {
+
+      if(euclideanDistance > euclidianDistance(target_cell, east(org_cell))){
+        euclideanDistance = euclidianDistance(target_cell, east(org_cell));
+
+        *fwX = 1;
+        *fwY = 0;
+        dst_desp = 3;
+      }
+
+    }
+    if (checkUnitMovement(west(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, west(org_cell))){
+        euclideanDistance = euclidianDistance(target_cell, west(org_cell));
+
+        *fwX = -1;
+        *fwY = 0;
+        dst_desp = 2;
+      }
+
+    }
+  }
+
+  // North
+  if (*fwX == 0 && *fwY == -1) {
+    if (checkUnitMovement(north(org_cell))) {
+
+      euclideanDistance = euclidianDistance(target_cell, north(org_cell));
+      dst_desp = 0;
+    }
+    if (checkUnitMovement(east(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, east(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, east(org_cell));
+
+        *fwX = 1;
+        *fwY = 0;
+        dst_desp = 3;
+      }
+
+    }
+    if (checkUnitMovement(west(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, west(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, west(org_cell));
+
+        *fwX = -1;
+        *fwY = 0;
+        dst_desp = 2;
+      }
+
+    }
+  }
+
+  // East
+  if (*fwX == 1 && *fwY == 0) {
+    if (checkUnitMovement(east(org_cell))) {
+
+      euclideanDistance = euclidianDistance(target_cell, east(org_cell));
+      dst_desp = 3;
+    }
+    if (checkUnitMovement(south(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, south(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, south(org_cell));
+
+        *fwX = 0;
+        *fwY = 1;
+        dst_desp = 1;
+      }
+
+    }
+    if (checkUnitMovement(north(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(org_cell, north(org_cell))) {
+        euclideanDistance = euclidianDistance(org_cell, north(org_cell));
+
+        *fwX = 0;
+        *fwY = -1;
+        dst_desp = 0;
+      }
+
+    }
+  }
+
+  // West
+  if (*fwX == -1 && *fwY == 0) {
+    if (checkUnitMovement(west(org_cell))) {
+
+      euclideanDistance = euclidianDistance(target_cell, west(org_cell));
+      dst_desp = 2;
+    }
+    if (checkUnitMovement(south(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, south(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, south(org_cell));
+
+        *fwX = 0;
+        *fwY = 1;
+        dst_desp = 1;
+      }
+
+    }
+    if (checkUnitMovement(north(org_cell))) {
+
+      if (euclideanDistance > euclidianDistance(target_cell, north(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, north(org_cell));
+
+        *fwX = 0;
+        *fwY = -1;
+        dst_desp = 0;
+      }
+
+    }
+  }
+   return dst_desp;
 }
 
 void Board::drawLBoard(sf::RenderWindow* window){

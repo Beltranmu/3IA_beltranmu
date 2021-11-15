@@ -27,6 +27,7 @@ class Agent {
 
     void init();
     int patternMov(bool* canIMove);
+    int pacmanMov();
     //void chooseMovement();
 
     static const int32_t numMovements = 64;
@@ -40,7 +41,10 @@ class Agent {
     int32_t currentForwardY;
 
     int32_t currentPos;
+    int32_t currentTarget;
     Movement movementType;
+
+    int32_t tileTarget;
    
 
 };
