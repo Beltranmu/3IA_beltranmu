@@ -10,8 +10,10 @@
     i_movement = 0;
     i_counterMov = 0;
     next_mov = 0;
-    tileTarget = -1;
+    tileTarget = 0;
     currentTarget = 0;
+
+    agentSelected = false;
   }
 
   Agent::~Agent(){

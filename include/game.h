@@ -52,8 +52,14 @@ class Game
 
     float delta_time_;
     float fixed_delta_time_;
+
+    // ImGUI
+    int32_t selectedAgentID;
+    int32_t targetRow;
+    int32_t targetCol;
  
   private:
+
 };
 
 #endif //__GAME_H__

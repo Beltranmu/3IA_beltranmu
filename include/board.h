@@ -7,7 +7,7 @@
 
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
-const int kBoardMaxUnits = 1;  // EVEN PLEASE
+const int kBoardMaxUnits = 4;  // EVEN PLEASE
 
 enum TileType {
   //Non-Walkables
@@ -66,6 +66,8 @@ class Board
     int32_t manhantanDistance(int32_t origin_cell, int32_t dst_cell);
     float euclidianDistance(int32_t origin_cell, int32_t dst_cell);
 
+    int32_t getAgent(sf::RenderWindow& window);
+
     Cell cell_[kBoardMaxSize * kBoardMaxSize];
     Agent units_[kBoardMaxSize];
 
@@ -82,6 +84,9 @@ class Board
 
     sf::Texture agent_t_;
     sf::Sprite agent_s_;
+    sf::Texture agent_t2_;
+    sf::Sprite agent_not_selected_;
+
   protected:
    
   private:

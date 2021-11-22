@@ -45,7 +45,8 @@ class Agent {
     Movement movementType;
 
     int32_t tileTarget;
-   
+
+    bool agentSelected;   
 
 };
 

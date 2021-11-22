@@ -12,12 +12,14 @@ Game::Game(){
   fixed_delta_time_ = fps.second_per_frame;
 
   fps.main_game = 60;
-  fps.input_ = 1;
+  fps.input_ = -1;
   fps.ai = 1;
   fps.world = 1;
   fps.draw_ = -1;
 
   fps.second_per_frame = 1/(float)fps.main_game;
+
+  selectedAgentID = -1;
 
 }
 
@@ -46,15 +48,22 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   BoardFromImage(&board_, "../../data/gfx/maps/map_03_120x88_cost.png");
 
  //initEnemy
-  //board_.units_->movementType = Agent::Movement::kMovement_Pattern;
-  board_.units_->movementType = Agent::Movement::kMovement_Track;
-/*
+ 
+  board_.units_[0].movementType = Agent::Movement::kMovement_Random;
+  board_.units_[1].movementType = Agent::Movement::kMovement_Pattern;
+  board_.units_[2].movementType = Agent::Movement::kMovement_Track;
+  board_.units_[3].movementType = Agent::Movement::kMovement_Random;
 
-  board_.units_->movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
-  board_.units_->movementCounterArray[0] = 3;
-  board_.units_->movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
-  board_.units_->movementCounterArray[1] = 1;*/
 
+  board_.units_[1].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
+  board_.units_[1].movementCounterArray[0] = 3;
+  board_.units_[1].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
+  board_.units_[1].movementCounterArray[1] = 1;
+  
+  board_.units_[3].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward;
+  board_.units_[3].movementCounterArray[0] = 3;
+  board_.units_[3].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
+  board_.units_[3].movementCounterArray[1] = 1;
 
 }
 
@@ -64,8 +73,31 @@ void Game::input() {
     ImGui::SFML::ProcessEvent(events_);
 
     if(events_.type == sf::Event::Closed ||
-       events_.key.code == sf::Keyboard::Escape){
+       ((events_.type == sf::Event::KeyPressed) && (events_.key.code == sf::Keyboard::Escape))) {
       w_.close();
+    }
+
+    switch(events_.key.code){
+
+      case sf::Keyboard::Num1:
+        board_.units_[3].movementType = Agent::Movement::kMovement_Random;
+        break;
+
+      case sf::Keyboard::Num2:
+        board_.units_[3].movementType = Agent::Movement::kMovement_Pattern;
+        board_.units_[3].currentForwardX = 0;
+        board_.units_[3].currentForwardY = -1;
+        break;
+
+      case sf::Keyboard::Num3:
+        board_.units_[3].movementType = Agent::Movement::kMovement_Track;
+        break;
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+      
+      selectedAgentID = board_.getAgent(w_);
+
     }
         
   }
@@ -81,7 +113,7 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 void Game::draw() {
 
   board_.drawBoard(&w_);
-    
+  //board_.drawLBoard(&w_);
 }
 
 void Game::end() {
@@ -136,6 +168,26 @@ void Game::mainLoop(){
     if(fps.draw_ == 0)
       fps.draw_ = -1;
 
+    ImGui::End();
+
+    ImGui::Begin("Agent Controller");
+
+    if(selectedAgentID == -1){
+      ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
+    }else{
+      ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: %d", selectedAgentID);  // Agent
+      ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track);
+      if(board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Track){
+
+        ImGui::SliderInt("Target Row:", &targetRow, 0, board_.width_-1);
+        ImGui::SliderInt("Target Col:", &targetCol, 0, board_.height_-1);
+
+      }
+
+      if(ImGui::Button("Confirm Tile"))
+       board_.rowcol2Index(targetRow,targetCol, &board_.units_[selectedAgentID].tileTarget);
+    }
+    
     ImGui::End();
 
     //Draw

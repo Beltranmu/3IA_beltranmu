@@ -33,6 +33,9 @@ void Board::initBoard(int width, int height){
   agent_t_.loadFromFile("../../data/gfx/agents/allied_soldier.bmp");
   agent_s_ = sf::Sprite(agent_t_);
 
+  agent_t2_.loadFromFile("../../data/gfx/agents/axis_soldier.bmp");
+  agent_not_selected_ = sf::Sprite(agent_t2_);
+
 }
 
 void Board::initUnits(){
@@ -363,6 +366,17 @@ void Board::drawLBoard(sf::RenderWindow* window){
 
   }
 
+  for (int i = 0; i < kBoardMaxUnits; ++i) {
+
+    int row = 0, col = 0;
+    index2RowCol(&row, &col, units_[i].currentPos);
+    float posx = col * width_tile_ + desp_x_tile_;
+    float posy = row * height_tile_ + desp_y_tile_;
+    agent_s_.setPosition(posx, posy);
+    window->draw(agent_s_);
+
+  }
+
 }
 
 void Board::drawBoard(sf::RenderWindow* window){
@@ -376,7 +390,12 @@ void Board::drawBoard(sf::RenderWindow* window){
     float posx = col * width_tile_ + desp_x_tile_;
     float posy = row * height_tile_ + desp_y_tile_;
     agent_s_.setPosition(posx, posy);
-    window->draw(agent_s_);
+    if(!units_[i].agentSelected){
+      window->draw(agent_s_);
+    }else{
+      agent_not_selected_.setPosition(posx, posy);
+      window->draw(agent_not_selected_);
+    }
 
   }
    
@@ -399,4 +418,38 @@ float Board::euclidianDistance(int32_t origin_cell, int32_t dst_cell){
   int dy = (c2 - c1) * height_tile_;
   
   return sqrt(dx * dx + dy * dy);
+}
+
+int32_t Board::getAgent(sf::RenderWindow& window) {
+
+  sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+  int mpX = mousePosition.x / 8;
+  int mpY = mousePosition.y / 8;
+
+  int32_t cell = -1;
+
+  rowcol2Index(mpY, mpX, &cell);
+
+  int32_t tmpAgentID = -1;
+
+  for(int i = 0; i < kBoardMaxUnits; ++i){
+
+    if(north(west(units_[i].currentPos)) == cell || north(units_[i].currentPos) == cell || north(east(units_[i].currentPos)) == cell ||
+       west(units_[i].currentPos) == cell || units_[i].currentPos == cell || east(units_[i].currentPos) == cell ||
+       south(west(units_[i].currentPos)) == cell || south(units_[i].currentPos) == cell || south(east(units_[i].currentPos)) == cell){
+
+      units_[i].agentSelected = true;
+      tmpAgentID = i;
+
+    }else{
+
+      units_[i].agentSelected = false;
+
+    }
+
+  }
+  
+  return tmpAgentID;
+
 }
