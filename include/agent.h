@@ -28,6 +28,7 @@ class Agent {
     void init();
     int patternMov(bool* canIMove);
     int pacmanMov();
+    void addMovement2Patern(PatternMovement p_m,int32_t n_m);
     //void chooseMovement();
 
     static const int32_t numMovements = 64;
@@ -44,7 +45,7 @@ class Agent {
     int32_t currentTarget;
     Movement movementType;
 
-    int32_t tileTarget;
+    int32_t index_movementArray;
 
     bool agentSelected;   
 

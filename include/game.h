@@ -57,6 +57,10 @@ class Game
     int32_t selectedAgentID;
     int32_t targetRow;
     int32_t targetCol;
+    int32_t possibleNextTarget;
+    bool startAddPattern;
+    int32_t number_movement;
+    Agent::PatternMovement movement_type;;
  
   private:
 

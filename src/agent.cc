@@ -10,7 +10,7 @@
     i_movement = 0;
     i_counterMov = 0;
     next_mov = 0;
-    tileTarget = 0;
+    index_movementArray = 0;
     currentTarget = 0;
 
     agentSelected = false;
@@ -105,3 +105,12 @@
 
     return 0;
   }
+
+void Agent::addMovement2Patern(PatternMovement p_m, int32_t n_m){
+
+  if(index_movementArray <64){
+    movementArray[index_movementArray] = p_m;
+    movementCounterArray[index_movementArray] = n_m;
+    index_movementArray++;
+  }
+}

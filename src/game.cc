@@ -20,7 +20,12 @@ Game::Game(){
   fps.second_per_frame = 1/(float)fps.main_game;
 
   selectedAgentID = -1;
-
+  targetRow = 0;
+  targetCol = 0;
+  possibleNextTarget = -1;
+  startAddPattern = false;
+  number_movement = 0;
+  movement_type = Agent::PatternMovement::kPatternMovement_None;
 }
 
 Game::~Game() {
@@ -55,15 +60,17 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   board_.units_[3].movementType = Agent::Movement::kMovement_Random;
 
 
-  board_.units_[1].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
-  board_.units_[1].movementCounterArray[0] = 3;
-  board_.units_[1].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
-  board_.units_[1].movementCounterArray[1] = 1;
+  board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Forward, 3);
+  board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Turn180, 1);
+//   board_.units_[1].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
+//   board_.units_[1].movementCounterArray[0] = 3;
+//   board_.units_[1].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
+//   board_.units_[1].movementCounterArray[1] = 1;
   
-  board_.units_[3].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward;
+ /* board_.units_[3].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward;
   board_.units_[3].movementCounterArray[0] = 3;
   board_.units_[3].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;
-  board_.units_[3].movementCounterArray[1] = 1;
+  board_.units_[3].movementCounterArray[1] = 1;*/
 
 }
 
@@ -112,7 +119,8 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 
 void Game::draw() {
 
-  board_.drawBoard(&w_);
+  board_.drawBoard(&w_, possibleNextTarget);
+  possibleNextTarget = -1;
   //board_.drawLBoard(&w_);
 }
 
@@ -142,7 +150,8 @@ void Game::mainLoop(){
     }
    
     // IA Update
-    if(ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || fps.ai == -1){
+    if((ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || fps.ai == -1) 
+      && (!startAddPattern)){
       ia_clock.restart();
       board_.unitMovement();
     }
@@ -177,15 +186,43 @@ void Game::mainLoop(){
     }else{
       ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: %d", selectedAgentID);  // Agent
       ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track);
-      if(board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Track){
+      
+      if (board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Pattern) {
+        if (ImGui::Button("Start Addition Pattern mode")){
+          startAddPattern = true;
+        }
 
-        ImGui::SliderInt("Target Row:", &targetRow, 0, board_.width_-1);
-        ImGui::SliderInt("Target Col:", &targetCol, 0, board_.height_-1);
-
+        if(startAddPattern){
+          if (ImGui::Button("Wait")) { movement_type = Agent::PatternMovement::kPatternMovement_Wait; }
+          if (ImGui::Button("Forward")){ movement_type = Agent::PatternMovement::kPatternMovement_Forward;  }
+          if (ImGui::Button("Turn 180")){ movement_type = Agent::PatternMovement::kPatternMovement_Turn180;  }
+          if (ImGui::Button("Turn Left 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnLeft90; }
+          if (ImGui::Button("Turn Right 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnRight90; }
+          ImGui::SliderInt("Number Movements",&number_movement ,1,10);
+          if (ImGui::Button("Add Pattern")) {
+            board_.units_[selectedAgentID].addMovement2Patern(movement_type, number_movement);
+            number_movement = 1;
+          }
+          if (ImGui::Button("End Addition Pattern mode")) {
+            startAddPattern = false;
+          }/*
+           Show the current pattern
+          for(int i = 0; i < board_.units_[selectedAgentID].index_movementArray; ++i){
+       
+          }*/
+        }
+        
       }
 
-      if(ImGui::Button("Confirm Tile"))
-       board_.rowcol2Index(targetRow,targetCol, &board_.units_[selectedAgentID].tileTarget);
+      if(board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Track){
+
+        ImGui::SliderInt("Target Row:", &targetRow, 0, board_.height_-1);
+        ImGui::SliderInt("Target Col:", &targetCol, 0, board_.width_-1);
+        board_.rowcol2Index(targetRow,targetCol, &possibleNextTarget);
+
+        if(ImGui::Button("Confirm Tile"))
+          board_.rowcol2Index(targetRow,targetCol, &board_.units_[selectedAgentID].currentTarget);
+      }
     }
     
     ImGui::End();

@@ -159,10 +159,11 @@ void Board::unitMovement() {
       case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
       case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
       case Agent::kMovement_Track: mov = pacmanMovement(units_[i].currentPos, 
-      units_[i].currentTarget,
-      &units_[i].currentForwardX,
+        units_[i].currentTarget,
+        &units_[i].currentForwardX,
         &units_[i].currentForwardY);/*units_[i].trackMov();*/
         will_move = true; 
+        if (mov == -1) { will_move = false; }
         break;
     }
     if (will_move) {
@@ -217,6 +218,10 @@ void Board::randomMove(){
 
 int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, int32_t* fwY) {
   
+
+  if(target_cell == org_cell){
+    return-1;
+  }
   float euclideanDistance = 99999.f;
   int dst_desp = 0;
   // South
@@ -248,6 +253,8 @@ int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, i
       }
 
     }
+      
+     return dst_desp;
   }
 
   // North
@@ -279,6 +286,7 @@ int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, i
       }
 
     }
+    return dst_desp;
   }
 
   // East
@@ -301,15 +309,15 @@ int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, i
     }
     if (checkUnitMovement(north(org_cell))) {
 
-      if (euclideanDistance > euclidianDistance(org_cell, north(org_cell))) {
-        euclideanDistance = euclidianDistance(org_cell, north(org_cell));
+      if (euclideanDistance > euclidianDistance(target_cell, north(org_cell))) {
+        euclideanDistance = euclidianDistance(target_cell, north(org_cell));
 
         *fwX = 0;
         *fwY = -1;
         dst_desp = 0;
       }
-
     }
+    return dst_desp;
   }
 
   // West
@@ -331,7 +339,6 @@ int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, i
 
     }
     if (checkUnitMovement(north(org_cell))) {
-
       if (euclideanDistance > euclidianDistance(target_cell, north(org_cell))) {
         euclideanDistance = euclidianDistance(target_cell, north(org_cell));
 
@@ -379,7 +386,7 @@ void Board::drawLBoard(sf::RenderWindow* window){
 
 }
 
-void Board::drawBoard(sf::RenderWindow* window){
+void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
 
   window->draw(board_sprite);
 
@@ -396,7 +403,44 @@ void Board::drawBoard(sf::RenderWindow* window){
       agent_not_selected_.setPosition(posx, posy);
       window->draw(agent_not_selected_);
     }
+//     Draw forward
+//         int r_forward = 0;
+//         int c_forward = 0;
+//         if(units_[i].currentForwardX == 0){
+//           if(units_[i].currentForwardY == 1){//South
+//             index2RowCol(&r_forward, &c_forward, south(units_[i].currentPos));
+//           }else{ //North
+//             index2RowCol(&r_forward, &c_forward, north(units_[i].currentPos));
+//           }
+//         }
+//         else if(units_[i].currentForwardX == 1){
+//           index2RowCol(&r_forward, &c_forward, east(units_[i].currentPos));
+//         }
+//         else{
+//           index2RowCol(&r_forward, &c_forward, west(units_[i].currentPos));
+//         }
+//         sf::RectangleShape rect;
+//         rect.setOutlineColor(sf::Color::Blue);
+//         rect.setFillColor(sf::Color::Blue);
+//         rect.setSize(sf::Vector2f(10.0f, 10.0f));
+//     
+//         int x = c_forward * 8;
+//         int y = r_forward * 8;
+//     
+//         rect.setPosition(sf::Vector2f(x, y));
+//         window->draw(rect);
+  }
+  if (selected_cell >= 0) {
+    sf::RectangleShape rect;
+    rect.setOutlineColor(sf::Color::Green);
+    rect.setFillColor(sf::Color::Green);
+    rect.setSize(sf::Vector2f(8.0f, 8.0f));
 
+    int x = (selected_cell % width_) * 8;
+    int y = (selected_cell / width_) * 8;
+
+    rect.setPosition(sf::Vector2f(x, y));
+    window->draw(rect);
   }
    
 }

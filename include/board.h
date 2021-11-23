@@ -61,7 +61,7 @@ class Board
     int pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, int32_t* fwY);
 
     void drawLBoard(sf::RenderWindow* window);
-    void drawBoard(sf::RenderWindow* window);
+    void drawBoard(sf::RenderWindow* window, int selected_cell);
 
     int32_t manhantanDistance(int32_t origin_cell, int32_t dst_cell);
     float euclidianDistance(int32_t origin_cell, int32_t dst_cell);
