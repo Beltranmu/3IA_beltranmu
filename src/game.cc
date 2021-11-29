@@ -198,18 +198,43 @@ void Game::mainLoop(){
           if (ImGui::Button("Turn 180")){ movement_type = Agent::PatternMovement::kPatternMovement_Turn180;  }
           if (ImGui::Button("Turn Left 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnLeft90; }
           if (ImGui::Button("Turn Right 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnRight90; }
-          ImGui::SliderInt("Number Movements",&number_movement ,1,10);
+          ImGui::SliderInt("Number Movements",&number_movement ,1,20);
           if (ImGui::Button("Add Pattern")) {
             board_.units_[selectedAgentID].addMovement2Patern(movement_type, number_movement);
             number_movement = 1;
+            movement_type = Agent::PatternMovement::kPatternMovement_None;
           }
           if (ImGui::Button("End Addition Pattern mode")) {
             startAddPattern = false;
-          }/*
-           Show the current pattern
+          }
+          const char* name_movement = "NONE";
+          switch (movement_type)
+          {
+            case Agent::PatternMovement::kPatternMovement_Wait: name_movement = "WAIT"; break;
+            case Agent::PatternMovement::kPatternMovement_Forward: name_movement = "FORWARD"; break;
+            case Agent::PatternMovement::kPatternMovement_Turn180: name_movement = "TURN180"; break;
+            case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_movement = "TURNLEFT90"; break;
+            case Agent::PatternMovement::kPatternMovement_TurnRight90: name_movement = "TURNRIGHT90"; break;
+          }
+          ImGui::TextColored(ImVec4(1, 0, 0, 1), "PATTERN TO ADD:");
+          ImGui::Text("Movement Type: %s || Steps: %d", name_movement, number_movement);
+         
+
+          //Show the current pattern
+          ImGui::TextColored(ImVec4(0, 1, 0, 1), "CURRENT PATTERN");
+          const char* name_mov = "NONE";
           for(int i = 0; i < board_.units_[selectedAgentID].index_movementArray; ++i){
-       
-          }*/
+            switch (board_.units_[selectedAgentID].movementArray[i])
+            {
+              case Agent::PatternMovement::kPatternMovement_Wait: name_mov = "WAIT"; break;
+              case Agent::PatternMovement::kPatternMovement_Forward: name_mov = "FORWARD"; break;
+              case Agent::PatternMovement::kPatternMovement_Turn180: name_mov = "TURN180"; break;
+              case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_mov = "TURNLEFT90"; break;
+              case Agent::PatternMovement::kPatternMovement_TurnRight90: name_mov = "TURNRIGHT90"; break;
+            }
+            //ImGui::Text("Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
+            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
+          }
         }
         
       }
