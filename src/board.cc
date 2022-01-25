@@ -17,10 +17,15 @@ void Board::initBoard(int width, int height){
     cell_[col].height = 0;
     cell_[col].value = kTileType_Void;
   }
+
+
+  //Init Agents
   for(int c = 0; c <  kBoardMaxSize; ++c){
     units_[c].init(); // No units here;
     units_[c].currentPos = -1; // No units here;
+    
   }
+
 
   width_tile_  = 8;
   height_tile_ = 8;
@@ -36,6 +41,9 @@ void Board::initBoard(int width, int height){
   agent_t2_.loadFromFile("../../data/gfx/agents/axis_soldier.bmp");
   agent_not_selected_ = sf::Sprite(agent_t2_);
 
+  player_t.loadFromFile("../../data/gfx/agents/player.png");
+  player_s = sf::Sprite(player_t);
+
 }
 
 void Board::initUnits(){
@@ -47,6 +55,10 @@ void Board::initUnits(){
 
   }
 
+  treasureLocation = randomWalkableCell();
+  //Character
+  units_[0].currentTarget = treasureLocation;
+  units_[0].movementType = Agent::Movement::kMovement_Track;
 }
 
 void Board::index2RowCol(int* row, int* col, int id){
@@ -102,7 +114,6 @@ int Board::west(int id){
   return id;
 }
 
-
 int Board::east(int id){
   
   int col = 0;
@@ -133,12 +144,12 @@ bool Board::checkUnitMovement(int id_end_cell) {
   return (cell_[id_end_cell].value >= kTileType_Normal);
 }
 
-void Board::checkAndMove(int unit_id, int id_origin_cell, int id_end_cell){
+void Board::checkAndMove(Agent* a, int id_end_cell){
 
   // Can move
   if(cell_[id_end_cell].value >= kTileType_Normal){
 
-    units_[unit_id].currentPos = id_end_cell;
+    a->currentPos = id_end_cell;
 
     // Graphically move the unit
     //units_[id_origin_cell] = -1;
@@ -151,68 +162,70 @@ void Board::killUnit(int target_idx){ units_[target_idx].currentPos = -1;}
 
 void Board::unitMovement() {
   for (int i = 0; i < kBoardMaxUnits; ++i) {
-    int mov = 0;
-    int next_tile;
-    bool will_move = false;
 
-    switch (units_[i].movementType) {
-      case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
-      case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
-      case Agent::kMovement_Track: mov = pacmanMovement(units_[i].currentPos, 
-        units_[i].currentTarget,
-        &units_[i].currentForwardX,
-        &units_[i].currentForwardY);/*units_[i].trackMov();*/
-        will_move = true; 
-        if (mov == -1) { will_move = false; }
-        break;
-    }
-    if (will_move) {
-      switch (mov) {
-      case 0:
-        next_tile = north(units_[i].currentPos);
-        break;
-      case 1:
-        next_tile = south(units_[i].currentPos);
-        break;
-      case 2:
-        next_tile = west(units_[i].currentPos);
-        break;
-      case 3:
-        next_tile = east(units_[i].currentPos);
-        break;
-      }
-
-      checkAndMove(i, units_[i].currentPos, next_tile);
-    }
+    units_[i].moveUnit(i, this);
+//     int mov = 0;
+//     int next_tile;
+//     bool will_move = false;
+// 
+//     switch (units_[i].movementType) {
+//       case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
+//       case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
+//       case Agent::kMovement_Track: mov = pacmanMovement(units_[i].currentPos, 
+//         units_[i].currentTarget,
+//         &units_[i].currentForwardX,
+//         &units_[i].currentForwardY);/*units_[i].trackMov();*/
+//         will_move = true; 
+//         if (mov == -1) { will_move = false; }
+//         break;
+//     }
+//     if (will_move) {
+//       switch (mov) {
+//       case 0:
+//         next_tile = north(units_[i].currentPos);
+//         break;
+//       case 1:
+//         next_tile = south(units_[i].currentPos);
+//         break;
+//       case 2:
+//         next_tile = west(units_[i].currentPos);
+//         break;
+//       case 3:
+//         next_tile = east(units_[i].currentPos);
+//         break;
+//       }
+// 
+//       checkAndMove(i, units_[i].currentPos, next_tile);
+//     }
   }
 }
 
 void Board::randomMove(){
 
-  for(int i = 0; i < kBoardMaxUnits; ++i){
-
-    int mov = rand() % 4;
-
-    int next_tile ;
-
-    switch (mov) {
-      case 0:
-        next_tile = north(units_[i].currentPos);
-        break;
-      case 1:
-        next_tile = south(units_[i].currentPos);
-        break;
-      case 2:
-        next_tile = west(units_[i].currentPos);
-        break;
-      case 3:
-        next_tile = east(units_[i].currentPos);
-        break;
-    }
-
-    checkAndMove(i, units_[i].currentPos, next_tile);
-  
-  }
+//   for(int i = 0; i < kBoardMaxUnits; ++i){
+// 
+//     int mov = rand() % 4;
+// 
+//     int next_tile ;
+// 
+//     switch (mov) {
+//       case 0:
+//         next_tile = north(units_[i].currentPos);
+//         break;
+//       case 1:
+//         next_tile = south(units_[i].currentPos);
+//         break;
+//       case 2:
+//         next_tile = west(units_[i].currentPos);
+//         break;
+//       case 3:
+//         next_tile = east(units_[i].currentPos);
+//         break;
+//     }
+// 
+//     checkAndMove(units_[i].currentPos, next_tile);
+//   
+//   }
 
 }
 
@@ -390,18 +403,25 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
 
   window->draw(board_sprite);
 
-  for(int i = 0; i < kBoardMaxUnits; ++i){
+  for (int i = 0; i < kBoardMaxUnits; ++i) {
 
     int row = 0, col = 0;
     index2RowCol(&row, &col, units_[i].currentPos);
     float posx = col * width_tile_ + desp_x_tile_;
     float posy = row * height_tile_ + desp_y_tile_;
     agent_s_.setPosition(posx, posy);
-    if(!units_[i].agentSelected){
-      window->draw(agent_s_);
-    }else{
-      agent_not_selected_.setPosition(posx, posy);
-      window->draw(agent_not_selected_);
+    if (i > 0) {
+      if (!units_[i].agentSelected) {
+        window->draw(agent_s_);
+      }
+      else {
+        agent_not_selected_.setPosition(posx, posy);
+        window->draw(agent_not_selected_);
+      }
+    }
+    else{
+      player_s.setPosition(posx, posy);
+      window->draw(player_s);
     }
 //     Draw forward
 //         int r_forward = 0;
@@ -442,6 +462,20 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
     rect.setPosition(sf::Vector2f(x, y));
     window->draw(rect);
   }
+
+  //Draw Treasure
+
+  sf::RectangleShape treasure;
+  treasure.setOutlineColor(sf::Color::Red);
+  treasure.setFillColor(sf::Color::Red);
+  treasure.setSize(sf::Vector2f(8.0f, 8.0f));
+
+  int xt = (treasureLocation % width_) * 8;
+  int yt = (treasureLocation / width_) * 8;
+
+  treasure.setPosition(sf::Vector2f(xt, yt));
+  window->draw(treasure);
+
    
 }
 

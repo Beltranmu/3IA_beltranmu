@@ -54,14 +54,12 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
 
  //initEnemy
  
-  board_.units_[0].movementType = Agent::Movement::kMovement_Random;
-  board_.units_[1].movementType = Agent::Movement::kMovement_Pattern;
-  board_.units_[2].movementType = Agent::Movement::kMovement_Track;
-  board_.units_[3].movementType = Agent::Movement::kMovement_Random;
 
 
-  board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Forward, 3);
-  board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Turn180, 1);
+
+
+  //board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Forward, 3);
+  //board_.units_[1].addMovement2Patern(Agent::PatternMovement::kPatternMovement_Turn180, 1);
 //   board_.units_[1].movementArray[0] = Agent::PatternMovement::kPatternMovement_Forward ;
 //   board_.units_[1].movementCounterArray[0] = 3;
 //   board_.units_[1].movementArray[1] = Agent::PatternMovement::kPatternMovement_Turn180;

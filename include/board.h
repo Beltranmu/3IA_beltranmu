@@ -7,7 +7,7 @@
 
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
-const int kBoardMaxUnits = 4;  // EVEN PLEASE
+const int kBoardMaxUnits = 2;  // EVEN PLEASE
 
 enum TileType {
   //Non-Walkables
@@ -53,7 +53,7 @@ class Board
 
     bool checkUnitMovement(int id_end_cell);
     void moveUnit(int unit_id, int id_origin_cell, int id_end_cell);
-    void checkAndMove(int unit_id, int id_origin_cell, int id_end_cell);
+    void checkAndMove(Agent* a, int id_end_cell);
     void killUnit(int target_idx);
 
     void unitMovement();
@@ -71,6 +71,8 @@ class Board
     Cell cell_[kBoardMaxSize * kBoardMaxSize];
     Agent units_[kBoardMaxSize];
 
+    int32_t treasureLocation;
+
     int width_;
     int height_;
 
@@ -86,6 +88,9 @@ class Board
     sf::Sprite agent_s_;
     sf::Texture agent_t2_;
     sf::Sprite agent_not_selected_;
+
+    sf::Texture player_t;
+    sf::Sprite player_s;
 
   protected:
    

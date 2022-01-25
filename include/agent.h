@@ -2,6 +2,7 @@
 #define __AGENT_H__ 1
 
 #include <stdint.h>
+class Board;
 
 class Agent {
 
@@ -26,10 +27,13 @@ class Agent {
     ~Agent();
 
     void init();
+
+    void moveUnit(int32_t agent_id, Board* board);
+    int randomMov(bool* canIMove);
     int patternMov(bool* canIMove);
-    int pacmanMov();
+    int pacManMovement(bool* canIMove, Board* board);
     void addMovement2Patern(PatternMovement p_m,int32_t n_m);
-    //void chooseMovement();
+    void cleanMovementPatern();
 
     static const int32_t numMovements = 64;
     PatternMovement movementArray[numMovements];
