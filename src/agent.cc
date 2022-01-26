@@ -36,6 +36,7 @@
     addMovement2Patern(Agent::PatternMovement::kPatternMovement_Wait, 1);
     movementType = kMovement_Pattern;
     i_movement = 0;
+    distanceToCatch = 5;
   }
 
 
@@ -151,7 +152,7 @@
         }
 
       }
-
+      //Update Position
       return dst_desp;
     }
 
@@ -248,7 +249,6 @@
       }
     }
     return dst_desp;
-
   }
 
 
@@ -268,11 +268,15 @@ void Agent::cleanMovementPatern(){
   }
 }
 
-void Agent::moveUnit(int32_t agent_id, Board* board) {
+void Agent::moveUnit(Board* board) {
 
   int mov = 0;
   int next_tile = currentPos;
   bool will_move = false;
+
+  if(agentID !=0){
+    board->checkForPlayer(0, this);
+  }
 
   switch (movementType) {
     case Agent::kMovement_Random: mov = randomMov(&will_move); break;;

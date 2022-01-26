@@ -28,7 +28,7 @@ class Agent {
 
     void init();
 
-    void moveUnit(int32_t agent_id, Board* board);
+    void moveUnit(Board* board);
     int randomMov(bool* canIMove);
     int patternMov(bool* canIMove);
     int pacManMovement(bool* canIMove, Board* board);
@@ -46,11 +46,15 @@ class Agent {
     int32_t currentForwardY;
 
     int32_t currentPos;
+    float currentFPos;
     int32_t currentTarget;
     Movement movementType;
+    uint32_t distanceToCatch;
+    uint32_t speed;
 
     int32_t index_movementArray;
 
+    uint32_t agentID;
     bool agentSelected;   
 
 };

@@ -23,7 +23,7 @@ void Board::initBoard(int width, int height){
   for(int c = 0; c <  kBoardMaxSize; ++c){
     units_[c].init(); // No units here;
     units_[c].currentPos = -1; // No units here;
-    
+    units_[c].agentID = c;
   }
 
 
@@ -56,6 +56,7 @@ void Board::initUnits(){
   }
 
   treasureLocation = randomWalkableCell();
+  treasureLocation = 120 * 60;
   //Character
   units_[0].currentTarget = treasureLocation;
   units_[0].movementType = Agent::Movement::kMovement_Track;
@@ -148,6 +149,7 @@ void Board::checkAndMove(Agent* a, int id_end_cell){
 
   // Can move
   if(cell_[id_end_cell].value >= kTileType_Normal){
+    //Need to be changed
 
     a->currentPos = id_end_cell;
 
@@ -158,12 +160,21 @@ void Board::checkAndMove(Agent* a, int id_end_cell){
 
 }
 
+void Board::checkForPlayer(uint32_t playerToSearch, Agent* e){
+    
+  if(manhantanDistance(units_[playerToSearch].currentPos, e->currentPos) < e->distanceToCatch){
+    e->movementType = Agent::Movement::kMovement_Track;
+    e->currentTarget = units_[playerToSearch].currentPos;
+  }
+  
+}
+
 void Board::killUnit(int target_idx){ units_[target_idx].currentPos = -1;}
 
 void Board::unitMovement() {
   for (int i = 0; i < kBoardMaxUnits; ++i) {
 
-    units_[i].moveUnit(i, this);
+    units_[i].moveUnit(this);
 //     int mov = 0;
 //     int next_tile;
 //     bool will_move = false;

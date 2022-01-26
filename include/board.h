@@ -7,7 +7,7 @@
 
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
-const int kBoardMaxUnits = 2;  // EVEN PLEASE
+const int kBoardMaxUnits = 10;  // EVEN PLEASE
 
 enum TileType {
   //Non-Walkables
@@ -52,8 +52,9 @@ class Board
     uint8_t cellType(int id, int cell_type);
 
     bool checkUnitMovement(int id_end_cell);
-    void moveUnit(int unit_id, int id_origin_cell, int id_end_cell);
+    //void moveUnit(int unit_id, int id_origin_cell, int id_end_cell);
     void checkAndMove(Agent* a, int id_end_cell);
+    void checkForPlayer(uint32_t playerToSearch, Agent* e); ///> true if there is a player near otherwise false
     void killUnit(int target_idx);
 
     void unitMovement();
