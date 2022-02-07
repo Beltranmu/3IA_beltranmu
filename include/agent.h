@@ -50,7 +50,8 @@ class Agent {
     int32_t currentTarget;
     Movement movementType;
     uint32_t distanceToCatch;
-    uint32_t speed;
+    uint32_t speed; 
+    bool been_chased;
 
     int32_t index_movementArray;
 

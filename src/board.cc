@@ -162,9 +162,11 @@ void Board::checkAndMove(Agent* a, int id_end_cell){
 
 void Board::checkForPlayer(uint32_t playerToSearch, Agent* e){
     
+    units_[playerToSearch].been_chased = false;
   if(manhantanDistance(units_[playerToSearch].currentPos, e->currentPos) < e->distanceToCatch){
     e->movementType = Agent::Movement::kMovement_Track;
     e->currentTarget = units_[playerToSearch].currentPos;
+    units_[playerToSearch].speed += 0.5f;
   }
   
 }
@@ -172,42 +174,10 @@ void Board::checkForPlayer(uint32_t playerToSearch, Agent* e){
 void Board::killUnit(int target_idx){ units_[target_idx].currentPos = -1;}
 
 void Board::unitMovement() {
+  units_[0].speed = 1;
   for (int i = 0; i < kBoardMaxUnits; ++i) {
 
     units_[i].moveUnit(this);
-//     int mov = 0;
-//     int next_tile;
-//     bool will_move = false;
-// 
-//     switch (units_[i].movementType) {
-//       case Agent::kMovement_Random: mov = rand() % 4;  will_move = true; break;;
-//       case Agent::kMovement_Pattern: mov = units_[i].patternMov(&will_move); break;
-//       case Agent::kMovement_Track: mov = pacmanMovement(units_[i].currentPos, 
-//         units_[i].currentTarget,
-//         &units_[i].currentForwardX,
-//         &units_[i].currentForwardY);/*units_[i].trackMov();*/
-//         will_move = true; 
-//         if (mov == -1) { will_move = false; }
-//         break;
-//     }
-//     if (will_move) {
-//       switch (mov) {
-//       case 0:
-//         next_tile = north(units_[i].currentPos);
-//         break;
-//       case 1:
-//         next_tile = south(units_[i].currentPos);
-//         break;
-//       case 2:
-//         next_tile = west(units_[i].currentPos);
-//         break;
-//       case 3:
-//         next_tile = east(units_[i].currentPos);
-//         break;
-//       }
-// 
-//       checkAndMove(i, units_[i].currentPos, next_tile);
-//     }
   }
 }
 

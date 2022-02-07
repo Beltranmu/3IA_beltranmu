@@ -14,6 +14,8 @@
     next_mov = 0;
     index_movementArray = 0;
     currentTarget = 0;
+    speed = 1;
+    been_chased = false;
 
     agentSelected = false;
 
