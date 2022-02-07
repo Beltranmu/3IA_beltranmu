@@ -38,7 +38,7 @@
     addMovement2Patern(Agent::PatternMovement::kPatternMovement_Wait, 1);
     movementType = kMovement_Pattern;
     i_movement = 0;
-    distanceToCatch = 5;
+    distanceToCatch = 8;
   }
 
 

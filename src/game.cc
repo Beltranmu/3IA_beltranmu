@@ -200,7 +200,6 @@ void Game::mainLoop(){
           const char* name_movement = "NONE";
           switch (movement_type)
           {
-<<<<<<< HEAD
           case Agent::PatternMovement::kPatternMovement_Wait: name_movement = "WAIT"; break;
           case Agent::PatternMovement::kPatternMovement_Forward: name_movement = "FORWARD"; break;
           case Agent::PatternMovement::kPatternMovement_Turn180: name_movement = "TURN180"; break;
@@ -210,25 +209,11 @@ void Game::mainLoop(){
           ImGui::TextColored(ImVec4(1, 0, 0, 1), "PATTERN TO ADD:");
           ImGui::Text("Movement Type: %s || Steps: %d", name_movement, number_movement);
 
-=======
-            case Agent::PatternMovement::kPatternMovement_Wait: name_movement = "WAIT"; break;
-            case Agent::PatternMovement::kPatternMovement_Forward: name_movement = "FORWARD"; break;
-            case Agent::PatternMovement::kPatternMovement_Turn180: name_movement = "TURN180"; break;
-            case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_movement = "TURNLEFT90"; break;
-            case Agent::PatternMovement::kPatternMovement_TurnRight90: name_movement = "TURNRIGHT90"; break;
-          }
-          ImGui::TextColored(ImVec4(1, 0, 0, 1), "PATTERN TO ADD:");
-          ImGui::Text("Movement Type: %s || Steps: %d", name_movement, number_movement);
-         
->>>>>>> 7b9b7ddcb911b3c3b69c0f834dbf85499130d3f0
 
           //Show the current pattern
           ImGui::TextColored(ImVec4(0, 1, 0, 1), "CURRENT PATTERN");
           const char* name_mov = "NONE";
-<<<<<<< HEAD
       
-=======
->>>>>>> 7b9b7ddcb911b3c3b69c0f834dbf85499130d3f0
           for(int i = 0; i < board_.units_[selectedAgentID].index_movementArray; ++i){
             switch (board_.units_[selectedAgentID].movementArray[i])
             {
@@ -241,10 +226,7 @@ void Game::mainLoop(){
             //ImGui::Text("Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
           }
-<<<<<<< HEAD
           
-=======
->>>>>>> 7b9b7ddcb911b3c3b69c0f834dbf85499130d3f0
         }
         
       }
