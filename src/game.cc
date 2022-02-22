@@ -4,6 +4,7 @@
 #include "SFML/System.hpp"
 #include "b_loader.h"
 #include "agent.h"
+#include "voronoi.h"
 
 Game::Game(){
 
@@ -34,8 +35,13 @@ Game::~Game() {
 
 void Game::init(uint32_t w_width, uint32_t w_height) {
 
+  srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
+  voronoi.w = w_width_;
+  voronoi.h = w_height_;
+  voronoi.init(3);
+  voronoi.calculateBisector();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 
@@ -108,9 +114,10 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 
 void Game::draw() {
 
-  board_.drawBoard(&w_, possibleNextTarget);
-  possibleNextTarget = -1;
+  //board_.drawBoard(&w_, possibleNextTarget);
+  //possibleNextTarget = -1;
   //board_.drawLBoard(&w_);
+  voronoi.draw(&w_);
 }
 
 void Game::end() {
@@ -142,7 +149,7 @@ void Game::mainLoop(){
     if((ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || fps.ai == -1) 
       && (!startAddPattern)){
       ia_clock.restart();
-      board_.unitMovement();
+      /*board_.unitMovement();*/
     }
 
     // World Update
@@ -169,7 +176,7 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
     ImGui::End();
 
-    ImGui::Begin("Agent Controller");
+    /*ImGui::Begin("Agent Controller");
 
     if(selectedAgentID == -1){
       ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
@@ -242,7 +249,7 @@ void Game::mainLoop(){
       }
     }
     
-    ImGui::End();
+    ImGui::End();*/
 
     //Draw
     if (draw_clock.getElapsedTime().asSeconds() > 1.0f / (float)fps.draw_ || fps.draw_ == -1) {

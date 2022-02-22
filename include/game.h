@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
 #include "board.h"
+#include "voronoi.h"
 
 class Game
 {
@@ -20,6 +21,9 @@ class Game
     void draw();
     void end();
     
+    Voronoi voronoi;
+
+
     //FrameControl
     struct FramesPerModule {
       int main_game;
