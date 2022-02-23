@@ -35,7 +35,7 @@ Game::~Game() {
 
 void Game::init(uint32_t w_width, uint32_t w_height) {
 
-  srand(time(NULL));
+  //srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
   voronoi.w = w_width_;
@@ -79,28 +79,13 @@ void Game::input() {
       w_.close();
     }
 
-    switch(events_.key.code){
-
-      case sf::Keyboard::Num1:
-        board_.units_[3].movementType = Agent::Movement::kMovement_Random;
-        break;
-
-      case sf::Keyboard::Num2:
-        board_.units_[3].movementType = Agent::Movement::kMovement_Pattern;
-        board_.units_[3].currentForwardX = 0;
-        board_.units_[3].currentForwardY = -1;
-        break;
-
-      case sf::Keyboard::Num3:
-        board_.units_[3].movementType = Agent::Movement::kMovement_Track;
-        break;
-    }
-
+    
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
       
       selectedAgentID = board_.getAgent(w_);
 
     }
+    
         
   }
 }
@@ -174,6 +159,21 @@ void Game::mainLoop(){
       fps.draw_ = -1;
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d",board_.units_[0].currentPos);
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
+    ImGui::BeginChild("Scrolling");
+    if(ImGui::Button("Check Voronoi")){
+      voronoi.calculateBisector();
+    }
+    for (int n = 0; n < voronoi.points.size(); n++) {
+     
+      float red = ((float)n+1.0f) / (float)voronoi.points.size();
+      ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
+      char name[255];
+      sprintf(name, "PositionX % d", n);
+      ImGui::SliderFloat(name, &voronoi.points[n].x, 0, 960);
+      sprintf(name, "PositionY % d", n);
+      ImGui::SliderFloat(name, &voronoi.points[n].y, 0, 704);
+    }
+    ImGui::EndChild();
     ImGui::End();
 
     /*ImGui::Begin("Agent Controller");

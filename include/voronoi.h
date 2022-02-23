@@ -8,15 +8,16 @@
 #include "SFML/System/Vector2.hpp"
 
 
-struct Line{
-  sf::Vector2<float> p1;
-  sf::Vector2<float> p2;
-};
+
 struct Bisector {
   sf::Vector2<float> Spoint;
   sf::Vector2<float> vDirector;
   sf::Vector2<float> p1;
   sf::Vector2<float> p2;
+};
+
+struct Line {
+  sf::Vector2<float> mp, p1, p2;
 };
 
 class Voronoi
@@ -31,12 +32,15 @@ public:
   void draw(sf::RenderWindow* window);
 
   void calculateBisector();
+  
   sf::Vector3<float> ecuationSystem(sf::Vector3<float>, sf::Vector3<float>);
 
   std::vector<sf::Vector2<float>> points;
   std::vector<sf::Vector2<float>> Mpoints;
+  std::vector<sf::Vector2<float>> Spoints;
   std::vector<Bisector> bisector;
   std::vector<Line> lines;
+  std::vector<Line> linesBisector;
 
 
 

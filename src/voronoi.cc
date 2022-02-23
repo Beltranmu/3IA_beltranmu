@@ -88,6 +88,16 @@ void Voronoi::draw(sf::RenderWindow* window){
     rect.setPosition(sf::Vector2f(Mpoints[p].x-3, Mpoints[p].y-3));
     window->draw(rect);
   }
+
+  for (int p = 0; p < Spoints.size(); p++) {
+    sf::RectangleShape rect;
+    rect.setOutlineColor(sf::Color::Blue);
+    rect.setFillColor(sf::Color::Blue);
+    rect.setSize(sf::Vector2f(6.0f, 6.0f));
+
+    rect.setPosition(sf::Vector2f(Spoints[p].x - 3, Spoints[p].y - 3));
+    window->draw(rect);
+  }
   for (int p = 0; p < bisector.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::Green);
@@ -101,26 +111,15 @@ void Voronoi::draw(sf::RenderWindow* window){
     {
         sf::Vertex(bisector[p].Spoint + bisector[p].vDirector),
         sf::Vertex(bisector[p].Spoint - bisector[p].vDirector),
-
     };
     line[0].color = (sf::Color(255, 143, 36));
     line[1].color = (sf::Color(255, 143, 36));
-    window->draw(line, 2, sf::Lines);
-
-   /* sf::Vertex line2[] =
-    {
-        sf::Vertex(bisector[p].Spoint),
-        sf::Vertex(bisector[p].Spoint - bisector[p].vDirector),
-
-    };
-    line2[0].color = (sf::Color(255, 143, 36));
-    line2[1].color = (sf::Color(255, 143, 36));
-    window->draw(line2, 2, sf::Lines);*/
-    
-    
+    window->draw(line, 2, sf::Lines); 
   }
+}
 
-
+float module(sf::Vector2<float> v){
+  return sqrtf((v.x * v.x) + (v.y * v.y));
 }
 
 void normalizeSFVec2(sf::Vector2<float> *v){
@@ -128,13 +127,30 @@ void normalizeSFVec2(sf::Vector2<float> *v){
   v->x *= mod;
   v->y *= mod;
 }
+
+float dotProtduct(sf::Vector2<float> v1, sf::Vector2<float> v2){
+
+
+  float p = v1.x * v2.x + v1.y * v2.y;
+  float m = sqrtf((v1.x * v1.x) + (v1.y * v1.y)) * sqrtf((v2.x * v2.x) + (v2.y * v2.y));
+  return p / m;
+}
+
+bool compareMargin(float x, float y, float error) {
+  return ((y - error <= x) && (x <= y + error));
+}
+
 void Voronoi::calculateBisector()
 {
   int p = 0;
-  int j = 1;
-
+  //int j = 1;
+  bisector.clear();
+  Mpoints.clear();
+  Spoints.clear();
+  linesBisector.clear();
+  int ii = 1;
   for (int p = 0; p < points.size(); p++) {
-    for(int j = 0; j < points.size(); j++){
+    for(int j = ii; j < points.size(); j++){
 
       if(p!=j){
         sf::Vector2<float> newPoint;
@@ -146,24 +162,30 @@ void Voronoi::calculateBisector()
         n.Spoint = newPoint;
         n.vDirector = { vDirector.y, -vDirector.x };
         //bisector.push_back(n);
+        bool firstPoint = false;
+        Line newBisector;
+        newBisector.mp = newPoint;
+        sf::Vector2<float> vdir1 = { -vDirector.y, vDirector.x };
+        sf::Vector3<float> e1, e2, sol;
+        normalizeSFVec2(&vdir1);
+        newBisector.vdir = vdir1;
+        float m = 0;
+        if(vdir1.x !=0){
+            m = vdir1.y / vdir1.x;
+            e1.x = -m;
+            e1.y = 1;
 
+            e1.z = -m * newPoint.x + newPoint.y;
+        }else {
+          e1.x = 1;
+          e1.y = 0;
+
+          e1.z = newPoint.y;
+        }
         for(int l = 0; l < lines.size(); l++){
-          sf::Vector3<float> e1, e2, sol;
-          sf::Vector2<float> vdir1 = { -vDirector.y, vDirector.x };
-          normalizeSFVec2(&vdir1);
           sf::Vector2<float> vdir2 = lines[l].p2 - lines[l].p1;
           normalizeSFVec2(&vdir2);
-         // MATR::Vec2 vdir1 = MATR::RestaDeVec2(a2, a1), vdir2 = MATR::RestaDeVec2(b2, b1);
-          //int cont = 0;
-          float m = 0;
-          if(vdir1.x !=0){
-             m = vdir1.y / vdir1.x;
-          }
-          
-          e1.x = -m;
-          e1.y = 1;
 
-          e1.z = -m * newPoint.x + newPoint.y;
 
           if (vdir2.x != 0) {
             m = vdir2.y / vdir2.x;
@@ -175,17 +197,27 @@ void Voronoi::calculateBisector()
             e2.x = 1;
             e2.y = 0;
 
-            e2.z =  lines[l].p1.y;
+            e2.z =  lines[l].p1.x;
           }
 
-         
+          sol = ecuationSystem(e1, e2);
+          bool solutionXInRange = ((sol.x >= -1) && (sol.x <= 961));
+          bool solutionYInRange = ((sol.y >= -1) && (sol.y <= 705));
+          bool validSolution = ((sol.z == 1) && (solutionXInRange) && (solutionYInRange));
 
-            sol = ecuationSystem(e1, e2);
-          if (sol.z == 1) {
+          if (validSolution) {
+            if(!firstPoint){
+              firstPoint = true;
+              newBisector.p1 = { sol.x, sol.y };
+            }else{
+
+              newBisector.p2 = { sol.x, sol.y };
+              linesBisector.push_back(newBisector);
+            }
             Bisector n;
             n.Spoint.x = sol.x;
             n.Spoint.y = sol.y;
-            n.vDirector = {vdir1.x * 1000, vdir1.y * 1000 };
+            n.vDirector = {vdir1.x * 2000, vdir1.y * 2000 };
             bisector.push_back(n);
           }
       
@@ -195,10 +227,82 @@ void Voronoi::calculateBisector()
         
       }
    }
-    
+    ii++;
+  }
+
+   ii = 1;
+  for(int i = 0; i < linesBisector.size(); ++ i){
+    for(int j = ii; j < linesBisector.size(); ++ j){
+
+      if (i != j) {
+        sf::Vector3<float> e1, e2, sol;
+        sf::Vector2<float> vdir1 = linesBisector[i].p2 - linesBisector[i].p1;
+        normalizeSFVec2(&vdir1);
+        sf::Vector2<float> vdir2 = linesBisector[j].p2 - linesBisector[j].p1;
+        normalizeSFVec2(&vdir2);
+
+        float m = 0;
+        if (vdir1.x != 0) {
+          m = vdir1.y / vdir1.x;
+          e1.x = -m;
+          e1.y = 1;
+
+          e1.z = -m * linesBisector[i].p1.x + linesBisector[i].p1.y;
+        }
+        else {
+          e1.x = 1;
+          e1.y = 0;
+
+          e1.z = linesBisector[i].p1.x;;
+        }
+
+        if (vdir2.x != 0) {
+          m = vdir2.y / vdir2.x;
+          e2.x = -m;
+          e2.y = 1;
+
+          e2.z = -m * linesBisector[j].p1.x + linesBisector[j].p1.y;
+        }
+        else {
+          e2.x = 1;
+          e2.y = 0;
+
+          e2.z = linesBisector[j].p1.x;
+        }
+
+        sol = ecuationSystem(e1, e2);
+        bool solutionXInRange = ((sol.x >= -1) && (sol.x <= 961));
+        bool solutionYInRange = ((sol.y >= -1 ) && (sol.y <= 705));
+        bool validSolution = ((sol.z == 1) && (solutionXInRange) && (solutionYInRange));
+
+        if (validSolution) {
+
+          sf::Vector2<float> V1, V2; 
+          /// <summary>
+          /// ////dasfasdfasklfkadjflkasdjfl
+          /// </summary>
+          V1.x = sol.x - linesBisector[i].mp.x;
+          V1.x = sol.y - linesBisector[i].mp.y;
+          V2.x = sol.x - linesBisector[i].mp.x;
+          V2.x = sol.y - linesBisector[i].mp.y;
+          float dotvalue = dotProtduct(V1,V2);
+
+
+          if (compareMargin(dotvalue, 1.0f, 0.1f)){
+            //El otro
+          }else if(compareMargin(dotvalue, -1.0f, 0.1f)){
+
+          }
+          Spoints.push_back({ sol.x, sol.y });
+          //Change segments
+        }
+      }
+    }
+    ii++;
   }
 
 }
+
 
 sf::Vector3<float> Voronoi::ecuationSystem(sf::Vector3<float> ec1, sf::Vector3<float> ec2)
 {
