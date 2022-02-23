@@ -98,7 +98,7 @@ void Voronoi::draw(sf::RenderWindow* window){
     rect.setPosition(sf::Vector2f(Spoints[p].x - 3, Spoints[p].y - 3));
     window->draw(rect);
   }
-  for (int p = 0; p < bisector.size(); p++) {
+ /* for (int p = 0; p < bisector.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::Green);
     rect.setFillColor(sf::Color::Green);
@@ -115,6 +115,27 @@ void Voronoi::draw(sf::RenderWindow* window){
     line[0].color = (sf::Color(255, 143, 36));
     line[1].color = (sf::Color(255, 143, 36));
     window->draw(line, 2, sf::Lines); 
+  }*/
+
+  for (int p = 0; p < linesBisector.size(); p++) {
+    sf::RectangleShape rect;
+    rect.setOutlineColor(sf::Color(188, 117, 255));
+    rect.setFillColor(sf::Color(188, 117, 255));
+    float size = 4.0f;
+    rect.setSize(sf::Vector2f(size, size));
+    rect.setPosition(sf::Vector2f(linesBisector[p].p1.x - size * 0.5f, linesBisector[p].p1.y - size * 0.5f));
+    window->draw(rect);
+    rect.setPosition(sf::Vector2f(linesBisector[p].p2.x - size * 0.5f, linesBisector[p].p2.y - size * 0.5f));
+    window->draw(rect);
+
+    sf::Vertex line[] =
+    {
+        linesBisector[p].p1,
+        linesBisector[p].p2,
+    };
+    line[0].color = (sf::Color(255, 255, 0));
+    line[1].color = (sf::Color(255, 255, 0));
+    window->draw(line, 2, sf::Lines);
   }
 }
 
@@ -168,7 +189,7 @@ void Voronoi::calculateBisector()
         sf::Vector2<float> vdir1 = { -vDirector.y, vDirector.x };
         sf::Vector3<float> e1, e2, sol;
         normalizeSFVec2(&vdir1);
-        newBisector.vdir = vdir1;
+      
         float m = 0;
         if(vdir1.x !=0){
             m = vdir1.y / vdir1.x;
@@ -276,23 +297,50 @@ void Voronoi::calculateBisector()
         bool validSolution = ((sol.z == 1) && (solutionXInRange) && (solutionYInRange));
 
         if (validSolution) {
-
-          sf::Vector2<float> V1, V2; 
-          /// <summary>
-          /// ////dasfasdfasklfkadjflkasdjfl
-          /// </summary>
-          V1.x = sol.x - linesBisector[i].mp.x;
-          V1.x = sol.y - linesBisector[i].mp.y;
-          V2.x = sol.x - linesBisector[i].mp.x;
-          V2.x = sol.y - linesBisector[i].mp.y;
+          //Line i
+          sf::Vector2<float> V1, V2, p;
+          p.x = sol.x;
+          p.y = sol.y;
+          V1 = linesBisector[i].mp - linesBisector[i].p1;
+          V2 = linesBisector[i].mp - p;
           float dotvalue = dotProtduct(V1,V2);
 
-
           if (compareMargin(dotvalue, 1.0f, 0.1f)){
-            //El otro
+            //Cambiar el 1
+            if (module(linesBisector[i].p1 - linesBisector[i].p2) >= module(p - linesBisector[i].p2)) {
+              //Cambiamos
+              linesBisector[i].p1 = p;
+            }
           }else if(compareMargin(dotvalue, -1.0f, 0.1f)){
-
+            //Cambiar el 2
+            if (module(linesBisector[i].p1 - linesBisector[i].p2) >= module(p - linesBisector[i].p1)) {
+              //Cambiamos
+              linesBisector[i].p2 = p;
+            }
           }
+
+          V1 = linesBisector[j].mp - linesBisector[j].p1;
+          V2 = linesBisector[j].mp - p;
+          dotvalue = dotProtduct(V1, V2);
+
+          if (compareMargin(dotvalue, 1.0f, 0.1f)) {
+            //Cambiar el 1
+            if (module(linesBisector[j].p1 - linesBisector[j].p2) >= module(p - linesBisector[j].p2)) {
+              //Cambiamos
+              linesBisector[j].p1 = p;
+            }
+          }
+          else if (compareMargin(dotvalue, -1.0f, 0.1f)) {
+            //Cambiar el 2
+            if (module(linesBisector[j].p1 - linesBisector[j].p2) >= module(p - linesBisector[j].p1)) {
+              //Cambiamos
+              linesBisector[j].p2 = p;
+            }
+          }
+
+
+
+          //Line j
           Spoints.push_back({ sol.x, sol.y });
           //Change segments
         }
