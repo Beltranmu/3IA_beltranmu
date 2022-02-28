@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <map>
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
 #include "SFML/System/Vector2.hpp"
@@ -30,7 +31,7 @@ public:
 
   int32_t w, h;
 
-  float d;
+  float horizontal, d;
 
   void init(int32_t nPoints);
   void draw(sf::RenderWindow* window);
@@ -50,6 +51,8 @@ public:
   std::vector<Line> lines;
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
+
+  std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
 
   bool drawAllLine;
 

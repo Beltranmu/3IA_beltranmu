@@ -40,7 +40,7 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   w_height_ = w_height;
   voronoi.w = w_width_;
   voronoi.h = w_height_;
-  voronoi.init(3);
+  voronoi.init(5);
   voronoi.calculateBisector();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
@@ -161,13 +161,14 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
     ImGui::BeginChild("Scrolling");
     ImGui::Checkbox("Lines", &voronoi.drawAllLine);
-    //if (ImGui::Button("Check PArbole")) {
+    if (ImGui::Button("Check PArbole")) {
       voronoi.calculateParabola();
-    //}
+    }
     for(int i = 0; i< voronoi.parabole.size(); ++i){
       ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.parabole[i].x, voronoi.parabole[i].y, voronoi.parabole[i].z);
     }
-    ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 960);
+    ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
+    ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, 704);
     if (ImGui::Button("Check Voronoi")) {
       voronoi.calculateBisector();
     }
