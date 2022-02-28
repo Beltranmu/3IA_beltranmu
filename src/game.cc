@@ -160,7 +160,15 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d",board_.units_[0].currentPos);
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
     ImGui::BeginChild("Scrolling");
-    if(ImGui::Button("Check Voronoi")){
+    ImGui::Checkbox("Lines", &voronoi.drawAllLine);
+    //if (ImGui::Button("Check PArbole")) {
+      voronoi.calculateParabola();
+    //}
+    for(int i = 0; i< voronoi.parabole.size(); ++i){
+      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.parabole[i].x, voronoi.parabole[i].y, voronoi.parabole[i].z);
+    }
+    ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 960);
+    if (ImGui::Button("Check Voronoi")) {
       voronoi.calculateBisector();
     }
     for (int n = 0; n < voronoi.points.size(); n++) {

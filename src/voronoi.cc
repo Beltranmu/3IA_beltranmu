@@ -4,7 +4,7 @@
 
 Voronoi::Voronoi()
 {
-
+  drawAllLine = false;
 }
 
 Voronoi::~Voronoi()
@@ -55,12 +55,63 @@ void Voronoi::init(int32_t nPoints){
 
 
 void Voronoi::draw(sf::RenderWindow* window){
+  sf::Vector2<float> p1 = { (float)d, 0.0f };
+  sf::Vector2<float> p2 = { (float)d, (float)h };
+  sf::Vertex directriz[] =
+  {
+      sf::Vertex(p1),
+      sf::Vertex(p2)
+
+  };
+  
+  window->draw(directriz, 2, sf::Lines);
+
+  for (int p = 0; p < parabole.size(); ++p) {
+    for(int x = 0; x<w ; x++){
+      float a = parabole[p].x;
+      float b = parabole[p].y;
+      float c = parabole[p].z - x;
+      float denominator = 2.0f * a;
+      float insideSqrt = (b * b) - (4.0f * a * c);
+      float y1 = (-b + sqrt(insideSqrt))/denominator;
+      float y2 = (-b - sqrt(insideSqrt))/denominator;
+
+      a = parabole[p].x;
+      b = parabole[p].y;
+      c = parabole[p].z - x-1;
+      denominator = 2.0f * a;
+      insideSqrt = (b * b) - (4.0f * a * c);
+      float y3 = (-b + sqrt(insideSqrt)) / denominator;
+      float y4 = (-b - sqrt(insideSqrt)) / denominator;
+      sf::Vector2<float> p1 = { (float)x,  y1 };
+      sf::Vector2<float> p2 = { (float)x+1, y3 };
+      sf::Vertex linepp[] =
+      {
+          sf::Vertex(p1),
+          sf::Vertex(p2)
+
+      };
+
+      sf::Vector2<float> p3 = { (float)x,  y2 };
+      sf::Vector2<float> p4 = { (float)x + 1, y4 };
+      sf::Vertex linepn[] =
+      {
+          sf::Vertex(p3),
+          sf::Vertex(p4)
+
+      };
+
+      window->draw(linepp, 2, sf::Lines);
+      window->draw(linepn, 2, sf::Lines);
+    }
+    
+  }
+
   for (int l = 0; l < lines.size(); l++) {
     sf::Vertex line[] =
     {
         sf::Vertex(lines[l].p1),
         sf::Vertex(lines[l].p2),
-
     };
     line[0].color = (sf::Color(150, 50, 250));
     line[1].color = (sf::Color(150, 50, 250));
@@ -79,7 +130,19 @@ void Voronoi::draw(sf::RenderWindow* window){
 
   } 
   
-  for (int p = 0; p < Mpoints.size(); p++) {
+  for (int p = 0; p < paraboleIPoints.size(); p++) {
+    sf::RectangleShape rect;
+    rect.setOutlineColor(sf::Color::Red);
+    rect.setFillColor(sf::Color::Red);
+    rect.setSize(sf::Vector2f(4.0f, 4.0f));
+
+    rect.setPosition(sf::Vector2f(paraboleIPoints[p].x - 2, paraboleIPoints[p].y -2));
+    window->draw(rect);
+
+
+  }
+
+ /* for (int p = 0; p < Mpoints.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::Red);
     rect.setFillColor(sf::Color::Red);
@@ -97,8 +160,8 @@ void Voronoi::draw(sf::RenderWindow* window){
 
     rect.setPosition(sf::Vector2f(Spoints[p].x - 3, Spoints[p].y - 3));
     window->draw(rect);
-  }
- /* for (int p = 0; p < bisector.size(); p++) {
+  }*/
+  /*for (int p = 0; p < bisector.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::Green);
     rect.setFillColor(sf::Color::Green);
@@ -116,27 +179,122 @@ void Voronoi::draw(sf::RenderWindow* window){
     line[1].color = (sf::Color(255, 143, 36));
     window->draw(line, 2, sf::Lines); 
   }*/
+ if(drawAllLine){
 
-  for (int p = 0; p < linesBisector.size(); p++) {
+    for (int p = 0; p < linesBisector.size(); p++) {
+      sf::RectangleShape rect;
+      rect.setOutlineColor(sf::Color(188, 117, 255));
+      rect.setFillColor(sf::Color(188, 117, 255));
+      float size = 4.0f;
+      rect.setSize(sf::Vector2f(size, size));
+      rect.setPosition(sf::Vector2f(linesBisector[p].p1.x - size * 0.5f, linesBisector[p].p1.y - size * 0.5f));
+      window->draw(rect);
+      rect.setPosition(sf::Vector2f(linesBisector[p].p2.x - size * 0.5f, linesBisector[p].p2.y - size * 0.5f));
+      window->draw(rect);
+
+      sf::Vertex line[] =
+      {
+          linesBisector[p].p1,
+          linesBisector[p].p2,
+      };
+      line[0].color = (sf::Color(255, 255, 0));
+      line[1].color = (sf::Color(255, 255, 0));
+      window->draw(line, 2, sf::Lines);
+    }
+  }
+
+  /*for (int p = 0; p < goodLinesBisector.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color(188, 117, 255));
     rect.setFillColor(sf::Color(188, 117, 255));
     float size = 4.0f;
     rect.setSize(sf::Vector2f(size, size));
-    rect.setPosition(sf::Vector2f(linesBisector[p].p1.x - size * 0.5f, linesBisector[p].p1.y - size * 0.5f));
+    rect.setPosition(sf::Vector2f(goodLinesBisector[p].p1.x - size * 0.5f, goodLinesBisector[p].p1.y - size * 0.5f));
     window->draw(rect);
-    rect.setPosition(sf::Vector2f(linesBisector[p].p2.x - size * 0.5f, linesBisector[p].p2.y - size * 0.5f));
+    rect.setPosition(sf::Vector2f(goodLinesBisector[p].p2.x - size * 0.5f, goodLinesBisector[p].p2.y - size * 0.5f));
     window->draw(rect);
 
     sf::Vertex line[] =
     {
-        linesBisector[p].p1,
-        linesBisector[p].p2,
+        goodLinesBisector[p].p1,
+        goodLinesBisector[p].p2,
     };
     line[0].color = (sf::Color(255, 255, 0));
     line[1].color = (sf::Color(255, 255, 0));
     window->draw(line, 2, sf::Lines);
-  }
+  }*/
+
+}
+
+void Voronoi::calculateParabola(){
+
+  paraboleIPoints.clear();
+  int di = d;
+  //for(int di = 0; di< w; ++di){
+    printf("asdas %d\n", di);
+  parabole.clear();
+    for(int p = 0; p <points.size(); p++){
+      if(points[p].x < di){
+        //Creo parabola  
+        sf::Vector3<float> newParabole;
+
+        float mp = ((float)di - points[p].x) * 0.5f;
+        sf::Vector2<float> V = { points[p].x + mp, points[p].y };
+        float h = V.x;
+        float k = V.y;
+        float xp = (4.0f * h * mp);
+        newParabole.x = 1.0f;
+        newParabole.y = -2.0f*k;
+        newParabole.z = (k*k) - xp;
+
+        newParabole /= -4.0f * mp;
+
+
+        parabole.push_back(newParabole);
+      }
+    }
+
+    int pp = 1;
+    // Calcular puntos de corte 
+    for(int p = 0; p < parabole.size() ; ++p){
+      for(int p1 = pp; p1 < parabole.size(); ++p1){
+
+        if(p != p1){
+          float a = parabole[p].x - parabole[p1].x;
+          float b = parabole[p].y - parabole[p1].y;
+          float c = parabole[p].z - parabole[p1].z;
+          float denominator = 2.0f * a;
+          float insideSqrt = (b * b) - (4.0f * a * c);
+          float y1 = (-b + sqrt(insideSqrt)) / denominator;
+          float y2 = (-b - sqrt(insideSqrt)) / denominator;
+           
+          a = y1 * y1;
+          b = parabole[p].y * y1 ;
+          c = parabole[p].z;
+          float x1 = a + b + c;
+          a = y2 * y2;
+          b = parabole[p].y * y2;
+          float x2 = a + b + c;
+
+
+          bool solutionXInRange = ((x1 >= -1) && (x1 <= 961));
+          bool solutionYInRange = ((y1 >= -1) && (y1 <= 705));
+          bool validSolution = ((solutionXInRange) && (solutionYInRange));
+          if(validSolution){
+            paraboleIPoints.push_back({ x1, y1 });
+          }
+          solutionXInRange = ((x2 >= -1) && (x2 <= 961));
+          solutionYInRange = ((y2 >= -1) && (y2 <= 705));
+          validSolution = ((solutionXInRange) && (solutionYInRange));
+          if(validSolution){
+            paraboleIPoints.push_back({ x2, y2 });
+
+          }
+        }
+      }
+      pp++;
+    }
+  //}
 }
 
 float module(sf::Vector2<float> v){
@@ -169,6 +327,7 @@ void Voronoi::calculateBisector()
   Mpoints.clear();
   Spoints.clear();
   linesBisector.clear();
+  goodLinesBisector.clear();
   int ii = 1;
   for (int p = 0; p < points.size(); p++) {
     for(int j = ii; j < points.size(); j++){
@@ -234,6 +393,7 @@ void Voronoi::calculateBisector()
 
               newBisector.p2 = { sol.x, sol.y };
               linesBisector.push_back(newBisector);
+              goodLinesBisector.push_back(newBisector);
             }
             Bisector n;
             n.Spoint.x = sol.x;
@@ -251,8 +411,9 @@ void Voronoi::calculateBisector()
     ii++;
   }
 
-   ii = 1;
+  ii = 1;
   for(int i = 0; i < linesBisector.size(); ++ i){
+
     for(int j = ii; j < linesBisector.size(); ++ j){
 
       if (i != j) {
@@ -307,15 +468,15 @@ void Voronoi::calculateBisector()
 
           if (compareMargin(dotvalue, 1.0f, 0.1f)){
             //Cambiar el 1
-            if (module(linesBisector[i].p1 - linesBisector[i].p2) >= module(p - linesBisector[i].p2)) {
+            if (module(goodLinesBisector[i].p1 - goodLinesBisector[i].p2) >= module(p - goodLinesBisector[i].p2)) {
               //Cambiamos
-              linesBisector[i].p1 = p;
+              goodLinesBisector[i].p1 = p;
             }
           }else if(compareMargin(dotvalue, -1.0f, 0.1f)){
             //Cambiar el 2
-            if (module(linesBisector[i].p1 - linesBisector[i].p2) >= module(p - linesBisector[i].p1)) {
+            if (module(goodLinesBisector[i].p1 - goodLinesBisector[i].p2) >= module(p - goodLinesBisector[i].p1)) {
               //Cambiamos
-              linesBisector[i].p2 = p;
+              goodLinesBisector[i].p2 = p;
             }
           }
 
@@ -325,16 +486,16 @@ void Voronoi::calculateBisector()
 
           if (compareMargin(dotvalue, 1.0f, 0.1f)) {
             //Cambiar el 1
-            if (module(linesBisector[j].p1 - linesBisector[j].p2) >= module(p - linesBisector[j].p2)) {
+            if (module(goodLinesBisector[j].p1 - goodLinesBisector[j].p2) >= module(p - goodLinesBisector[j].p2)) {
               //Cambiamos
-              linesBisector[j].p1 = p;
+              goodLinesBisector[j].p1 = p;
             }
           }
           else if (compareMargin(dotvalue, -1.0f, 0.1f)) {
             //Cambiar el 2
-            if (module(linesBisector[j].p1 - linesBisector[j].p2) >= module(p - linesBisector[j].p1)) {
+            if (module(goodLinesBisector[j].p1 - goodLinesBisector[j].p2) >= module(p - goodLinesBisector[j].p1)) {
               //Cambiamos
-              linesBisector[j].p2 = p;
+              goodLinesBisector[j].p2 = p;
             }
           }
 
