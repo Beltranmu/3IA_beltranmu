@@ -9,6 +9,7 @@ Voronoi::Voronoi()
   h = 0;
   d = 0;
   drawAllLine = false;
+  maxDistance = -1;
 }
 
 Voronoi::~Voronoi()
@@ -99,6 +100,9 @@ void Voronoi::draw(sf::RenderWindow* window){
       c = paraboleDraw[p].z - x-1;
       denominator = 2.0f * a;
       insideSqrt = (b * b) - (4.0f * a * c);
+      if (insideSqrt < 0) {
+        insideSqrt = 0;
+      }
       float y3 = (-b + sqrt(insideSqrt)) / denominator;
       float y4 = (-b - sqrt(insideSqrt)) / denominator;
       sf::Vector2<float> p1 = { (float)x,  y1 };
@@ -247,7 +251,22 @@ void Voronoi::draw(sf::RenderWindow* window){
 bool compareMargin(float x, float y, float error) {
   return ((y - error <= x) && (x <= y + error));
 }
+
+float module(sf::Vector2<float> v){
+  return sqrtf((v.x * v.x) + (v.y * v.y));
+}
+
 void Voronoi::calculateParabola(){
+  int ii = 1;
+  for(int i = 0; i< (int)points.size(); i++){
+    for (int j = ii; j < (int)points.size(); ++j) {
+      float newDist = module(points[i] - points[j]);
+      if(maxDistance < newDist){
+        maxDistance = newDist;
+      }
+    }
+    ii++;
+  }
 
   bool firstSol = true;
   paraboleIPoints.clear();
@@ -257,7 +276,8 @@ void Voronoi::calculateParabola(){
   parabole.clear();
   solutions.clear();
     for(int p = 0; p < (int)points.size(); p++){
-      if(points[p].x < di){
+      float dist = di - points[p].x;
+      if(points[p].x < di ){
         //Creo parabola  
         sf::Vector3<float> newParabole;
 
@@ -404,9 +424,6 @@ void Voronoi::calculateParabolaDraw()
   }
 }
 
-float module(sf::Vector2<float> v){
-  return sqrtf((v.x * v.x) + (v.y * v.y));
-}
 
 void normalizeSFVec2(sf::Vector2<float> *v){
   float mod = 1 / sqrtf((v->x * v->x) + (v->y * v->y));

@@ -60,6 +60,7 @@ public:
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
   std::vector<Solution> solutions;
   std::vector<Solution> solutionsVoronoid;
+  float maxDistance;
 
   bool drawAllLine;
 
