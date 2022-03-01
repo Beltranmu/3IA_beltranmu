@@ -21,7 +21,10 @@ struct Line {
   sf::Vector2<float> mp, p1, p2;
 };
 
-
+struct Solution{
+  sf::Vector2<float> point;
+  uint32_t n = 0;
+};
 
 class Voronoi
 {
@@ -37,6 +40,7 @@ public:
   void draw(sf::RenderWindow* window);
 
   void calculateParabola();
+  void calculateParabolaDraw();
 
   void calculateBisector();
   
@@ -46,13 +50,16 @@ public:
   std::vector<sf::Vector2<float>> Mpoints;
   std::vector<sf::Vector2<float>> Spoints;
   std::vector<sf::Vector3<float>> parabole; // x = Ay^2 + By + C
+  std::vector<sf::Vector3<float>> paraboleDraw; // x = Ay^2 + By + C
   std::vector<sf::Vector2<float>> paraboleIPoints;
   std::vector<Bisector> bisector;
   std::vector<Line> lines;
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
 
-  std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
+  //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
+  std::vector<Solution> solutions;
+  std::vector<Solution> solutionsVoronoid;
 
   bool drawAllLine;
 

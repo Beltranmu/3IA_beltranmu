@@ -81,19 +81,22 @@ void Voronoi::draw(sf::RenderWindow* window){
 
   window->draw(ho, 2, sf::Lines);
 
-  for (int p = 0; p < (int)parabole.size(); ++p) {
+  for (int p = 0; p < (int)paraboleDraw.size(); ++p) {
     for(int x = 0; x<w ; x++){
-      float a = parabole[p].x;
-      float b = parabole[p].y;
-      float c = parabole[p].z - x;
+      float a = paraboleDraw[p].x;
+      float b = paraboleDraw[p].y;
+      float c = paraboleDraw[p].z - x;
       float denominator = 2.0f * a;
       float insideSqrt = (b * b) - (4.0f * a * c);
+      if(insideSqrt < 0){
+        insideSqrt = 0;
+      }
       float y1 = (-b + sqrt(insideSqrt))/denominator;
       float y2 = (-b - sqrt(insideSqrt))/denominator;
 
-      a = parabole[p].x;
-      b = parabole[p].y;
-      c = parabole[p].z - x-1;
+      a = paraboleDraw[p].x;
+      b = paraboleDraw[p].y;
+      c = paraboleDraw[p].z - x-1;
       denominator = 2.0f * a;
       insideSqrt = (b * b) - (4.0f * a * c);
       float y3 = (-b + sqrt(insideSqrt)) / denominator;
@@ -248,10 +251,11 @@ void Voronoi::calculateParabola(){
 
   bool firstSol = true;
   paraboleIPoints.clear();
-  float di = d;
-  for(di = 0; di< w+500; di+=0.1f){
+  float di = 0;
+  for(di = 0; di< w+1000; di+=0.005f){
     //printf("asdas %d\n", di);
   parabole.clear();
+  solutions.clear();
     for(int p = 0; p < (int)points.size(); p++){
       if(points[p].x < di){
         //Creo parabola  
@@ -272,7 +276,7 @@ void Voronoi::calculateParabola(){
         parabole.push_back(newParabole);
       }
     }
-
+    printf("Terminado de GenerarPArabolas %f\n ",di);
     int pp = 1;
     // Calcular puntos de corte 
     for(int p = 0; p < (int)parabole.size() ; ++p){
@@ -301,60 +305,101 @@ void Voronoi::calculateParabola(){
           bool validSolution = ((solutionXInRange) && (solutionYInRange));
           if(validSolution){
             if(firstSol){
-              paraboleIPoints.push_back({ x1, y1 });
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y1 };
+              solutions.push_back(newSol);
+              firstSol = false;
             }
             else{
-
-              for (auto& x : solutionsVoronoid) {
-                sf::Vector2<float>vectorKey = x.first;
-
-                bool sameSol = (compareMargin(x1, vectorKey.x, 0.1f) && compareMargin(y1, vectorKey.y, 0.1f));
-                if(sameSol){
-                  //solutionsVoronoid[vectorKey]++;
-                }else{
-                 // solutionsVoronoid[{x1, y1}]++;
+              bool alreadySol = false;
+              for(int s = 0; s < solutions.size() && !alreadySol; ++s){
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, 0.1f));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
                 }
+              }
+              if(!alreadySol){
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y1 };
+                solutions.push_back(newSol);
               }
             }
           }
           solutionXInRange = ((x2 >= -1) && (x2 <= 961));
           solutionYInRange = ((y2 >= -1) && (y2 <= 705));
           validSolution = ((solutionXInRange) && (solutionYInRange));
-          if(validSolution){
-            for (auto& x : solutionsVoronoid) {
-              if (firstSol) {
-                paraboleIPoints.push_back({ x2, y2 });
-              }
-              else {
-                sf::Vector2<float>vectorKey = x.first;
-                float x = vectorKey.x;
-                float y = vectorKey.y;
-                
-
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x2,y2 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, 0.1f));
                 if (sameSol) {
-                  //solutionsVoronoid[vectorKey]++;
-                }
-                else {
-                  //solutionsVoronoid[{x2, y2}]++;
+                  solutions[s].n++;
+                  alreadySol = true;
                 }
               }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x2,y2 };
+                solutions.push_back(newSol);
+              }
             }
-
-           
-
           }
         }
       }
       pp++;
     }
+
+    for (int i = 0; i < solutions.size(); ++i) {
+      if (solutions[i].n >= 2) {
+        paraboleIPoints.push_back(solutions[i].point);
+      }
+
+    }
+    
   }
 
-  for (auto& x : solutionsVoronoid) {
-    sf::Vector2<float>vectorKey = x.first;
-    uint32_t rep = 0;//solutionsVoronoid[vectorKey];
-    if(rep >=2){
-      //paraboleIPoints.push_back(vectorKey);
+}
+
+void Voronoi::calculateParabolaDraw()
+{
+  float di = d;
+  //printf("asdas %d\n", di);
+  paraboleDraw.clear();
+  
+  for (int p = 0; p < (int)points.size(); p++) {
+    if (points[p].x < di) {
+      //Creo parabola  
+      sf::Vector3<float> newParabole;
+
+      float mp = ((float)di - points[p].x) * 0.5f;
+      sf::Vector2<float> V = { points[p].x + mp, points[p].y };
+      float h = V.x;
+      float k = V.y;
+      float xp = (4.0f * h * mp);
+      newParabole.x = 1.0f;
+      newParabole.y = -2.0f * k;
+      newParabole.z = (k * k) - xp;
+
+      newParabole /= -4.0f * mp;
+
+
+      paraboleDraw.push_back(newParabole);
     }
   }
 }

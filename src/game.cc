@@ -22,7 +22,6 @@ Game::Game(){
 
   selectedAgentID = -1;
   targetRow = 0;
-  targetCol = 0;
   possibleNextTarget = -1;
   startAddPattern = false;
   number_movement = 0;
@@ -91,7 +90,7 @@ void Game::input() {
 }
 
 void Game::update(float delta_time) {
-  
+  voronoi.d += 0.5f;
 }
 
 void Game::fixedUpdate(float fixed_delta_time) {}
@@ -142,7 +141,7 @@ void Game::mainLoop(){
       world_clock.restart();
       update(delta_time_);      
     }
-
+    voronoi.calculateParabolaDraw();
     ImGui::SFML::Update(w_, imgui_clock.restart());
     ImGui::Begin("FPS Controller");
  
