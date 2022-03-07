@@ -49,15 +49,17 @@ void Voronoi::init(int32_t nPoints){
 
   for(int i = 0; i < nPoints; i++){
 
+    Cells site;
     sf::Vector2<float> newPoint;
     newPoint.x = (float)(rand() % w);
     newPoint.y = (float)(rand() % h);
-
+    site.point = newPoint;  
+    site.perimetralPoints.clear();
     points.push_back(newPoint);
+    sites.push_back(site);
   }
 
 }
-
 
 void Voronoi::draw(sf::RenderWindow* window){
   sf::Vector2<float> p1 = { (float)d, 0.0f };
@@ -140,13 +142,13 @@ void Voronoi::draw(sf::RenderWindow* window){
     window->draw(line, 2, sf::Lines);
   }
 
-  for(int p = 0; p < (int)points.size(); p++){
+  for(int p = 0; p < (int)sites.size(); p++){
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::White);
     rect.setFillColor(sf::Color::White);
     rect.setSize(sf::Vector2f(2.0f, 2.0f));
 
-    rect.setPosition(sf::Vector2f(points[p].x, points[p].y));
+    rect.setPosition(sf::Vector2f(sites[p].point.x, sites[p].point.y));
     window->draw(rect);
 
 
@@ -272,7 +274,6 @@ void Voronoi::calculateParabola(){
   paraboleIPoints.clear();
   float di = 0;
   for(di = 0; di< w+1000; di+=0.005f){
-    //printf("asdas %d\n", di);
   parabole.clear();
   solutions.clear();
     for(int p = 0; p < (int)points.size(); p++){
@@ -296,7 +297,6 @@ void Voronoi::calculateParabola(){
         parabole.push_back(newParabole);
       }
     }
-    printf("Terminado de GenerarPArabolas %f\n ",di);
     int pp = 1;
     // Calcular puntos de corte 
     for(int p = 0; p < (int)parabole.size() ; ++p){

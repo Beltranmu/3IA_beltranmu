@@ -9,7 +9,7 @@
 Game::Game(){
 
   delta_time_ = 0.0f;
- 
+  pausedParabola = false;
   fixed_delta_time_ = fps.second_per_frame;
 
   fps.main_game = 60;
@@ -90,7 +90,10 @@ void Game::input() {
 }
 
 void Game::update(float delta_time) {
-  voronoi.d += 0.5f;
+  if(pausedParabola){
+    voronoi.d += 0.5f;
+
+  }
 }
 
 void Game::fixedUpdate(float fixed_delta_time) {}
@@ -163,6 +166,9 @@ void Game::mainLoop(){
     if (ImGui::Button("Check PArbole")) {
       voronoi.calculateParabola();
     }
+    if (ImGui::Button("Pause Parabola")) {
+      pausedParabola = !pausedParabola;
+    }
     for(int i = 0; i< voronoi.parabole.size(); ++i){
       ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.parabole[i].x, voronoi.parabole[i].y, voronoi.parabole[i].z);
     }
@@ -177,9 +183,9 @@ void Game::mainLoop(){
       ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
       char name[255];
       sprintf(name, "PositionX % d", n);
-      ImGui::SliderFloat(name, &voronoi.points[n].x, 0, 960);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, 960);
       sprintf(name, "PositionY % d", n);
-      ImGui::SliderFloat(name, &voronoi.points[n].y, 0, 704);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, 704);
     }
     ImGui::EndChild();
     ImGui::End();

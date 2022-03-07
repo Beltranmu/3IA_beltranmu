@@ -56,6 +56,7 @@ class Game
 
     float delta_time_;
     float fixed_delta_time_;
+    bool pausedParabola;
 
     // ImGUI
     int32_t selectedAgentID;

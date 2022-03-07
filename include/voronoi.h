@@ -26,6 +26,11 @@ struct Solution{
   uint32_t n = 0;
 };
 
+
+struct Cells{
+  sf::Vector2<float> point;
+  std::vector<sf::Vector2<float>> perimetralPoints;
+};
 class Voronoi
 {
 public:
@@ -56,6 +61,7 @@ public:
   std::vector<Line> lines;
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
+  std::vector<Cells> sites;
 
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
   std::vector<Solution> solutions;
@@ -67,3 +73,6 @@ public:
 
 };
 #endif //__VORONOI_H__
+
+
+
