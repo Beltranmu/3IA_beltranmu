@@ -20,6 +20,10 @@ struct Bisector {
 struct Line {
   sf::Vector2<float> mp, p1, p2;
 };
+struct LineP {
+  sf::Vector2<float> p1, p2;
+  int sites[2];
+};
 
 struct Solution{
   sf::Vector2<float> point;
@@ -29,7 +33,7 @@ struct Solution{
 
 struct Cells{
   sf::Vector2<float> point;
-  std::vector<sf::Vector2<float>> perimetralPoints;
+  std::vector<LineP> perimetralLines;
 };
 class Voronoi
 {
@@ -48,6 +52,8 @@ public:
   void calculateParabolaDraw();
 
   void calculateBisector();
+
+  bool isBeachLine(sf::Vector2<float> p);
   
   sf::Vector3<float> ecuationSystem(sf::Vector3<float>, sf::Vector3<float>);
 

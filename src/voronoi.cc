@@ -54,7 +54,7 @@ void Voronoi::init(int32_t nPoints){
     newPoint.x = (float)(rand() % w);
     newPoint.y = (float)(rand() % h);
     site.point = newPoint;  
-    site.perimetralPoints.clear();
+    site.perimetralLines.clear();
     points.push_back(newPoint);
     sites.push_back(site);
   }
@@ -254,23 +254,18 @@ bool compareMargin(float x, float y, float error) {
   return ((y - error <= x) && (x <= y + error));
 }
 
+bool compareMarginGT(float x, float y, float error){
+  return (x <= (y - error) || x);
+}
+
 float module(sf::Vector2<float> v){
   return sqrtf((v.x * v.x) + (v.y * v.y));
 }
 
 void Voronoi::calculateParabola(){
-  int ii = 1;
-  for(int i = 0; i< (int)points.size(); i++){
-    for (int j = ii; j < (int)points.size(); ++j) {
-      float newDist = module(points[i] - points[j]);
-      if(maxDistance < newDist){
-        maxDistance = newDist;
-      }
-    }
-    ii++;
-  }
-
+ 
   bool firstSol = true;
+  bool not  = true;
   paraboleIPoints.clear();
   float di = 0;
   for(di = 0; di< w+1000; di+=0.005f){
@@ -299,7 +294,226 @@ void Voronoi::calculateParabola(){
     }
     int pp = 1;
     // Calcular puntos de corte 
-    for(int p = 0; p < (int)parabole.size() ; ++p){
+    for (int p = 0; p < (int)parabole.size(); ++p) {
+      //Corte con los cuatro bordes
+      { //x = 0
+        float marging = 0.1f;
+        { 
+          float x1 = 0;
+          float a = parabole[p].x;
+          float b = parabole[p].y;
+          float c = parabole[p].z - x1;
+          float denominator = 2.0f * a;
+          float insideSqrt = (b * b) - (4.0f * a * c);
+         
+          float y1 = (-b + sqrt(insideSqrt)) / denominator;
+          float y2 = (-b - sqrt(insideSqrt)) / denominator;
+
+          bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
+          bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
+          bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y1 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y1 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+          solutionXInRange = ((x1 >= -1) && (x1 <= 960));
+          solutionYInRange = ((y2 >= -1) && (y2 <= 704));
+          validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y2 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y2 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y2 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+        }
+        // x = 960
+        {
+          float x1 = 960;
+          float a = parabole[p].x;
+          float b = parabole[p].y;
+          float c = parabole[p].z - x1;
+          float denominator = 2.0f * a;
+          float insideSqrt = (b * b) - (4.0f * a * c);
+
+          float y1 = (-b + sqrt(insideSqrt)) / denominator;
+          float y2 = (-b - sqrt(insideSqrt)) / denominator;
+           
+          bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
+          bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
+          bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y1 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y1 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+          solutionXInRange = ((x1 >= -1) && (x1 <= 960));
+          solutionYInRange = ((y2 >= -1) && (y2 <= 704));
+          validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y2 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y2 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y2 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+        }
+        // y = 0 y = 704
+        {
+          float y1 = 0;
+          float y2 = 704;
+          float x1 = y1 * y1 * parabole[p].x + y1 * parabole[p].y + parabole[p].z;
+          float x2 = y2 * y2 * parabole[p].x + y2 * parabole[p].y + parabole[p].z;
+
+          bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
+          bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
+          bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x1,y1 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x1,y1 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+          solutionXInRange = ((x2 >= -1) && (x2 <= 960));
+          solutionYInRange = ((y2 >= -1) && (y2 <= 704));
+          validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x2,y2 })));
+          if (validSolution) {
+            if (firstSol) {
+              Solution newSol;
+              newSol.n = 1;
+              newSol.point = { x2,y2 };
+              solutions.push_back(newSol);
+              firstSol = false;
+            }
+            else {
+              bool alreadySol = false;
+              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+                float x = solutions[s].point.x;
+                float y = solutions[s].point.y;
+                bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, marging));
+                if (sameSol) {
+                  solutions[s].n++;
+                  alreadySol = true;
+                }
+              }
+              if (!alreadySol) {
+                Solution newSol;
+                newSol.n = 1;
+                newSol.point = { x2,y2 };
+                solutions.push_back(newSol);
+              }
+            }
+          }
+        }
+      }
+  
+      // Corte con parablolas
       for(int p1 = pp; p1 < (int)parabole.size(); ++p1){
 
         if(p != p1){
@@ -322,7 +536,8 @@ void Voronoi::calculateParabola(){
 
           bool solutionXInRange = ((x1 >= -1) && (x1 <= 961));
           bool solutionYInRange = ((y1 >= -1) && (y1 <= 705));
-          bool validSolution = ((solutionXInRange) && (solutionYInRange));
+          bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({x1,y1})));
+          
           if(validSolution){
             if(firstSol){
               Solution newSol;
@@ -352,7 +567,7 @@ void Voronoi::calculateParabola(){
           }
           solutionXInRange = ((x2 >= -1) && (x2 <= 961));
           solutionYInRange = ((y2 >= -1) && (y2 <= 705));
-          validSolution = ((solutionXInRange) && (solutionYInRange));
+          validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x2,y2 })));
           if (validSolution) {
             if (firstSol) {
               Solution newSol;
@@ -399,7 +614,7 @@ void Voronoi::calculateParabola(){
 void Voronoi::calculateParabolaDraw()
 {
   float di = d;
-  //printf("asdas %d\n", di);
+  
   paraboleDraw.clear();
   
   for (int p = 0; p < (int)points.size(); p++) {
@@ -631,6 +846,23 @@ void Voronoi::calculateBisector()
     ii++;
   }
 
+}
+
+bool Voronoi::isBeachLine(sf::Vector2<float> p)
+{
+
+  for (int i = 0; i < parabole.size() ; ++i) {
+    sf::Vector2<float> p2;
+
+    p2.y = p.y;
+    p2.x = p2.y * p2.y * parabole[i].x + p2.y * parabole[i].y + parabole[i].z;
+
+    if(compareMargin(p.y, p2.y, 0.1f) && p2.x > (p.x+0.1f) ){
+      return false;
+    }
+  }
+   
+  return true;
 }
 
 
