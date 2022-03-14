@@ -22,18 +22,30 @@ struct Line {
 };
 struct LineP {
   sf::Vector2<float> p1, p2;
-  int sites[2];
 };
 
 struct Solution{
   sf::Vector2<float> point;
   uint32_t n = 0;
+  int sites[3] = {-1,-1,-1};
 };
 
+
+struct Parabole {
+  sf::Vector3<float> parabole; // x = Ay^2 + By + C
+  int parentPoint;
+};
 
 struct Cells{
   sf::Vector2<float> point;
   std::vector<LineP> perimetralLines;
+  sf::Color color;
+};
+
+struct AuxCell {
+
+  std::vector<sf::Vector2<float>> upperPoints;
+  std::vector<sf::Vector2<float>> bottonPoints;
 };
 class Voronoi
 {
@@ -60,18 +72,19 @@ public:
   std::vector<sf::Vector2<float>> points;
   std::vector<sf::Vector2<float>> Mpoints;
   std::vector<sf::Vector2<float>> Spoints;
-  std::vector<sf::Vector3<float>> parabole; // x = Ay^2 + By + C
+  std::vector<Parabole> parabole; // x = Ay^2 + By + C
   std::vector<sf::Vector3<float>> paraboleDraw; // x = Ay^2 + By + C
-  std::vector<sf::Vector2<float>> paraboleIPoints;
+  std::vector<Solution> paraboleIPoints;
   std::vector<Bisector> bisector;
   std::vector<Line> lines;
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
   std::vector<Cells> sites;
+  std::vector<AuxCell> auxsites;
 
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
   std::vector<Solution> solutions;
-  std::vector<Solution> solutionsVoronoid;
+  std::vector<Solution> solutionsVoronoi;
   float maxDistance;
 
   bool drawAllLine;

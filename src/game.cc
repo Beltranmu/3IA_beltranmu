@@ -34,13 +34,14 @@ Game::~Game() {
 
 void Game::init(uint32_t w_width, uint32_t w_height) {
 
-  //srand(time(NULL));
+  srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
   voronoi.w = w_width_;
   voronoi.h = w_height_;
-  voronoi.init(5);
+  voronoi.init(10);
   voronoi.calculateBisector();
+  voronoi.calculateParabola();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 
@@ -169,8 +170,8 @@ void Game::mainLoop(){
     if (ImGui::Button("Pause Parabola")) {
       pausedParabola = !pausedParabola;
     }
-    for(int i = 0; i< voronoi.parabole.size(); ++i){
-      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.parabole[i].x, voronoi.parabole[i].y, voronoi.parabole[i].z);
+    for(int i = 0; i< voronoi.paraboleDraw.size(); ++i){
+      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
     }
     ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
     ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, 704);
