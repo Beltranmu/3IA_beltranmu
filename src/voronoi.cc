@@ -60,6 +60,7 @@ void Voronoi::init(int32_t nPoints){
     sites.push_back(site);
     AuxCell s;
     auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
   }
 
 
@@ -157,6 +158,19 @@ void Voronoi::draw(sf::RenderWindow* window){
     window->draw(rect);
 
     for (int l = 0; l < (int)sites[p].perimetralLines.size(); ++l) {
+      if (drawSectors) {
+        sf::Vertex triangle[] =
+        {
+            sites[p].perimetralLines[l].p1,
+            sites[p].perimetralLines[l].p2,
+            sites[p].point
+        };
+
+        triangle[0].color = sites[p].color;
+        triangle[1].color = sites[p].color;
+        triangle[2].color = sites[p].color;
+        window->draw(triangle, 3, sf::Triangles);
+      }
       sf::Vertex line[] =
       {
           sites[p].perimetralLines[l].p1,
@@ -166,6 +180,8 @@ void Voronoi::draw(sf::RenderWindow* window){
       line[0].color = sites[p].color;
       line[1].color = sites[p].color;
       window->draw(line, 2, sf::Lines);
+
+      
     }
 
   } 
@@ -223,10 +239,15 @@ void Voronoi::draw(sf::RenderWindow* window){
 
 }
 
-bool compareMargin(float x, float y, float error) {
+inline bool compareMargin(float x, float y, float error) {
   return ((y - error <= x) && (x <= y + error));
 }
 
+void normalizeSFVec2(sf::Vector2<float> *v){
+  float mod = 1 / sqrtf((v->x * v->x) + (v->y * v->y));
+  v->x *= mod;
+  v->y *= mod;
+}
 
 float module(sf::Vector2<float> v){
   return sqrtf((v.x * v.x) + (v.y * v.y));
@@ -239,7 +260,13 @@ void Voronoi::calculateParabola(){
   
   for (int i = 0; i < (int)sites.size(); ++i) {
     sites[i].perimetralLines.clear();
+  }for (int i = 0; i < (int)auxsites.size(); ++i) {
+    auxsites[i].bottonPoints.clear();
+    auxsites[i].upperPoints.clear();
+    auxsitesLittle[i].upperPoints.clear();
+    auxsitesLittle[i].upperPoints.clear();
   }
+  solutionsVoronoi.clear();
   paraboleIPoints.clear();
   float di = 0;
   for(di = 0; di< w+1000; di+=0.005f){
@@ -647,7 +674,7 @@ void Voronoi::calculateParabola(){
       }
       pp++;
     }
-
+    // Check for a valid sol
     for (int i = 0; i < solutions.size(); ++i) {
       if (solutions[i].n >= 2) {
         paraboleIPoints.push_back(solutions[i]);
@@ -678,10 +705,9 @@ void Voronoi::calculateParabola(){
   }
 
   //Clasify the points
-  //Each site
+
   for (int s = 0; s < sites.size(); s++) {
-    printf("Puntos de la celula (%6.6f,%6.6f)\n", sites[s].point.x, sites[s].point.y);
-      printf("\n\n");
+    
     for (int vs = 0; vs < solutionsVoronoi.size(); vs++) {
       bool alreadyInCell = false;
       for (int i = 0; i < 3 && !alreadyInCell; ++i) {
@@ -693,35 +719,113 @@ void Voronoi::calculateParabola(){
           else {
             auxsites[s].upperPoints.push_back(solutionsVoronoi[vs].point);
           }
-          printf("Este punto (%6.6f,%6.6f) pertence a la celula %d\n", solutionsVoronoi[vs].point.x, solutionsVoronoi[vs].point.y, s);
         }
       }
     }
   }
-  // Creation fo the polys
+  // Reduce de poly
+  {
+    sf::Vector2<float> reducedP;
+    sf::Vector2<float> reduceDirection;
+    sf::Vector2<float> P;
+    sf::Vector2<float> Vnext;
+    sf::Vector2<float> Vprev;
+    float desp = (float)kwidthStreet * 0.5f;
+    for (int i = 0; i < auxsites.size(); ++i) {
+      LineP newPLine;
+      int sizeBotton = (int)auxsites[i].bottonPoints.size();
+      int sizeUpper = (int)auxsites[i].upperPoints.size();
 
-  for (int i = 0; i < auxsites.size(); ++i) {
+      for (int b = 0; b < sizeBotton - 1; ++b) {
+        P = auxsites[i].bottonPoints[b];
+        Vnext = auxsites[i].bottonPoints[b + 1] - P;
+        if (b == 0) {
+           Vprev = auxsites[i].upperPoints[0] - P ;
+        }
+        else {
+           Vprev = auxsites[i].bottonPoints[b - 1] - P;
+        }
+        reduceDirection = Vnext + Vprev;
+        normalizeSFVec2(&reduceDirection);
+        reducedP = P + (reduceDirection * desp);
+        auxsitesLittle[i].bottonPoints.push_back(reducedP);
+      }
+
+      P = auxsites[i].bottonPoints[sizeBotton - 1];
+      Vnext = auxsites[i].upperPoints[sizeUpper - 1] - P;
+      if (sizeBotton == 1) {
+         Vprev = auxsites[i].upperPoints[0] - P;
+      }else {
+         Vprev = auxsites[i].bottonPoints[sizeBotton-2] - P;
+      }
+      reduceDirection = Vnext + Vprev;
+      normalizeSFVec2(&reduceDirection);
+      reducedP = P + (reduceDirection * desp);
+      auxsitesLittle[i].bottonPoints.push_back(reducedP);
+
+      for (int u = 0 ; u < sizeUpper - 1; u++) {
+        P = auxsites[i].upperPoints[u];
+        Vnext = auxsites[i].upperPoints[u + 1] - P;
+        if (u == 0) {
+          Vprev = auxsites[i].bottonPoints[0] - P;
+        }
+        else {
+          Vprev = auxsites[i].upperPoints[u - 1] - P;
+        }
+        reduceDirection = Vnext + Vprev;
+        normalizeSFVec2(&reduceDirection);
+        reducedP = P + (reduceDirection * desp);
+        auxsitesLittle[i].upperPoints.push_back(reducedP);
+      }
+
+      P = auxsites[i].upperPoints[sizeUpper-1];
+      Vnext = auxsites[i].bottonPoints[sizeBotton - 1] - P;
+      if (sizeUpper == 1) {
+        Vprev = auxsites[i].bottonPoints[0] - P;
+      }else {
+        Vprev = auxsites[i].upperPoints[sizeUpper-2] - P;
+      }
+      reduceDirection = Vnext + Vprev;
+      normalizeSFVec2(&reduceDirection);
+      reducedP = P + (reduceDirection * desp);
+      auxsitesLittle[i].upperPoints.push_back(reducedP);
+
+    }
+  }
+
+  // Creation fo the polys
+  //std::vector<AuxCell> auxS = auxsites;
+  std::vector<AuxCell> auxS = auxsitesLittle;
+  for (int i = 0; i < auxS.size(); ++i) {
     LineP newPLine;
-    for (int b = 0; b < auxsites[i].bottonPoints.size()-1; ++b) {
-      newPLine.p1 = auxsites[i].bottonPoints[b];
-      newPLine.p2 = auxsites[i].bottonPoints[b+1];
+    int sizeBotton = (int)auxS[i].bottonPoints.size();
+    int sizeUpper = (int)auxS[i].upperPoints.size();
+    for (int b = 0; b < sizeBotton-1; ++b) {
+      newPLine.p1 = auxS[i].bottonPoints[b];
+      newPLine.p2 = auxS[i].bottonPoints[b+1];
+   
       sites[i].perimetralLines.push_back(newPLine);
     }
-    newPLine.p1 = auxsites[i].bottonPoints[auxsites[i].bottonPoints.size() - 1];
-    newPLine.p2 = auxsites[i].upperPoints[auxsites[i].upperPoints.size() - 1];
+    newPLine.p1 = auxS[i].bottonPoints[sizeBotton - 1];
+    newPLine.p2 = auxS[i].upperPoints[sizeUpper - 1];
+ 
+
     sites[i].perimetralLines.push_back(newPLine);
 
-    for (int u = auxsites[i].upperPoints.size() - 1; u > 0; --u) {
-      newPLine.p1 = auxsites[i].upperPoints[u];
-      newPLine.p2 = auxsites[i].upperPoints[u-1];
+    for (int u = sizeUpper - 1; u > 0; --u) {
+      newPLine.p1 = auxS[i].upperPoints[u];
+      newPLine.p2 = auxS[i].upperPoints[u-1];
+     
       sites[i].perimetralLines.push_back(newPLine);
     }
 
-    newPLine.p1 = auxsites[i].bottonPoints[0];
-    newPLine.p2 = auxsites[i].upperPoints[0];
+    newPLine.p1 = auxS[i].bottonPoints[0];
+    newPLine.p2 = auxS[i].upperPoints[0];
+    
     sites[i].perimetralLines.push_back(newPLine);
 
   }
+  
 
 }
 
@@ -754,11 +858,6 @@ void Voronoi::calculateParabolaDraw()
 }
 
 
-void normalizeSFVec2(sf::Vector2<float> *v){
-  float mod = 1 / sqrtf((v->x * v->x) + (v->y * v->y));
-  v->x *= mod;
-  v->y *= mod;
-}
 
 float dotProtduct(sf::Vector2<float> v1, sf::Vector2<float> v2){
 

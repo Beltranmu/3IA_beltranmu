@@ -34,7 +34,7 @@ Game::~Game() {
 
 void Game::init(uint32_t w_width, uint32_t w_height) {
 
-  srand(time(NULL));
+ // srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
   voronoi.w = w_width_;
@@ -164,8 +164,14 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
     ImGui::BeginChild("Scrolling");
     ImGui::Checkbox("Lines", &voronoi.drawAllLine);
+    ImGui::Checkbox("Sectors", &voronoi.drawSectors);
     if (ImGui::Button("Check PArbole")) {
       voronoi.calculateParabola();
+    } if (ImGui::Button("Clear Parbole")) {
+      for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
+        voronoi.sites[i].perimetralLines.clear();
+      };
+        voronoi.solutionsVoronoi.clear();
     }
     if (ImGui::Button("Pause Parabola")) {
       pausedParabola = !pausedParabola;

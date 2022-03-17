@@ -8,7 +8,7 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/System/Vector2.hpp"
 
-
+const int kwidthStreet = 20;
 
 struct Bisector {
   sf::Vector2<float> Spoint;
@@ -22,6 +22,7 @@ struct Line {
 };
 struct LineP {
   sf::Vector2<float> p1, p2;
+  // p1-> Point, p2-> NextPoint,
 };
 
 struct Solution{
@@ -80,6 +81,7 @@ public:
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
   std::vector<Cells> sites;
+  std::vector<AuxCell> auxsitesLittle;
   std::vector<AuxCell> auxsites;
 
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
@@ -88,6 +90,7 @@ public:
   float maxDistance;
 
   bool drawAllLine;
+  bool drawSectors;
 
 
 };
