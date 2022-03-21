@@ -176,7 +176,7 @@ void Game::mainLoop(){
     if (ImGui::Button("Pause Parabola")) {
       pausedParabola = !pausedParabola;
     }
-    for(int i = 0; i< voronoi.paraboleDraw.size(); ++i){
+    for(int i = 0; i< (int)voronoi.paraboleDraw.size(); ++i){
       ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
     }
     ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
@@ -184,9 +184,9 @@ void Game::mainLoop(){
     if (ImGui::Button("Check Voronoi")) {
       voronoi.calculateBisector();
     }
-    for (int n = 0; n < voronoi.points.size(); n++) {
+    for (int n = 0; n < (int)voronoi.sites.size(); n++) {
      
-      float red = ((float)n+1.0f) / (float)voronoi.points.size();
+      float red = ((float)n+1.0f) / (float)voronoi.sites.size();
       ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
       char name[255];
       sprintf(name, "PositionX % d", n);

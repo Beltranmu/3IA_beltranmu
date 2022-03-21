@@ -326,7 +326,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
@@ -365,7 +365,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
@@ -416,7 +416,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
@@ -454,7 +454,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
@@ -500,7 +500,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
@@ -538,7 +538,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, marging));
@@ -602,7 +602,7 @@ void Voronoi::calculateParabola(){
             }
             else{
               bool alreadySol = false;
-              for(int s = 0; s < solutions.size() && !alreadySol; ++s){
+              for(int s = 0; s < (int)solutions.size() && !alreadySol; ++s){
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, 0.1f));
@@ -644,7 +644,7 @@ void Voronoi::calculateParabola(){
             }
             else {
               bool alreadySol = false;
-              for (int s = 0; s < solutions.size() && !alreadySol; ++s) {
+              for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
                 bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, 0.1f));
@@ -675,7 +675,7 @@ void Voronoi::calculateParabola(){
       pp++;
     }
     // Check for a valid sol
-    for (int i = 0; i < solutions.size(); ++i) {
+    for (int i = 0; i < (int)solutions.size(); ++i) {
       if (solutions[i].n >= 2) {
         paraboleIPoints.push_back(solutions[i]);
       }
@@ -686,14 +686,14 @@ void Voronoi::calculateParabola(){
 
   // Delete unecessary points
 
-  for (int i = 0; i < paraboleIPoints.size(); ++i) {
+  for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
 
     if (solutionsVoronoi.empty()) {
       solutionsVoronoi.push_back(paraboleIPoints[i]);
     }
     else {
       bool samePoint = false;
-      for (int j = 0; j < solutionsVoronoi.size() && !samePoint; ++j) {
+      for (int j = 0; j < (int)solutionsVoronoi.size() && !samePoint; ++j) {
         bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, 1.0f);
         bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, 1.0f);
         samePoint = sameX && sameY;
@@ -706,9 +706,9 @@ void Voronoi::calculateParabola(){
 
   //Clasify the points
 
-  for (int s = 0; s < sites.size(); s++) {
+  for (int s = 0; s < (int)sites.size(); s++) {
     
-    for (int vs = 0; vs < solutionsVoronoi.size(); vs++) {
+    for (int vs = 0; vs < (int)solutionsVoronoi.size(); vs++) {
       bool alreadyInCell = false;
       for (int i = 0; i < 3 && !alreadyInCell; ++i) {
         if (solutionsVoronoi[vs].sites[i] == s ) {
@@ -731,7 +731,7 @@ void Voronoi::calculateParabola(){
     sf::Vector2<float> Vnext;
     sf::Vector2<float> Vprev;
     float desp = (float)kwidthStreet * 0.5f;
-    for (int i = 0; i < auxsites.size(); ++i) {
+    for (int i = 0; i < (int)auxsites.size(); ++i) {
       LineP newPLine;
       int sizeBotton = (int)auxsites[i].bottonPoints.size();
       int sizeUpper = (int)auxsites[i].upperPoints.size();
@@ -796,7 +796,7 @@ void Voronoi::calculateParabola(){
   // Creation fo the polys
   //std::vector<AuxCell> auxS = auxsites;
   std::vector<AuxCell> auxS = auxsitesLittle;
-  for (int i = 0; i < auxS.size(); ++i) {
+  for (int i = 0; i < (int)auxS.size(); ++i) {
     LineP newPLine;
     int sizeBotton = (int)auxS[i].bottonPoints.size();
     int sizeUpper = (int)auxS[i].upperPoints.size();
@@ -1064,7 +1064,7 @@ void Voronoi::calculateBisector()
 bool Voronoi::isBeachLine(sf::Vector2<float> p)
 {
 
-  for (int i = 0; i < parabole.size() ; ++i) {
+  for (int i = 0; i < (int)parabole.size() ; ++i) {
     sf::Vector2<float> p2;
 
     p2.y = p.y;
