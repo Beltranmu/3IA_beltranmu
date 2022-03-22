@@ -37,11 +37,11 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
  // srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
-  voronoi.w = w_width_;
-  voronoi.h = w_height_;
-  voronoi.init(10);
-  voronoi.calculateBisector();
-  voronoi.calculateParabola();
+  //voronoi.w = w_width_;
+  //voronoi.h = w_height_;
+  //voronoi.init(10);
+  //voronoi.calculateBisector();
+  //voronoi.calculateParabola();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 
@@ -102,10 +102,10 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 
 void Game::draw() {
 
-  //board_.drawBoard(&w_, possibleNextTarget);
+  board_.drawBoard(&w_, possibleNextTarget);
   //possibleNextTarget = -1;
   //board_.drawLBoard(&w_);
-  voronoi.draw(&w_);
+  //voronoi.draw(&w_);
 }
 
 void Game::end() {
@@ -137,7 +137,7 @@ void Game::mainLoop(){
     if((ia_clock.getElapsedTime().asSeconds() > 1.0f/fps.ai || fps.ai == -1) 
       && (!startAddPattern)){
       ia_clock.restart();
-      /*board_.unitMovement();*/
+      board_.unitMovement();
     }
 
     // World Update
@@ -145,7 +145,7 @@ void Game::mainLoop(){
       world_clock.restart();
       update(delta_time_);      
     }
-    voronoi.calculateParabolaDraw();
+    //voronoi.calculateParabolaDraw();
     ImGui::SFML::Update(w_, imgui_clock.restart());
     ImGui::Begin("FPS Controller");
  
@@ -163,9 +163,9 @@ void Game::mainLoop(){
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d",board_.units_[0].currentPos);
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
     ImGui::BeginChild("Scrolling");
-    ImGui::Checkbox("Lines", &voronoi.drawAllLine);
+    /*ImGui::Checkbox("Lines", &voronoi.drawAllLine);
     ImGui::Checkbox("Sectors", &voronoi.drawSectors);
-    if (ImGui::Button("Check PArbole")) {
+    if (ImGui::Button("Check Parbole")) {
       voronoi.calculateParabola();
     } if (ImGui::Button("Clear Parbole")) {
       for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
@@ -193,7 +193,7 @@ void Game::mainLoop(){
       ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, 960);
       sprintf(name, "PositionY % d", n);
       ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, 704);
-    }
+    }*/
     ImGui::EndChild();
     ImGui::End();
 
