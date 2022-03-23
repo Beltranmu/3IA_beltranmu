@@ -37,11 +37,11 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
  // srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
-  //voronoi.w = w_width_;
-  //voronoi.h = w_height_;
-  //voronoi.init(10);
+  voronoi.w = w_width_;
+  voronoi.h = w_height_;
+  voronoi.init(10);
   //voronoi.calculateBisector();
-  //voronoi.calculateParabola();
+  voronoi.calculateParabola();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 

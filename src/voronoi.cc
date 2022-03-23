@@ -819,8 +819,8 @@ void Voronoi::calculateParabola(){
       sites[i].perimetralLines.push_back(newPLine);
     }
 
-    newPLine.p1 = auxS[i].bottonPoints[0];
-    newPLine.p2 = auxS[i].upperPoints[0];
+    newPLine.p1 = auxS[i].upperPoints[0];
+    newPLine.p2 = auxS[i].bottonPoints[0];
     
     sites[i].perimetralLines.push_back(newPLine);
 
