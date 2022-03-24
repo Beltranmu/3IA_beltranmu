@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "SFML/Graphics.hpp"
 #include "agent.h"
+#include "astar.h"
 
 const int kBoardMaxSize = 128;
 const int kBoardMinSize = 16;
@@ -74,6 +75,8 @@ class Board
 
     int32_t treasureLocation;
 
+    Astar aPath_;
+
     int width_;
     int height_;
 
@@ -81,6 +84,14 @@ class Board
     int height_tile_;
     int desp_x_tile_;
     int desp_y_tile_;
+
+
+
+    int32_t targetRowI;
+    int32_t targetColI;
+    int32_t targetRowD;
+    int32_t targetColD;
+
 
     sf::Texture mt;
     sf::Sprite board_sprite;

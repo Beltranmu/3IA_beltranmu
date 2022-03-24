@@ -3,6 +3,12 @@
 
 Board::Board(){
 
+  targetColD = 0;
+  targetColI = 0;
+  targetRowD = 0;
+  targetRowI = 0;
+
+
 }
 
 Board::~Board(){
@@ -457,6 +463,50 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
   treasure.setPosition(sf::Vector2f(xt, yt));
   window->draw(treasure);
 
+
+
+  //Draw Origin and destination for the A*
+  sf::RectangleShape origin;
+  sf::RectangleShape destination;
+
+
+  origin.setOutlineColor(sf::Color::Green);
+  origin.setFillColor(sf::Color::Green);
+  origin.setSize(sf::Vector2f(8.0f, 8.0f));
+
+  destination.setOutlineColor(sf::Color::Red);
+  destination.setFillColor(sf::Color::Red);
+  destination.setSize(sf::Vector2f(8.0f, 8.0f));
+
+  int xo = targetColI * 8;
+  int yo = targetRowI * 8;
+  int xd = targetColD * 8;
+  int yd = targetRowD * 8;
+
+  origin.setPosition(sf::Vector2f(xo, yo));
+  destination.setPosition(sf::Vector2f(xd, yd));
+  window->draw(origin);
+  window->draw(destination);
+
+  //**Draw Path for A*
+  for (int p = 0; p < aPath_.currentPaths.size(); ++p) {
+
+    if(aPath_.currentPaths[p].draw){
+      for(int c = 0; c < (int) aPath_.currentPaths[p].path.size(); ++c){
+        sf::RectangleShape cellPath;
+        cellPath.setOutlineColor(sf::Color::Black);
+        cellPath.setFillColor(sf::Color(255,255,255,100));
+        cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
+
+        int xc = (aPath_.currentPaths[p].path[c] % width_) * 8;
+        int yc = (aPath_.currentPaths[p].path[c] / width_) * 8;
+
+        cellPath.setPosition(sf::Vector2f(xc, yc));
+        window->draw(cellPath);
+      }
+    }
+
+  }
    
 }
 

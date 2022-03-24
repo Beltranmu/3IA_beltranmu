@@ -12,16 +12,18 @@ struct ACell{
   uint32_t parentCellID;
   uint32_t score;
   uint32_t g;
+
   // Same cellID and parentCellID -> init cell
 };
 
 struct TPath{
-  uint32_t* path;
+  std::vector<uint32_t> path;
   uint32_t origin, destination;
+  bool draw = false;
 };
 
 class Astar{
-
+public:
   void calculatePath(Board* board, int initPostition, int endPosition);
 
   std::list<ACell> openList;

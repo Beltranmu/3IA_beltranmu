@@ -39,7 +39,7 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   w_height_ = w_height;
   voronoi.w = w_width_;
   voronoi.h = w_height_;
-  voronoi.init(10);
+  //voronoi.init(10);
   //voronoi.calculateBisector();
   voronoi.calculateParabola();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
@@ -162,6 +162,35 @@ void Game::mainLoop(){
       fps.draw_ = -1;
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d",board_.units_[0].currentPos);
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
+    ImGui::SliderInt("InitPosRow", &board_.targetRowI, 0, board_.height_ - 1);
+    ImGui::SliderInt("InitPosCol", &board_.targetColI, 0, board_.width_ - 1);
+
+    ImGui::SliderInt("DstPosRow", &board_.targetRowD, 0, board_.height_ - 1);
+    ImGui::SliderInt("DstPosCol", &board_.targetColD, 0, board_.width_ - 1);
+
+    if (ImGui::Button("Check A Star")) {
+      int origin = board_.targetColI + board_.targetRowI * board_.width_;
+      int dst = board_.targetColD + board_.targetRowD * board_.width_;
+      printf("Calculate Path From %d -> %d", origin, dst);
+      board_.aPath_.calculatePath(&board_, origin,dst);
+    }
+    //ImGui::BeginChild("Paths");
+    for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
+      ImGui::BeginChild("Path");
+      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Path From %d -> %d", board_.aPath_.currentPaths[i].origin, 
+        board_.aPath_.currentPaths[i].destination);
+      char name[255];
+      sprintf(name, "Draw %d", i);
+      ImGui::Checkbox(name, &board_.aPath_.currentPaths[i].draw);
+      for(int p = 0; p< (int )board_.aPath_.currentPaths[i].path.size(); ++p){
+
+        ImGui::TextColored(ImVec4(1, 0, 1, 1), "%d : %d", p,
+          board_.aPath_.currentPaths[i].path[p]);
+
+      }
+      ImGui::EndChild();
+    }
+   // ImGui::EndChild();
     ImGui::BeginChild("Scrolling");
     /*ImGui::Checkbox("Lines", &voronoi.drawAllLine);
     ImGui::Checkbox("Sectors", &voronoi.drawSectors);
@@ -197,7 +226,7 @@ void Game::mainLoop(){
     ImGui::EndChild();
     ImGui::End();
 
-    /*ImGui::Begin("Agent Controller");
+    ImGui::Begin("Agent Controller");
 
     if(selectedAgentID == -1){
       ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
@@ -270,7 +299,7 @@ void Game::mainLoop(){
       }
     }
     
-    ImGui::End();*/
+    ImGui::End();
 
     //Draw
     if (draw_clock.getElapsedTime().asSeconds() > 1.0f / (float)fps.draw_ || fps.draw_ == -1) {
