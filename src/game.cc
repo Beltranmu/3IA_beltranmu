@@ -167,12 +167,16 @@ void Game::mainLoop(){
 
     ImGui::SliderInt("DstPosRow", &board_.targetRowD, 0, board_.height_ - 1);
     ImGui::SliderInt("DstPosCol", &board_.targetColD, 0, board_.width_ - 1);
+    ImGui::Checkbox("Manhattan Distance", &board_.aPath_.ManhattanD);
+    ImGui::Checkbox("Euclidean Distance", &board_.aPath_.EuclideanD);
 
     if (ImGui::Button("Check A Star")) {
       int origin = board_.targetColI + board_.targetRowI * board_.width_;
       int dst = board_.targetColD + board_.targetRowD * board_.width_;
-      printf("Calculate Path From %d -> %d", origin, dst);
-      board_.aPath_.calculatePath(&board_, origin,dst);
+      if(origin != dst){
+        printf("Calculate Path From %d -> %d\n", origin, dst);
+        board_.aPath_.calculatePath(&board_, origin,dst);
+      }
     }
     //ImGui::BeginChild("Paths");
     for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
@@ -182,7 +186,7 @@ void Game::mainLoop(){
       char name[255];
       sprintf(name, "Draw %d", i);
       ImGui::Checkbox(name, &board_.aPath_.currentPaths[i].draw);
-      for(int p = 0; p< (int )board_.aPath_.currentPaths[i].path.size(); ++p){
+      for(int p = 0; p< (int)board_.aPath_.currentPaths[i].path.size(); ++p){
 
         ImGui::TextColored(ImVec4(1, 0, 1, 1), "%d : %d", p,
           board_.aPath_.currentPaths[i].path[p]);

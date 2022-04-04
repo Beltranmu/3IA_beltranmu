@@ -24,11 +24,17 @@ struct TPath{
 
 class Astar{
 public:
+
+  Astar();
   void calculatePath(Board* board, int initPostition, int endPosition);
 
   std::list<ACell> openList;
   std::list<ACell> closeList;
   std::vector<TPath> currentPaths;
+
+
+  bool ManhattanD; 
+  bool EuclideanD; 
 
 };
 

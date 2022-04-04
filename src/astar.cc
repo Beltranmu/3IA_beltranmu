@@ -16,7 +16,36 @@
 
 
 // F = G + H
+
+Astar::Astar(){
+
+  ManhattanD = true;
+  EuclideanD = false;
+
+}
+
 void Astar::calculatePath(Board* board, int initPostition, int endPosition){
+  if (initPostition == endPosition)
+  {
+    printf("Choose another position\n");
+  }
+  if(ManhattanD == false && EuclideanD == false){
+    printf("Choose a type to calculate the distance\n");
+    return;
+  }
+  if(ManhattanD == true && EuclideanD == true){
+    printf("ALl distance types chosen, choose only one, pls :D\n");
+    return;
+  }
+  for(int i = 0; i<(int) currentPaths.size(); ++i){
+    bool samePath = currentPaths[i].destination == endPosition;
+    samePath = samePath && currentPaths[i].origin == initPostition;
+    if(samePath){
+      printf("Path already calculated\n");
+      return;
+    }
+  }
+
 
   ACell initCell;
   openList.clear();
@@ -25,7 +54,9 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
   initCell.cellID = initPostition;
   initCell.parentCellID = initPostition;
   initCell.g = 0;
-  initCell.score = initCell.g + board->manhantanDistance(initPostition, endPosition);
+  
+  if(ManhattanD){ initCell.score = initCell.g + board->manhantanDistance(initPostition, endPosition); }
+  if(EuclideanD){ initCell.score = initCell.g + board->euclidianDistance(initPostition, endPosition); }
   uint32_t parentID = initPostition;
   bool pathFound = initPostition == endPosition;
   
@@ -87,8 +118,11 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
           }
           
 
-          uint32_t GScore = lowestScoreCell.g + 1 ;
-          uint32_t HScore = board->manhantanDistance(neighbourdCells[j], endPosition);
+          uint32_t GScore = lowestScoreCell.g + 1; 
+          uint32_t HScore = 0;
+         
+          if (ManhattanD) { HScore = initCell.g + board->manhantanDistance(neighbourdCells[j], endPosition); }
+          if (EuclideanD) { HScore = initCell.g + board->euclidianDistance(neighbourdCells[j], endPosition); }
           uint32_t FScore = GScore + HScore;
           if (!isInOpenList) {
             ACell newCell;
@@ -121,7 +155,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     }
   }
 
-
+  // Get the path
   if(pathFound){
     std::list<ACell>::iterator it = closeList.begin();
     std::list<uint32_t> path;
