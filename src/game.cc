@@ -170,6 +170,7 @@ void Game::mainLoop(){
     ImGui::Checkbox("Manhattan Distance", &board_.aPath_.manhattanD);
     ImGui::Checkbox("Euclidean Distance", &board_.aPath_.euclideanD);
     ImGui::Checkbox("Chebyshov Distance", &board_.aPath_.chebyshovD);
+    ImGui::Checkbox("Draw Board", &board_.drawLogical);
 
     if (ImGui::Button("Check A Star")) {
       int origin = board_.targetColI + board_.targetRowI * board_.width_;
@@ -179,20 +180,31 @@ void Game::mainLoop(){
       }
     }
 
+    char* types[3]; 
+    types[0] = "Manhattan";
+    types[1] = "Euclidean";
+    types[2] = "Chebyshov";
    
     //ImGui::BeginChild("Paths");
     for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
       ImGui::BeginChild("Path");
-      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Path From %d -> %d", board_.aPath_.currentPaths[i].origin, 
-        board_.aPath_.currentPaths[i].destination);
+      char treeName[255];
+      sprintf(treeName, "Path From %d -> %d Type: %s", board_.aPath_.currentPaths[i].origin,
+            board_.aPath_.currentPaths[i].destination, types[board_.aPath_.currentPaths[i].type] );
       char name[255];
-      sprintf(name, "Draw %d", i);
+      sprintf(name, "Draw Path %d", i);
       ImGui::Checkbox(name, &board_.aPath_.currentPaths[i].draw);
-      for(int p = 0; p< (int)board_.aPath_.currentPaths[i].path.size(); ++p){
-
-        ImGui::TextColored(ImVec4(1, 0, 1, 1), "%d : %d", p,
-          board_.aPath_.currentPaths[i].path[p]);
-
+      if (ImGui::TreeNode(treeName))
+      {
+        for (int p = 0; p < (int)board_.aPath_.currentPaths[i].path.size(); ++p) {
+          ImGui::TextColored(ImVec4(1, 1, 1, 1), "%d : %d| G:%f + H:%f =  F:%f| ParentCell %d", p,
+            board_.aPath_.currentPaths[i].path[p].cellID,
+            board_.aPath_.currentPaths[i].path[p].g,
+            board_.aPath_.currentPaths[i].path[p].score - board_.aPath_.currentPaths[i].path[p].g,
+            board_.aPath_.currentPaths[i].path[p].score,
+            board_.aPath_.currentPaths[i].path[p].parentCellID);
+        }
+        ImGui::TreePop();
       }
       ImGui::EndChild();
     }

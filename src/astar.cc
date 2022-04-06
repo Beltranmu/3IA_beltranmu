@@ -85,10 +85,10 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
   while(!openList.empty() && !pathFound){
     //Get the one with lowest F in the openList
     uint32_t index = 0;
-    uint32_t lowestScore = 9999;
     std::list<ACell>::iterator it = openList.begin();
+    float lowestScore = 9999.0f;
     for(it; it != openList.end(); ++it ){
-      uint32_t score = it->score;
+      float score = it->score;
       /*CALCULAR SCORE*/
       if(score < lowestScore){
         lowestScore = score;
@@ -98,6 +98,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
       }
       index++;
     }
+
 
     //Remove from the open list
     it = openList.begin();
@@ -127,7 +128,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
 
         if(!isInCloseList){
 
-          for (int q = 0; q < openList.size(); ++q) {
+          for (int q = 0; q < openList.size() && !isInOpenList; ++q) {
             it = openList.begin();
             advance(it, q);
             if (it->cellID == neighbourdCells[j]) {
@@ -136,8 +137,8 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
           }
           
 
-          uint32_t GScore = lowestScoreCell.g + 1; 
-          uint32_t HScore = 0;
+         float GScore = lowestScoreCell.g + 1; 
+         float HScore = 0;
          
           if (manhattanD) { HScore = initCell.g + board->manhantanDistance(neighbourdCells[j], endPosition); }
           if (euclideanD) { HScore = initCell.g + board->euclidianDistance(neighbourdCells[j], endPosition); }
@@ -146,7 +147,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
           if (!isInOpenList) {
             ACell newCell;
             newCell.cellID = neighbourdCells[j];
-            newCell.parentCellID = parentID;
+           newCell.parentCellID = parentID;
             newCell.g = GScore;
             newCell.score = FScore;
             openList.push_front(newCell);
@@ -177,7 +178,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
   // Get the path
   if(pathFound){
     std::list<ACell>::iterator it = closeList.begin();
-    std::list<uint32_t> path;
+    std::list<ACell> path;
     path.clear();
     //Camino esta en la closeList
     bool endPath = false;
@@ -188,13 +189,13 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
 
       if(it->cellID == it->parentCellID){
         endPath = true;
-        path.push_front(it->cellID);
+        path.push_front(*it);
       }
 
       if(it->cellID == endCellID && !endPath){
        // endAdded = true;
         endCellID = it->parentCellID;
-        path.push_front(it->cellID);
+        path.push_front(*it);
         it = closeList.begin();
       }else{
         ++it;
@@ -202,7 +203,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
 
       
     }
-    std::list<uint32_t>::iterator it2 = path.begin();
+    it = path.begin();
     int sizePath = path.size();
     TPath newPath;
     newPath.origin = initPostition;
@@ -211,8 +212,8 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     //newPath.path = (uint32_t*)malloc(sizeof(uint32_t) * sizePath);
     //Eliminar la lista para el path
     int i = 0;
-    for (it2; it2 != path.end(); ++it2) {
-      newPath.path.push_back(*it2) ;
+    for (it; it != path.end(); ++it) {
+      newPath.path.push_back(*it) ;
       i++;
     }
     currentPaths.push_back(newPath);

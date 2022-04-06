@@ -3,11 +3,12 @@
 
 Board::Board(){
 
-  targetColD = 0;
-  targetColI = 0;
-  targetRowD = 0;
-  targetRowI = 0;
+  targetRowI = 35;
+  targetColI = 90;
+  targetRowD = 62;
+  targetColD = 115;
 
+  drawLogical = false;
 
 }
 
@@ -354,39 +355,10 @@ int Board::pacmanMovement(int32_t org_cell, int32_t target_cell, int32_t* fwX, i
 
 void Board::drawLBoard(sf::RenderWindow* window){
 
-  sf::RectangleShape rect;
-  rect.setOutlineColor(sf::Color::Black);
-  rect.setSize(sf::Vector2f(8.0f, 8.0f));
-
-  for (int i = 0; i < width_ * height_; ++i) {
-
-    //window->draw();
-    rect.setFillColor(sf::Color::Red);
-    if(cell_[i].value == kTileType_Normal)
-      rect.setFillColor(sf::Color::Green);
-
-    int x = (i % width_) * 8;
-    int y = (i / width_) * 8;
-
-    rect.setPosition(sf::Vector2f(x, y));
-    window->draw(rect);
-
-  }
-
-  for (int i = 0; i < kBoardMaxUnits; ++i) {
-
-    int row = 0, col = 0;
-    index2RowCol(&row, &col, units_[i].currentPos);
-    float posx = col * width_tile_ + desp_x_tile_;
-    float posy = row * height_tile_ + desp_y_tile_;
-    agent_s_.setPosition(posx, posy);
-    window->draw(agent_s_);
-
-  }
-
+ 
 }
 
-void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
+void Board::drawBoard(sf::RenderWindow* window, int selected_cell) {
 
   window->draw(board_sprite);
 
@@ -406,36 +378,36 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
         window->draw(agent_not_selected_);
       }
     }
-    else{
+    else {
       player_s.setPosition(posx, posy);
       window->draw(player_s);
     }
-//     Draw forward
-//         int r_forward = 0;
-//         int c_forward = 0;
-//         if(units_[i].currentForwardX == 0){
-//           if(units_[i].currentForwardY == 1){//South
-//             index2RowCol(&r_forward, &c_forward, south(units_[i].currentPos));
-//           }else{ //North
-//             index2RowCol(&r_forward, &c_forward, north(units_[i].currentPos));
-//           }
-//         }
-//         else if(units_[i].currentForwardX == 1){
-//           index2RowCol(&r_forward, &c_forward, east(units_[i].currentPos));
-//         }
-//         else{
-//           index2RowCol(&r_forward, &c_forward, west(units_[i].currentPos));
-//         }
-//         sf::RectangleShape rect;
-//         rect.setOutlineColor(sf::Color::Blue);
-//         rect.setFillColor(sf::Color::Blue);
-//         rect.setSize(sf::Vector2f(10.0f, 10.0f));
-//     
-//         int x = c_forward * 8;
-//         int y = r_forward * 8;
-//     
-//         rect.setPosition(sf::Vector2f(x, y));
-//         window->draw(rect);
+    //     Draw forward
+    //         int r_forward = 0;
+    //         int c_forward = 0;
+    //         if(units_[i].currentForwardX == 0){
+    //           if(units_[i].currentForwardY == 1){//South
+    //             index2RowCol(&r_forward, &c_forward, south(units_[i].currentPos));
+    //           }else{ //North
+    //             index2RowCol(&r_forward, &c_forward, north(units_[i].currentPos));
+    //           }
+    //         }
+    //         else if(units_[i].currentForwardX == 1){
+    //           index2RowCol(&r_forward, &c_forward, east(units_[i].currentPos));
+    //         }
+    //         else{
+    //           index2RowCol(&r_forward, &c_forward, west(units_[i].currentPos));
+    //         }
+    //         sf::RectangleShape rect;
+    //         rect.setOutlineColor(sf::Color::Blue);
+    //         rect.setFillColor(sf::Color::Blue);
+    //         rect.setSize(sf::Vector2f(10.0f, 10.0f));
+    //     
+    //         int x = c_forward * 8;
+    //         int y = r_forward * 8;
+    //     
+    //         rect.setPosition(sf::Vector2f(x, y));
+    //         window->draw(rect);
   }
   if (selected_cell >= 0) {
     sf::RectangleShape rect;
@@ -464,6 +436,43 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
   window->draw(treasure);
 
 
+  //Logical Board
+
+  if (drawLogical) {
+    sf::RectangleShape rect;
+    rect.setOutlineColor(sf::Color::Black);
+    rect.setSize(sf::Vector2f(8.0f, 8.0f));
+
+    for (int i = 0; i < width_ * height_; ++i) {
+
+      //window->draw();
+      rect.setFillColor(sf::Color::Red);
+      if (cell_[i].value == kTileType_Normal)
+        rect.setFillColor(sf::Color::Green);
+
+      int x = (i % width_) * 8;
+      int y = (i / width_) * 8;
+
+      rect.setPosition(sf::Vector2f(x, y));
+      window->draw(rect);
+
+    }
+
+    for (int i = 0; i < kBoardMaxUnits; ++i) {
+
+      int row = 0, col = 0;
+      index2RowCol(&row, &col, units_[i].currentPos);
+      float posx = col * width_tile_ + desp_x_tile_;
+      float posy = row * height_tile_ + desp_y_tile_;
+      agent_s_.setPosition(posx, posy);
+      window->draw(agent_s_);
+
+    }
+  }
+
+
+
+
 
   //Draw Origin and destination for the A*
   sf::RectangleShape origin;
@@ -488,6 +497,11 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
   window->draw(origin);
   window->draw(destination);
 
+
+
+
+
+
   //**Draw Path for A*
   for (int p = 0; p < aPath_.currentPaths.size(); ++p) {
 
@@ -498,8 +512,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
         cellPath.setFillColor(aPath_.pathColors[aPath_.currentPaths[p].type]);
         cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
 
-        int xc = (aPath_.currentPaths[p].path[c] % width_) * 8;
-        int yc = (aPath_.currentPaths[p].path[c] / width_) * 8;
+        int xc = (aPath_.currentPaths[p].path[c].cellID % width_) * 8;
+        int yc = (aPath_.currentPaths[p].path[c].cellID / width_) * 8;
 
         cellPath.setPosition(sf::Vector2f(xc, yc));
         window->draw(cellPath);

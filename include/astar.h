@@ -20,14 +20,14 @@ enum TypeDistanceUsedToCalculatePath{
 struct ACell{
   uint32_t cellID;
   uint32_t parentCellID;
-  uint32_t score;
-  uint32_t g;
+  float score;
+  float g;
 
   // Same cellID and parentCellID -> init cell
 };
 
 struct TPath{
-  std::vector<uint32_t> path;
+  std::vector<ACell> path;
   uint32_t origin, destination;
   bool draw = false;
   TypeDistanceUsedToCalculatePath type;

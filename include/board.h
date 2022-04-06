@@ -93,6 +93,8 @@ class Board
     int32_t targetRowD;
     int32_t targetColD;
 
+    bool drawLogical;
+
 
     sf::Texture mt;
     sf::Sprite board_sprite;
