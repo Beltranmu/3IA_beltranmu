@@ -167,17 +167,19 @@ void Game::mainLoop(){
 
     ImGui::SliderInt("DstPosRow", &board_.targetRowD, 0, board_.height_ - 1);
     ImGui::SliderInt("DstPosCol", &board_.targetColD, 0, board_.width_ - 1);
-    ImGui::Checkbox("Manhattan Distance", &board_.aPath_.ManhattanD);
-    ImGui::Checkbox("Euclidean Distance", &board_.aPath_.EuclideanD);
+    ImGui::Checkbox("Manhattan Distance", &board_.aPath_.manhattanD);
+    ImGui::Checkbox("Euclidean Distance", &board_.aPath_.euclideanD);
+    ImGui::Checkbox("Chebyshov Distance", &board_.aPath_.chebyshovD);
 
     if (ImGui::Button("Check A Star")) {
       int origin = board_.targetColI + board_.targetRowI * board_.width_;
       int dst = board_.targetColD + board_.targetRowD * board_.width_;
       if(origin != dst){
-        printf("Calculate Path From %d -> %d\n", origin, dst);
         board_.aPath_.calculatePath(&board_, origin,dst);
       }
     }
+
+   
     //ImGui::BeginChild("Paths");
     for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
       ImGui::BeginChild("Path");

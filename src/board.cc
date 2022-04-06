@@ -495,7 +495,7 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
       for(int c = 0; c < (int) aPath_.currentPaths[p].path.size(); ++c){
         sf::RectangleShape cellPath;
         cellPath.setOutlineColor(sf::Color::Black);
-        cellPath.setFillColor(sf::Color(255,255,255,100));
+        cellPath.setFillColor(aPath_.pathColors[aPath_.currentPaths[p].type]);
         cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
 
         int xc = (aPath_.currentPaths[p].path[c] % width_) * 8;
@@ -510,7 +510,7 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell){
    
 }
 
-int32_t Board::manhantanDistance(int32_t origin_cell, int32_t dst_cell){
+uint32_t Board::manhantanDistance(int32_t origin_cell, int32_t dst_cell){
   int r1, r2, c1, c2;
   index2RowCol(&r1, &c1, origin_cell);
   index2RowCol(&r2, &c2, dst_cell);
@@ -527,6 +527,16 @@ float Board::euclidianDistance(int32_t origin_cell, int32_t dst_cell){
   int dy = (c2 - c1) * height_tile_;
   
   return sqrt(dx * dx + dy * dy);
+}
+
+
+uint32_t Board::chebyshovDistance(int32_t origin_cell, int32_t dst_cell){
+  int r1, r2, c1, c2;
+  index2RowCol(&r1, &c1, origin_cell);
+  index2RowCol(&r2, &c2, dst_cell);
+  uint32_t dr = abs(r2 - r1);
+  uint32_t dc = abs(c2 - c1);
+  return  dr > dc ? dr : dc ;
 }
 
 int32_t Board::getAgent(sf::RenderWindow& window) {

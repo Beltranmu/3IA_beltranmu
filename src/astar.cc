@@ -19,8 +19,16 @@
 
 Astar::Astar(){
 
-  ManhattanD = true;
-  EuclideanD = false;
+  manhattanD = true;
+  euclideanD = false;
+  chebyshovD = false;
+
+  pathColors[0] = sf::Color(255,0,0,85);
+  pathColors[1] = sf::Color(0,255,0,85);
+  pathColors[2] = sf::Color(0,0,255,85);
+
+
+
 
 }
 
@@ -29,23 +37,32 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
   {
     printf("Choose another position\n");
   }
-  if(ManhattanD == false && EuclideanD == false){
+  TypeDistanceUsedToCalculatePath currenttype = MANHATTAN_TYPE;
+  uint32_t activatedD = 0;
+  if (manhattanD) { activatedD++; }  
+  if (euclideanD) { activatedD++; currenttype = EUCLIDEAN_TYPE; }
+  if (chebyshovD) { activatedD++; currenttype = CHEBYSHOV_TYPE; }
+  
+
+  if (activatedD == 0 ) {
     printf("Choose a type to calculate the distance\n");
     return;
   }
-  if(ManhattanD == true && EuclideanD == true){
-    printf("ALl distance types chosen, choose only one, pls :D\n");
+  if(activatedD>1){
+    printf("More than one distance types are chosen, choose only one, pls :D\n");
     return;
   }
   for(int i = 0; i<(int) currentPaths.size(); ++i){
     bool samePath = currentPaths[i].destination == endPosition;
     samePath = samePath && currentPaths[i].origin == initPostition;
+    samePath = samePath && currentPaths[i].type == currenttype;
     if(samePath){
       printf("Path already calculated\n");
       return;
     }
   }
 
+  printf("Calculate Path From %d -> %d\n", initPostition, endPosition);
 
   ACell initCell;
   openList.clear();
@@ -55,8 +72,9 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
   initCell.parentCellID = initPostition;
   initCell.g = 0;
   
-  if(ManhattanD){ initCell.score = initCell.g + board->manhantanDistance(initPostition, endPosition); }
-  if(EuclideanD){ initCell.score = initCell.g + board->euclidianDistance(initPostition, endPosition); }
+  if(manhattanD){ initCell.score = initCell.g + board->manhantanDistance(initPostition, endPosition); }
+  if(euclideanD){ initCell.score = initCell.g + board->euclidianDistance(initPostition, endPosition); }
+  if(chebyshovD){ initCell.score = initCell.g + board->chebyshovDistance(initPostition, endPosition); }
   uint32_t parentID = initPostition;
   bool pathFound = initPostition == endPosition;
   
@@ -121,8 +139,9 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
           uint32_t GScore = lowestScoreCell.g + 1; 
           uint32_t HScore = 0;
          
-          if (ManhattanD) { HScore = initCell.g + board->manhantanDistance(neighbourdCells[j], endPosition); }
-          if (EuclideanD) { HScore = initCell.g + board->euclidianDistance(neighbourdCells[j], endPosition); }
+          if (manhattanD) { HScore = initCell.g + board->manhantanDistance(neighbourdCells[j], endPosition); }
+          if (euclideanD) { HScore = initCell.g + board->euclidianDistance(neighbourdCells[j], endPosition); }
+          if (chebyshovD) { HScore = initCell.g + board->chebyshovDistance(neighbourdCells[j], endPosition); }
           uint32_t FScore = GScore + HScore;
           if (!isInOpenList) {
             ACell newCell;
@@ -188,6 +207,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     TPath newPath;
     newPath.origin = initPostition;
     newPath.destination = endPosition;
+    newPath.type = currenttype;
     //newPath.path = (uint32_t*)malloc(sizeof(uint32_t) * sizePath);
     //Eliminar la lista para el path
     int i = 0;

@@ -5,7 +5,17 @@
 #include <list>
 #include <vector>
 
+#include "SFML/Graphics.hpp"
+
 class Board;
+
+
+enum TypeDistanceUsedToCalculatePath{
+  MANHATTAN_TYPE = 0,
+  EUCLIDEAN_TYPE,
+  CHEBYSHOV_TYPE,
+  MAX_TYPE
+};
 
 struct ACell{
   uint32_t cellID;
@@ -20,6 +30,7 @@ struct TPath{
   std::vector<uint32_t> path;
   uint32_t origin, destination;
   bool draw = false;
+  TypeDistanceUsedToCalculatePath type;
 };
 
 class Astar{
@@ -33,8 +44,11 @@ public:
   std::vector<TPath> currentPaths;
 
 
-  bool ManhattanD; 
-  bool EuclideanD; 
+  sf::Color pathColors[MAX_TYPE];
+
+  bool manhattanD; 
+  bool euclideanD; 
+  bool chebyshovD;
 
 };
 

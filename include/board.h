@@ -65,8 +65,9 @@ class Board
     void drawLBoard(sf::RenderWindow* window);
     void drawBoard(sf::RenderWindow* window, int selected_cell);
 
-    int32_t manhantanDistance(int32_t origin_cell, int32_t dst_cell);
+    uint32_t manhantanDistance(int32_t origin_cell, int32_t dst_cell);
     float euclidianDistance(int32_t origin_cell, int32_t dst_cell);
+    uint32_t chebyshovDistance(int32_t origin_cell, int32_t dst_cell);
 
     int32_t getAgent(sf::RenderWindow& window);
 
