@@ -44,7 +44,7 @@ struct Cells{
 };
 
 struct AuxCell {
-
+  
   std::vector<sf::Vector2<float>> upperPoints;
   std::vector<sf::Vector2<float>> bottonPoints;
 };
@@ -57,7 +57,9 @@ public:
   int32_t w, h;
 
   float horizontal, d;
+  bool reducedPoly;
 
+  void customInit();
   void init(int32_t nPoints);
   void draw(sf::RenderWindow* window);
   void clear();

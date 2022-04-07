@@ -44,7 +44,7 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
   voronoi.h = w_height_;
   //voronoi.init(10);
   //voronoi.calculateBisector();
-  voronoi.calculateParabola();
+  //voronoi.calculateParabola();
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 
@@ -219,13 +219,17 @@ void Game::ImguiVoronoi() {
   ImGui::Begin("Voronoi");
 
   ImGui::InputInt("Number of points", (int*)&numberVPoint);
+  if (ImGui::Button("Custom Init (TEST)")) {
+    voronoi.clear();
+    voronoi.customInit();
+    voronoiInitialized = true;
+  }
   if (ImGui::Button("Create Points")) {
     voronoi.clear();
     voronoi.init(numberVPoint);
     voronoiInitialized = true;
   } 
-  
-
+  ImGui::Checkbox("Reduce Poly", &voronoi.reducedPoly);
 
   if (voronoiInitialized) {
     ImGui::Checkbox("Lines", &voronoi.drawAllLine);

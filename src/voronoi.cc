@@ -16,8 +16,159 @@ Voronoi::~Voronoi()
 {
 }
 
+void normalizeSFVec2(sf::Vector2<float>* v) {
+  float mod = 1 / sqrtf((v->x * v->x) + (v->y * v->y));
+  v->x *= mod;
+  v->y *= mod;
+}
+
+void SwapListElements(std::vector<sf::Vector2<float>> *v, int position1, int position2) {
+  sf::Vector2<float> data1 = (*v)[position1];
+  sf::Vector2<float> data2 = (*v)[position2];
+
+  (*v)[position1] = data2;
+  (*v)[position2] = data1;
 
 
+}
+
+
+int Partition(std::vector<sf::Vector2<float>> *v, int first, int last, sf::Vector2<float> centralPoint) {
+  sf::Vector2<float> tmpV = centralPoint - (*v)[last] ;
+  normalizeSFVec2(&tmpV);
+  float pivot = tmpV.x; // pivot value
+  int i = first;  // Index of smaller element
+
+  for (int j = first; j < last; j++)
+  {
+    tmpV = centralPoint- (*v)[j] ;
+    normalizeSFVec2(&tmpV);
+    int j_element = tmpV.x;
+    if (j_element <= pivot) {
+      SwapListElements(v, i, j);
+      ++i;   // increment index of smaller element
+    }
+  }
+  // Swap the pivot to its place
+  SwapListElements(v, i, last);
+  return i;
+}
+
+
+void QuickSorting(std::vector<sf::Vector2<float>> *v, int index_start, int index_end, sf::Vector2<float> centralPoint) {
+
+  if (index_start < index_end) {
+    int pivot_index = Partition(v, index_start, index_end, centralPoint);
+
+    QuickSorting(v, index_start, pivot_index - 1, centralPoint);
+    QuickSorting(v, pivot_index + 1, index_end, centralPoint);
+  }
+}
+
+
+
+
+void Voronoi::customInit(){
+  Line newLine;
+  newLine.p1.x = 0.0f;
+  newLine.p1.y = 0.0f;
+  newLine.p2.x = (float)w;
+  newLine.p2.y = 0.0f;
+  lines.push_back(newLine);
+
+  newLine.p1.x = (float)w;
+  newLine.p1.y = 0.0f;
+  newLine.p2.x = (float)w;
+  newLine.p2.y = (float)h;
+  lines.push_back(newLine);
+
+  newLine.p1.x = (float)w;
+  newLine.p1.y = (float)h - 1;
+  newLine.p2.x = 0.0f;
+  newLine.p2.y = (float)h - 1;
+  lines.push_back(newLine);
+
+  newLine.p1.x = 0.0f;
+  newLine.p1.y = (float)h;
+  newLine.p2.x = 0.0f;
+  newLine.p2.y = 0.0f;
+  lines.push_back(newLine);
+
+  
+
+    Cells site;
+    sf::Vector2<float> newPoint;
+    newPoint.x = (float)(607);
+    newPoint.y = (float)(353);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+    AuxCell s;
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+ 
+    newPoint.x = (float)(31);
+    newPoint.y = (float)(61);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+    
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+
+
+    newPoint.x = (float)(430);
+    newPoint.y = (float)(311);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+ 
+    newPoint.x = (float)(73);
+    newPoint.y = (float)(496);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(834);
+    newPoint.y = (float)(471);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+
+    newPoint.x = (float)(891);
+    newPoint.y = (float)(125);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+}
 
 void Voronoi::init(int32_t nPoints){
 
@@ -280,11 +431,6 @@ inline bool compareMargin(float x, float y, float error) {
   return ((y - error <= x) && (x <= y + error));
 }
 
-void normalizeSFVec2(sf::Vector2<float> *v){
-  float mod = 1 / sqrtf((v->x * v->x) + (v->y * v->y));
-  v->x *= mod;
-  v->y *= mod;
-}
 
 float module(sf::Vector2<float> v){
   return sqrtf((v.x * v.x) + (v.y * v.y));
@@ -759,7 +905,13 @@ void Voronoi::calculateParabola(){
         }
       }
     }
+    
+    
   }
+
+  //QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1);
+  QuickSorting(&auxsites[2].bottonPoints, 0, (int)auxsites[2].bottonPoints.size() - 1, sites[2].point);
+
   // Reduce de poly
   {
     sf::Vector2<float> reducedP;
@@ -831,8 +983,11 @@ void Voronoi::calculateParabola(){
   }
 
   // Creation fo the polys
-  //std::vector<AuxCell> auxS = auxsites;
-  std::vector<AuxCell> auxS = auxsitesLittle;
+  std::vector<AuxCell> auxS = auxsites;
+  if(reducedPoly){
+    auxS = auxsitesLittle;
+  }
+  //std::vector<AuxCell> auxS = auxsitesLittle;
   for (int i = 0; i < (int)auxS.size(); ++i) {
     LineP newPLine;
     int sizeBotton = (int)auxS[i].bottonPoints.size();
