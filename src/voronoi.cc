@@ -239,6 +239,43 @@ void Voronoi::draw(sf::RenderWindow* window){
 
 }
 
+void Voronoi::clear()
+{
+  points.clear();
+  Mpoints.clear();
+  Spoints.clear();
+  parabole.clear();
+  paraboleDraw.clear();
+  paraboleIPoints.clear();
+  bisector.clear();
+  lines.clear();
+  linesBisector.clear();
+  goodLinesBisector.clear();
+  int c = 0;
+  for (c; c < (int)sites.size(); c++) {
+    sites[c].perimetralLines.clear();
+  }
+  sites.clear();
+
+  for (c = 0; c < (int)auxsitesLittle.size(); c++) {
+    auxsitesLittle[c].upperPoints.clear();
+    auxsitesLittle[c].bottonPoints.clear();
+  }
+  auxsitesLittle.clear();
+
+  for (c = 0; c < (int)auxsites.size(); c++) {
+    auxsites[c].upperPoints.clear();
+    auxsites[c].bottonPoints.clear();
+  }
+  auxsites.clear();
+
+
+  solutions.clear();
+  solutionsVoronoi.clear();
+
+
+}
+
 inline bool compareMargin(float x, float y, float error) {
   return ((y - error <= x) && (x <= y + error));
 }

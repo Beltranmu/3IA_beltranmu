@@ -11,6 +11,7 @@ Game::Game(){
   delta_time_ = 0.0f;
   pausedParabola = false;
   fixed_delta_time_ = fps.second_per_frame;
+  intgmType = 0;
 
   fps.main_game = 60;
   fps.input_ = -1;
@@ -24,7 +25,9 @@ Game::Game(){
   targetRow = 0;
   possibleNextTarget = -1;
   startAddPattern = false;
-  number_movement = 0;
+  number_movement = 0; 
+  voronoiInitialized = false;
+  numberVPoint = 0;
   movement_type = Agent::PatternMovement::kPatternMovement_None;
 }
 
@@ -101,17 +104,225 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 
 
 void Game::draw() {
+  if(gmType != VORONOI_TYPE){
+    board_.drawBoard(&w_, possibleNextTarget);
+  }else{
 
-  board_.drawBoard(&w_, possibleNextTarget);
+  voronoi.draw(&w_);
+  }
   //possibleNextTarget = -1;
   //board_.drawLBoard(&w_);
-  //voronoi.draw(&w_);
 }
 
 void Game::end() {
 
   ImGui::SFML::Shutdown();
 }
+
+
+
+void Game::ImguiSandBox(){
+
+  ImGui::Begin("Sandbox Agents");
+
+
+  //ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d", board_.units_[0].currentPos);
+ //ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d", board_.units_[0].currentTarget);
+
+
+
+  ImGui::End();
+
+
+  ImGui::Begin("Agent Controller");
+
+  if (selectedAgentID == -1) {
+    ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
+  }
+  else {
+    ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: %d", selectedAgentID);  // Agent
+    ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track);
+
+    if (board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Pattern) {
+      if (ImGui::Button("Start Addition Pattern mode")) {
+        startAddPattern = true;
+      }
+
+      if (startAddPattern) {
+        if (ImGui::Button("Wait")) { movement_type = Agent::PatternMovement::kPatternMovement_Wait; }
+        if (ImGui::Button("Forward")) { movement_type = Agent::PatternMovement::kPatternMovement_Forward; }
+        if (ImGui::Button("Turn 180")) { movement_type = Agent::PatternMovement::kPatternMovement_Turn180; }
+        if (ImGui::Button("Turn Left 90")) { movement_type = Agent::PatternMovement::kPatternMovement_TurnLeft90; }
+        if (ImGui::Button("Turn Right 90")) { movement_type = Agent::PatternMovement::kPatternMovement_TurnRight90; }
+        ImGui::SliderInt("Number Movements", &number_movement, 1, 20);
+        if (ImGui::Button("Add Pattern")) {
+          board_.units_[selectedAgentID].addMovement2Patern(movement_type, number_movement);
+          number_movement = 1;
+          movement_type = Agent::PatternMovement::kPatternMovement_None;
+        }
+        if (ImGui::Button("End Addition Pattern mode")) {
+          startAddPattern = false;
+        }
+        const char* name_movement = "NONE";
+        switch (movement_type)
+        {
+        case Agent::PatternMovement::kPatternMovement_Wait: name_movement = "WAIT"; break;
+        case Agent::PatternMovement::kPatternMovement_Forward: name_movement = "FORWARD"; break;
+        case Agent::PatternMovement::kPatternMovement_Turn180: name_movement = "TURN180"; break;
+        case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_movement = "TURNLEFT90"; break;
+        case Agent::PatternMovement::kPatternMovement_TurnRight90: name_movement = "TURNRIGHT90"; break;
+        }
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "PATTERN TO ADD:");
+        ImGui::Text("Movement Type: %s || Steps: %d", name_movement, number_movement);
+
+
+        //Show the current pattern
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "CURRENT PATTERN");
+        const char* name_mov = "NONE";
+
+        for (int i = 0; i < board_.units_[selectedAgentID].index_movementArray; ++i) {
+          switch (board_.units_[selectedAgentID].movementArray[i])
+          {
+          case Agent::PatternMovement::kPatternMovement_Wait: name_mov = "WAIT"; break;
+          case Agent::PatternMovement::kPatternMovement_Forward: name_mov = "FORWARD"; break;
+          case Agent::PatternMovement::kPatternMovement_Turn180: name_mov = "TURN180"; break;
+          case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_mov = "TURNLEFT90"; break;
+          case Agent::PatternMovement::kPatternMovement_TurnRight90: name_mov = "TURNRIGHT90"; break;
+          }
+          //ImGui::Text("Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
+          ImGui::TextColored(ImVec4(1, 1, 0, 1), "Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
+        }
+
+      }
+
+    }
+
+    if (board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Track) {
+
+      ImGui::SliderInt("Target Row:", &targetRow, 0, board_.height_ - 1);
+      ImGui::SliderInt("Target Col:", &targetCol, 0, board_.width_ - 1);
+      board_.rowcol2Index(targetRow, targetCol, &possibleNextTarget);
+
+      if (ImGui::Button("Confirm Tile"))
+        board_.rowcol2Index(targetRow, targetCol, &board_.units_[selectedAgentID].currentTarget);
+    }
+  }
+
+  ImGui::End();
+
+
+
+ 
+}
+
+void Game::ImguiVoronoi() {
+  ImGui::Begin("Voronoi");
+
+  ImGui::InputInt("Number of points", (int*)&numberVPoint);
+  if (ImGui::Button("Create Points")) {
+    voronoi.clear();
+    voronoi.init(numberVPoint);
+    voronoiInitialized = true;
+  } 
+  
+
+
+  if (voronoiInitialized) {
+    ImGui::Checkbox("Lines", &voronoi.drawAllLine);
+    ImGui::Checkbox("Sectors", &voronoi.drawSectors);
+    if (ImGui::Button("Check Parbole")) {
+      voronoi.calculateParabola();
+    } if (ImGui::Button("Clear Parbole")) {
+      for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
+        voronoi.sites[i].perimetralLines.clear();
+      };
+      voronoi.solutionsVoronoi.clear();
+    }
+    if (ImGui::Button("Pause Parabola")) {
+      pausedParabola = !pausedParabola;
+    }
+    for (int i = 0; i < (int)voronoi.paraboleDraw.size(); ++i) {
+      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
+    }
+    ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
+    ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, 704);
+    if (ImGui::Button("Check Voronoi")) {
+      voronoi.calculateBisector();
+    }
+    for (int n = 0; n < (int)voronoi.sites.size(); n++) {
+
+      float red = ((float)n + 1.0f) / (float)voronoi.sites.size();
+      ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
+      char name[255];
+      sprintf(name, "PositionX % d", n);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, 960);
+      sprintf(name, "PositionY % d", n);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, 704);
+    }
+
+  }
+
+  ImGui::End();
+}
+
+void Game::ImguiPathFinding(){
+
+  ImGui::Begin("Path Finding");
+
+  ImGui::SliderInt("InitPosRow", &board_.targetRowI, 0, board_.height_ - 1);
+  ImGui::SliderInt("InitPosCol", &board_.targetColI, 0, board_.width_ - 1);
+
+  ImGui::SliderInt("DstPosRow", &board_.targetRowD, 0, board_.height_ - 1);
+  ImGui::SliderInt("DstPosCol", &board_.targetColD, 0, board_.width_ - 1);
+  ImGui::Checkbox("Manhattan Distance", &board_.aPath_.manhattanD);
+  ImGui::Checkbox("Euclidean Distance", &board_.aPath_.euclideanD);
+  ImGui::Checkbox("Chebyshov Distance", &board_.aPath_.chebyshovD);
+  ImGui::Checkbox("Draw Board", &board_.drawLogical);
+
+
+
+  if (ImGui::Button("Check A Star")) {
+    int origin = board_.targetColI + board_.targetRowI * board_.width_;
+    int dst = board_.targetColD + board_.targetRowD * board_.width_;
+    if (origin != dst) {
+      board_.aPath_.calculatePath(&board_, origin, dst);
+    }
+  }
+
+  char* types[3];
+  types[0] = "Manhattan";
+  types[1] = "Euclidean";
+  types[2] = "Chebyshov";
+
+  //ImGui::BeginChild("Paths");
+  for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
+    ImGui::BeginChild("Path");
+    char treeName[255];
+    sprintf(treeName, "Path From %d -> %d Type: %s", board_.aPath_.currentPaths[i].origin,
+      board_.aPath_.currentPaths[i].destination, types[board_.aPath_.currentPaths[i].type]);
+    char name[255];
+    sprintf(name, "Draw Path %d", i);
+    ImGui::Checkbox(name, &board_.aPath_.currentPaths[i].draw);
+    if (ImGui::TreeNode(treeName))
+    {
+      for (int p = 0; p < (int)board_.aPath_.currentPaths[i].path.size(); ++p) {
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%d : %d| G:%f + H:%f =  F:%f| ParentCell %d", p,
+          board_.aPath_.currentPaths[i].path[p].cellID,
+          board_.aPath_.currentPaths[i].path[p].g,
+          board_.aPath_.currentPaths[i].path[p].score - board_.aPath_.currentPaths[i].path[p].g,
+          board_.aPath_.currentPaths[i].path[p].score,
+          board_.aPath_.currentPaths[i].path[p].parentCellID);
+      }
+      ImGui::TreePop();
+    }
+    ImGui::EndChild();
+  }
+
+  ImGui::End();
+
+
+}
+
 
 void Game::mainLoop(){
 
@@ -158,166 +369,24 @@ void Game::mainLoop(){
     ImGui::SliderInt("World", &fps.world, -1, 60);
     if (fps.world == 0) fps.world = -1;
     ImGui::SliderInt("Draw", &fps.draw_, -1, 60);
-    if(fps.draw_ == 0)
-      fps.draw_ = -1;
-    ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d",board_.units_[0].currentPos);
-    ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d",board_.units_[0].currentTarget);
-    ImGui::SliderInt("InitPosRow", &board_.targetRowI, 0, board_.height_ - 1);
-    ImGui::SliderInt("InitPosCol", &board_.targetColI, 0, board_.width_ - 1);
+    if(fps.draw_ == 0) fps.draw_ = -1;
+    ImGui::SliderInt("Mode", &intgmType, 0, MAX_TYPE - 1);
+    gmType = (GameModeType)intgmType;
 
-    ImGui::SliderInt("DstPosRow", &board_.targetRowD, 0, board_.height_ - 1);
-    ImGui::SliderInt("DstPosCol", &board_.targetColD, 0, board_.width_ - 1);
-    ImGui::Checkbox("Manhattan Distance", &board_.aPath_.manhattanD);
-    ImGui::Checkbox("Euclidean Distance", &board_.aPath_.euclideanD);
-    ImGui::Checkbox("Chebyshov Distance", &board_.aPath_.chebyshovD);
-    ImGui::Checkbox("Draw Board", &board_.drawLogical);
+    switch (gmType)
+    {
+    case Game::NORMAL_TYPE: ImguiSandBox(); voronoiInitialized = false; break;
+    case Game::VORONOI_TYPE: ImguiVoronoi(); break;
+    case Game::PATHFINDING_TYPE: ImguiPathFinding(); voronoiInitialized = false; break;
 
-    if (ImGui::Button("Check A Star")) {
-      int origin = board_.targetColI + board_.targetRowI * board_.width_;
-      int dst = board_.targetColD + board_.targetRowD * board_.width_;
-      if(origin != dst){
-        board_.aPath_.calculatePath(&board_, origin,dst);
-      }
+    default: break;
     }
 
-    char* types[3]; 
-    types[0] = "Manhattan";
-    types[1] = "Euclidean";
-    types[2] = "Chebyshov";
-   
-    //ImGui::BeginChild("Paths");
-    for (int i = 0; i < (int)board_.aPath_.currentPaths.size(); ++i) {
-      ImGui::BeginChild("Path");
-      char treeName[255];
-      sprintf(treeName, "Path From %d -> %d Type: %s", board_.aPath_.currentPaths[i].origin,
-            board_.aPath_.currentPaths[i].destination, types[board_.aPath_.currentPaths[i].type] );
-      char name[255];
-      sprintf(name, "Draw Path %d", i);
-      ImGui::Checkbox(name, &board_.aPath_.currentPaths[i].draw);
-      if (ImGui::TreeNode(treeName))
-      {
-        for (int p = 0; p < (int)board_.aPath_.currentPaths[i].path.size(); ++p) {
-          ImGui::TextColored(ImVec4(1, 1, 1, 1), "%d : %d| G:%f + H:%f =  F:%f| ParentCell %d", p,
-            board_.aPath_.currentPaths[i].path[p].cellID,
-            board_.aPath_.currentPaths[i].path[p].g,
-            board_.aPath_.currentPaths[i].path[p].score - board_.aPath_.currentPaths[i].path[p].g,
-            board_.aPath_.currentPaths[i].path[p].score,
-            board_.aPath_.currentPaths[i].path[p].parentCellID);
-        }
-        ImGui::TreePop();
-      }
-      ImGui::EndChild();
-    }
-   // ImGui::EndChild();
-    ImGui::BeginChild("Scrolling");
-    /*ImGui::Checkbox("Lines", &voronoi.drawAllLine);
-    ImGui::Checkbox("Sectors", &voronoi.drawSectors);
-    if (ImGui::Button("Check Parbole")) {
-      voronoi.calculateParabola();
-    } if (ImGui::Button("Clear Parbole")) {
-      for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
-        voronoi.sites[i].perimetralLines.clear();
-      };
-        voronoi.solutionsVoronoi.clear();
-    }
-    if (ImGui::Button("Pause Parabola")) {
-      pausedParabola = !pausedParabola;
-    }
-    for(int i = 0; i< (int)voronoi.paraboleDraw.size(); ++i){
-      ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
-    }
-    ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
-    ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, 704);
-    if (ImGui::Button("Check Voronoi")) {
-      voronoi.calculateBisector();
-    }
-    for (int n = 0; n < (int)voronoi.sites.size(); n++) {
-     
-      float red = ((float)n+1.0f) / (float)voronoi.sites.size();
-      ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
-      char name[255];
-      sprintf(name, "PositionX % d", n);
-      ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, 960);
-      sprintf(name, "PositionY % d", n);
-      ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, 704);
-    }*/
-    ImGui::EndChild();
     ImGui::End();
 
-    ImGui::Begin("Agent Controller");
-
-    if(selectedAgentID == -1){
-      ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
-    }else{
-      ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: %d", selectedAgentID);  // Agent
-      ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track);
-      
-      if (board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Pattern) {
-        if (ImGui::Button("Start Addition Pattern mode")){
-          startAddPattern = true;
-        }
-
-        if(startAddPattern){
-          if (ImGui::Button("Wait")) { movement_type = Agent::PatternMovement::kPatternMovement_Wait; }
-          if (ImGui::Button("Forward")){ movement_type = Agent::PatternMovement::kPatternMovement_Forward;  }
-          if (ImGui::Button("Turn 180")){ movement_type = Agent::PatternMovement::kPatternMovement_Turn180;  }
-          if (ImGui::Button("Turn Left 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnLeft90; }
-          if (ImGui::Button("Turn Right 90")){ movement_type = Agent::PatternMovement::kPatternMovement_TurnRight90; }
-          ImGui::SliderInt("Number Movements",&number_movement ,1,20);
-          if (ImGui::Button("Add Pattern")) {
-            board_.units_[selectedAgentID].addMovement2Patern(movement_type, number_movement);
-            number_movement = 1;
-            movement_type = Agent::PatternMovement::kPatternMovement_None;
-          }
-          if (ImGui::Button("End Addition Pattern mode")) {
-            startAddPattern = false;
-          }
-          const char* name_movement = "NONE";
-          switch (movement_type)
-          {
-          case Agent::PatternMovement::kPatternMovement_Wait: name_movement = "WAIT"; break;
-          case Agent::PatternMovement::kPatternMovement_Forward: name_movement = "FORWARD"; break;
-          case Agent::PatternMovement::kPatternMovement_Turn180: name_movement = "TURN180"; break;
-          case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_movement = "TURNLEFT90"; break;
-          case Agent::PatternMovement::kPatternMovement_TurnRight90: name_movement = "TURNRIGHT90"; break;
-          }
-          ImGui::TextColored(ImVec4(1, 0, 0, 1), "PATTERN TO ADD:");
-          ImGui::Text("Movement Type: %s || Steps: %d", name_movement, number_movement);
 
 
-          //Show the current pattern
-          ImGui::TextColored(ImVec4(0, 1, 0, 1), "CURRENT PATTERN");
-          const char* name_mov = "NONE";
-      
-          for(int i = 0; i < board_.units_[selectedAgentID].index_movementArray; ++i){
-            switch (board_.units_[selectedAgentID].movementArray[i])
-            {
-              case Agent::PatternMovement::kPatternMovement_Wait: name_mov = "WAIT"; break;
-              case Agent::PatternMovement::kPatternMovement_Forward: name_mov = "FORWARD"; break;
-              case Agent::PatternMovement::kPatternMovement_Turn180: name_mov = "TURN180"; break;
-              case Agent::PatternMovement::kPatternMovement_TurnLeft90: name_mov = "TURNLEFT90"; break;
-              case Agent::PatternMovement::kPatternMovement_TurnRight90: name_mov = "TURNRIGHT90"; break;
-            }
-            //ImGui::Text("Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Movement Type: %s || Steps: %d", name_mov, board_.units_[selectedAgentID].movementCounterArray[i]);
-          }
-          
-        }
-        
-      }
 
-      if(board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Track){
-
-        ImGui::SliderInt("Target Row:", &targetRow, 0, board_.height_-1);
-        ImGui::SliderInt("Target Col:", &targetCol, 0, board_.width_-1);
-        board_.rowcol2Index(targetRow,targetCol, &possibleNextTarget);
-
-        if(ImGui::Button("Confirm Tile"))
-          board_.rowcol2Index(targetRow,targetCol, &board_.units_[selectedAgentID].currentTarget);
-      }
-    }
-    
-    ImGui::End();
 
     //Draw
     if (draw_clock.getElapsedTime().asSeconds() > 1.0f / (float)fps.draw_ || fps.draw_ == -1) {

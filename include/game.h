@@ -13,16 +13,31 @@ class Game
     Game();
     ~Game();
 
+    enum GameModeType{
+      NORMAL_TYPE = 0,
+      VORONOI_TYPE,
+      PATHFINDING_TYPE,
+      MAX_TYPE 
+    };
+
+
   protected:   
     void init(uint32_t w_width, uint32_t w_height);
     void input();
     void update(float delta_time);
     void fixedUpdate(float fixed_delta_time);
+
+    void ImguiSandBox();
+    void ImguiVoronoi();
+    void ImguiPathFinding();
+
+
     void draw();
     void end();
     
     Voronoi voronoi;
-
+    bool voronoiInitialized;
+    uint32_t numberVPoint;
 
     //FrameControl
     struct FramesPerModule {
@@ -35,7 +50,8 @@ class Game
     };
 
     FramesPerModule fps;
-
+    GameModeType gmType;
+    int intgmType;
     //Window
     sf::RenderWindow w_;
     int32_t w_width_;

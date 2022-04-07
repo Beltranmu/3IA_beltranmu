@@ -60,7 +60,7 @@ public:
 
   void init(int32_t nPoints);
   void draw(sf::RenderWindow* window);
-
+  void clear();
   void calculateParabola();
   void calculateParabolaDraw();
 
