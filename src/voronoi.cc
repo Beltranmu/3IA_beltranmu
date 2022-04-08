@@ -43,8 +43,8 @@ int Partition(std::vector<sf::Vector2<float>> *v, int first, int last, sf::Vecto
   {
     tmpV = centralPoint - (*v)[j] ;
     normalizeSFVec2(&tmpV);
-    int j_element = tmpV.x;
-    if (j_element <= pivot) {
+    float j_element = tmpV.x;
+    if (j_element >= pivot) {
       SwapListElements(v, i, j);
       ++i;   // increment index of smaller element
     }
@@ -57,10 +57,7 @@ int Partition(std::vector<sf::Vector2<float>> *v, int first, int last, sf::Vecto
 
 void QuickSorting(std::vector<sf::Vector2<float>> *v, int index_start, int index_end, sf::Vector2<float> centralPoint) {
 
-  std::vector<sf::Vector2<float>>* vN = v;
-  for(int i = 0; i < (*vN).size(); ++i){
-    normalizeSFVec2(&(*vN[i]));
-  }
+ 
 
 
   if (index_start < index_end) {
@@ -72,33 +69,6 @@ void QuickSorting(std::vector<sf::Vector2<float>> *v, int index_start, int index
 }
 
 
-void bubbleSort(std::vector<sf::Vector2<float>>* v, uint32_t n, sf::Vector2<float> centralPoint)
-{
-  bool swapped;
-
-  for (int i = 0; i < n - 1; ++i) {
-
-    swapped = false;
-
-    for (int j = 0; j < n - i - 1; ++j) {
-
-      int botijo = (int*)list->ops_->at(list, j);
-      int paella = (int*)list->ops_->at(list, j + 1);
-
-      if (botijo > paella) {
-
-        SwapListElements(list, j, j + 1);
-        swapped = true;
-
-      }
-
-    }
-
-    if (false == swapped)
-      break;
-
-  }
-}
 
 
 
@@ -940,11 +910,12 @@ void Voronoi::calculateParabola(){
       }
     }
     
+    QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1, sites[s].point);
+    QuickSorting(&auxsites[s].bottonPoints, 0, (int)auxsites[s].bottonPoints.size() - 1, sites[s].point);
     
   }
 
-  //QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1);
-  QuickSorting(&auxsites[2].bottonPoints, 0, (int)auxsites[2].bottonPoints.size() - 1, sites[2].point);
+  //QuickSorting(&auxsites[2].bottonPoints, 0, (int)auxsites[2].bottonPoints.size() - 1, sites[2].point);
 
   // Reduce de poly
   {
