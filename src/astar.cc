@@ -22,6 +22,7 @@ Astar::Astar(){
   manhattanD = true;
   euclideanD = false;
   chebyshovD = false;
+  allowDiagonals = false;
 
   pathColors[0] = sf::Color(255,0,0,85);
   pathColors[1] = sf::Color(0,255,0,85);
@@ -56,6 +57,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     bool samePath = currentPaths[i].destination == endPosition;
     samePath = samePath && currentPaths[i].origin == initPostition;
     samePath = samePath && currentPaths[i].type == currenttype;
+    samePath = samePath && currentPaths[i].diagonal == allowDiagonals;
     if(samePath){
       printf("Path already calculated\n");
       return;
@@ -108,13 +110,23 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     closeList.push_front(lowestScoreCell);
 
     //Check Square
-    uint32_t neighbourdCells[4];
+    const int numberPoints = 8;
+    int numberNeighbourd = 4;
+    uint32_t neighbourdCells[numberPoints];
     neighbourdCells[0] = board->north(lowestScoreCell.cellID); //North
     neighbourdCells[1] = board->south(lowestScoreCell.cellID); //South
     neighbourdCells[2] = board->west(lowestScoreCell.cellID);  //West
     neighbourdCells[3] = board->east(lowestScoreCell.cellID);  //East
+    
+    if (allowDiagonals) { 
+      numberNeighbourd = numberPoints; 
+      neighbourdCells[4] = board->east(neighbourdCells[0]); //North -> East
+      neighbourdCells[5] = board->west(neighbourdCells[0]); //North -> West
+      neighbourdCells[6] = board->east(neighbourdCells[1]);  //South -> East
+      neighbourdCells[7] = board->west(neighbourdCells[1]);  //South -> West
+    }
 
-    for(int j = 0; j< 4 && !pathFound; j++){
+    for(int j = 0; j< numberNeighbourd && !pathFound; j++){
       if(board->checkUnitMovement(neighbourdCells[j])){
         bool isInCloseList = false;
         bool isInOpenList = false;

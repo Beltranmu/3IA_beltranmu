@@ -84,12 +84,10 @@ void Game::input() {
 
     
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-      
+
       selectedAgentID = board_.getAgent(w_);
 
     }
-    
-        
   }
 }
 
@@ -281,6 +279,8 @@ void Game::ImguiPathFinding(){
   ImGui::Checkbox("Manhattan Distance", &board_.aPath_.manhattanD);
   ImGui::Checkbox("Euclidean Distance", &board_.aPath_.euclideanD);
   ImGui::Checkbox("Chebyshov Distance", &board_.aPath_.chebyshovD);
+
+  //ImGui::Checkbox("Allow Diagonals", &board_.aPath_.allowDiagonals);
   ImGui::Checkbox("Draw Board", &board_.drawLogical);
 
 

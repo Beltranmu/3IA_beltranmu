@@ -30,6 +30,7 @@ struct TPath{
   std::vector<ACell> path;
   uint32_t origin, destination;
   bool draw = false;
+  bool diagonal = false;
   TypeDistanceUsedToCalculatePath type;
 };
 
@@ -49,6 +50,7 @@ public:
   bool manhattanD; 
   bool euclideanD; 
   bool chebyshovD;
+  bool allowDiagonals;
 
 };
 
