@@ -10,6 +10,15 @@
 
 const int kwidthStreet = 20;
 
+struct Size{
+  float width, height;
+};
+
+struct Map{
+  Size size;
+  float widthStreets;
+};
+
 struct Bisector {
   sf::Vector2<float> Spoint;
   sf::Vector2<float> vDirector;
@@ -28,7 +37,8 @@ struct LineP {
 struct Solution{
   sf::Vector2<float> point;
   uint32_t n = 0;
-  int sites[3] = {-1,-1,-1};
+  std::vector<int> parentSites;
+  int sites[3] = { -1,-1,-1 };
 };
 
 
@@ -60,6 +70,7 @@ public:
   bool reducedPoly;
 
   void customInit();
+  void customInit2();
   void init(int32_t nPoints);
   void draw(sf::RenderWindow* window);
   void clear();
@@ -75,22 +86,42 @@ public:
   std::vector<sf::Vector2<float>> points;
   std::vector<sf::Vector2<float>> Mpoints;
   std::vector<sf::Vector2<float>> Spoints;
-  std::vector<Parabole> parabole; // x = Ay^2 + By + C
   std::vector<sf::Vector3<float>> paraboleDraw; // x = Ay^2 + By + C
   std::vector<Solution> paraboleIPoints;
   std::vector<Bisector> bisector;
   std::vector<Line> lines;
   std::vector<Line> linesBisector;
   std::vector<Line> goodLinesBisector;
-  std::vector<Cells> sites;
-  std::vector<AuxCell> auxsitesLittle;
-  std::vector<AuxCell> auxsites;
+  std::vector<Solution> solutionsVoronoi2;
+  
+
 
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
   std::vector<Solution> solutions;
   std::vector<Solution> solutionsVoronoi;
-  float maxDistance;
 
+
+
+  // Good one
+  std::vector<Cells> sites;
+  std::vector<AuxCell> auxsitesLittle;
+  std::vector<AuxCell> auxsites;
+  std::vector<Parabole> parabole; // x = Ay^2 + By + C
+
+  void calculateSites();
+
+  void intersectionParaboleHLine(Parabole p, float y);
+  void intersectionParaboleVLine(Parabole p, float x);
+  void addSolution(float x, float y,  uint32_t paraboleIndex, uint32_t parabole2Index = -1);
+  void intersectionParaboleParabole(Parabole p, Parabole q);
+
+
+  float stepParabole;
+  float maxX;
+  bool firstSol;
+
+  float maxDistance;
+  Map map;
   bool drawAllLine;
   bool drawSectors;
   bool drawIPoints;

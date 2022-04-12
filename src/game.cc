@@ -40,8 +40,9 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
  // srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
-  voronoi.w = w_width_;
-  voronoi.h = w_height_;
+  voronoi.map.size.width = w_width_;
+  voronoi.map.size.height = w_height_;
+  voronoi.map.widthStreets = 20;
   //voronoi.init(10);
   //voronoi.calculateBisector();
   //voronoi.calculateParabola();
@@ -229,6 +230,8 @@ void Game::ImguiVoronoi() {
     voronoi.init(numberVPoint);
     voronoiInitialized = true;
   } 
+
+
   ImGui::Checkbox("Reduce Poly", &voronoi.reducedPoly);
 
   if (voronoiInitialized) {
@@ -237,9 +240,13 @@ void Game::ImguiVoronoi() {
     ImGui::Checkbox("Intersection Points", &voronoi.drawIPoints);
     ImGui::InputFloat("Precision", &voronoi.marginSamePoint);
     ImGui::InputFloat("Same solutions", &voronoi.sameSolMargin);
+    ImGui::InputFloat("Step Parabole", &voronoi.stepParabole);
+    ImGui::InputFloat("Max range X parabole", &voronoi.maxX);
     if (ImGui::Button("Check Parbole")) {
+      voronoi.calculateSites();
       voronoi.calculateParabola();
-    } if (ImGui::Button("Clear Parbole")) {
+    } 
+    if (ImGui::Button("Clear Parbole")) {
       for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
         voronoi.sites[i].perimetralLines.clear();
       };
@@ -252,19 +259,17 @@ void Game::ImguiVoronoi() {
       ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
     }
     ImGui::SliderFloat("Direztriz line", &voronoi.d, 0, 1500);
-    ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, 704);
-    if (ImGui::Button("Check Voronoi")) {
-      voronoi.calculateBisector();
-    }
+    ImGui::SliderFloat("Horizontal line", &voronoi.horizontal, 0, voronoi.map.size.height);
+    
     for (int n = 0; n < (int)voronoi.sites.size(); n++) {
 
       float red = ((float)n + 1.0f) / (float)voronoi.sites.size();
       ImGui::TextColored(ImVec4(1, red, red, 1), "Point: %d", n);
       char name[255];
       sprintf(name, "PositionX % d", n);
-      ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, 960);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.x, 0, voronoi.map.size.width);
       sprintf(name, "PositionY % d", n);
-      ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, 704);
+      ImGui::SliderFloat(name, &voronoi.sites[n].point.y, 0, voronoi.map.size.height);
     }
 
   }
