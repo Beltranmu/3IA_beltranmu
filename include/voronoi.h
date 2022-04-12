@@ -96,6 +96,8 @@ public:
   bool drawIPoints;
 
   bool showSitesInfo;
+  float marginSamePoint;
+  float sameSolMargin;
 
 
 };

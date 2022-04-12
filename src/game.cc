@@ -107,6 +107,8 @@ void Game::draw() {
   }else{
 
   voronoi.draw(&w_);
+  voronoi.calculateParabolaDraw();
+
   }
   //possibleNextTarget = -1;
   //board_.drawLBoard(&w_);
@@ -233,6 +235,8 @@ void Game::ImguiVoronoi() {
     ImGui::Checkbox("Sites Info", &voronoi.showSitesInfo);
     ImGui::Checkbox("Sectors", &voronoi.drawSectors);
     ImGui::Checkbox("Intersection Points", &voronoi.drawIPoints);
+    ImGui::InputFloat("Precision", &voronoi.marginSamePoint);
+    ImGui::InputFloat("Same solutions", &voronoi.sameSolMargin);
     if (ImGui::Button("Check Parbole")) {
       voronoi.calculateParabola();
     } if (ImGui::Button("Clear Parbole")) {
@@ -274,22 +278,47 @@ void Game::ImguiVoronoi() {
       sprintf(name, "Site %d", i);
       if (ImGui::TreeNode(name))
       {
-        char name1[255], name2[255];
+        char name1[255], name2[255], name3[255], colorLabel[255];
+        sprintf(name3, "Site %d-> Info", i);
         sprintf(name1, "Site %d-> UpperPoints", i);
         sprintf(name2, "Site %d-> BottomPoints", i);
+        sprintf(colorLabel, "Site %d-> Color", i);
+        float color[4];
+        color[0] = voronoi.sites[i].color.r;
+        color[1] = voronoi.sites[i].color.g;
+        color[2] = voronoi.sites[i].color.b;
+        color[3] = voronoi.sites[i].color.a;
+        ImGui::ColorEdit4(colorLabel,color);
+        voronoi.sites[i].color = sf::Color(color[0], color[1], color[2], color[3]);
+        if (ImGui::TreeNode(name3)) {
+          int b;
+          for (b = 0; b < (int)voronoi.sites[i].perimetralLines.size(); b++) {
+            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Point %d: 1->(%f,%f)| 2->(%f,%f)", b, voronoi.sites[i].perimetralLines[b].p1.x,
+              voronoi.sites[i].perimetralLines[b].p1.y,
+              voronoi.sites[i].perimetralLines[b].p2.x,
+              voronoi.sites[i].perimetralLines[b].p2.y);
+          }
+          ImGui::TreePop();
+        }
+
         if(ImGui::TreeNode(name1)){
           int b;
           for(b = 0; b < (int)voronoi.auxsites[i].upperPoints.size(); b++){
-            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Point &d: (%f,%f)", b, voronoi.auxsites[i].upperPoints[b].x,
+            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Point %d: (%f,%f)", b, voronoi.auxsites[i].upperPoints[b].x,
               voronoi.auxsites[i].upperPoints[b].y);
           }
+          ImGui::TreePop();
         }
-        ImGui::TreePop()
 
-          if (ImGui::TreeNode(name2)) {
-            for ()
-          }
-        ImGui::TreePop();
+        if (ImGui::TreeNode(name2)) {
+            int b;
+            for (b = 0; b < (int)voronoi.auxsites[i].bottonPoints.size(); b++) {
+              ImGui::TextColored(ImVec4(1, 1, 1, 1), "Point %d: (%f,%f)", b, voronoi.auxsites[i].bottonPoints[b].x,
+                voronoi.auxsites[i].bottonPoints[b].y);
+            }
+           ImGui::TreePop();
+        }
+
         ImGui::TreePop();
       }
     }

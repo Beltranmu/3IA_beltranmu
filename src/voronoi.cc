@@ -9,7 +9,12 @@ Voronoi::Voronoi()
   h = 0;
   d = 0;
   drawAllLine = false;
+  showSitesInfo= false;
+  reducedPoly = false;
   maxDistance = -1;
+
+  marginSamePoint = 0.15f;
+  sameSolMargin = 4.0f;
 }
 
 Voronoi::~Voronoi()
@@ -102,8 +107,8 @@ void Voronoi::customInit(){
 
     Cells site;
     sf::Vector2<float> newPoint;
-    newPoint.x = (float)(607);
-    newPoint.y = (float)(353);
+    newPoint.x = (float)(159);
+    newPoint.y = (float)(533);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -114,8 +119,8 @@ void Voronoi::customInit(){
     auxsitesLittle.push_back(s);
 
  
-    newPoint.x = (float)(31);
-    newPoint.y = (float)(61);
+    newPoint.x = (float)(663);
+    newPoint.y = (float)(323);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -127,8 +132,8 @@ void Voronoi::customInit(){
 
 
 
-    newPoint.x = (float)(430);
-    newPoint.y = (float)(311);
+    newPoint.x = (float)(717);
+    newPoint.y = (float)(367);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -138,8 +143,8 @@ void Voronoi::customInit(){
     auxsites.push_back(s);
     auxsitesLittle.push_back(s);
  
-    newPoint.x = (float)(73);
-    newPoint.y = (float)(496);
+    newPoint.x = (float)(218);
+    newPoint.y = (float)(27);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -149,8 +154,8 @@ void Voronoi::customInit(){
     auxsites.push_back(s);
     auxsitesLittle.push_back(s);
 
-    newPoint.x = (float)(834);
-    newPoint.y = (float)(471);
+    newPoint.x = (float)(578);
+    newPoint.y = (float)(464);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -161,8 +166,8 @@ void Voronoi::customInit(){
     auxsitesLittle.push_back(s);
 
 
-    newPoint.x = (float)(891);
-    newPoint.y = (float)(125);
+    newPoint.x = (float)(714);
+    newPoint.y = (float)(91);
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
@@ -172,6 +177,105 @@ void Voronoi::customInit(){
     auxsites.push_back(s);
     auxsitesLittle.push_back(s);
 
+    newPoint.x = (float)(937);
+    newPoint.y = (float)(514);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(826);
+    newPoint.y = (float)(438);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(485);
+    newPoint.y = (float)(650);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(710);
+    newPoint.y = (float)(137);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+
+    newPoint.x = (float)(701);
+    newPoint.y = (float)(3);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(158);
+    newPoint.y = (float)(694);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(458);
+    newPoint.y = (float)(592);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(720);
+    newPoint.y = (float)(386);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
+
+    newPoint.x = (float)(548);
+    newPoint.y = (float)(351);
+    site.point = newPoint;
+    site.perimetralLines.clear();
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    points.push_back(newPoint);
+    sites.push_back(site);
+
+    auxsites.push_back(s);
+    auxsitesLittle.push_back(s);
 }
 
 void Voronoi::init(int32_t nPoints){
@@ -210,7 +314,7 @@ void Voronoi::init(int32_t nPoints){
     newPoint.y = (float)(rand() % h);
     site.point = newPoint;  
     site.perimetralLines.clear();
-    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+    site.color = sf::Color((rand() % 155 )+100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
     points.push_back(newPoint);
     sites.push_back(site);
     AuxCell s;
@@ -445,7 +549,7 @@ void Voronoi::calculateParabola(){
  
   bool firstSol = true;
   bool not  = true;
-  float marginSamePoint = 0.25f;
+ 
   
   for (int i = 0; i < (int)sites.size(); ++i) {
     sites[i].perimetralLines.clear();
@@ -873,7 +977,7 @@ void Voronoi::calculateParabola(){
   }
 
   // Delete unecessary points
-  float sameSolMargin = 1.0f;
+  
   for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
 
     if (solutionsVoronoi.empty()) {
