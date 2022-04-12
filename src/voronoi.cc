@@ -222,7 +222,7 @@ void Voronoi::init(int32_t nPoints){
   
 }
 
-void Voronoi::draw(sf::RenderWindow* window){
+void Voronoi::draw(sf::RenderWindow* window) {
   sf::Vector2<float> p1 = { (float)d, 0.0f };
   sf::Vector2<float> p2 = { (float)d, (float)h };
   sf::Vertex directriz[] =
@@ -231,10 +231,10 @@ void Voronoi::draw(sf::RenderWindow* window){
       sf::Vertex(p2)
 
   };
-  
+
   window->draw(directriz, 2, sf::Lines);
 
-  sf::Vector2<float> p3= { 0.0f, horizontal };
+  sf::Vector2<float> p3 = { 0.0f, horizontal };
   sf::Vector2<float> p4 = { (float)w,horizontal };
   sf::Vertex ho[] =
   {
@@ -246,21 +246,21 @@ void Voronoi::draw(sf::RenderWindow* window){
   window->draw(ho, 2, sf::Lines);
 
   for (int p = 0; p < (int)paraboleDraw.size(); ++p) {
-    for(int x = 0; x<w ; x++){
+    for (int x = 0; x < w; x++) {
       float a = paraboleDraw[p].x;
       float b = paraboleDraw[p].y;
       float c = paraboleDraw[p].z - x;
       float denominator = 2.0f * a;
       float insideSqrt = (b * b) - (4.0f * a * c);
-      if(insideSqrt < 0){
+      if (insideSqrt < 0) {
         insideSqrt = 0;
       }
-      float y1 = (-b + sqrt(insideSqrt))/denominator;
-      float y2 = (-b - sqrt(insideSqrt))/denominator;
+      float y1 = (-b + sqrt(insideSqrt)) / denominator;
+      float y2 = (-b - sqrt(insideSqrt)) / denominator;
 
       a = paraboleDraw[p].x;
       b = paraboleDraw[p].y;
-      c = paraboleDraw[p].z - x-1;
+      c = paraboleDraw[p].z - x - 1;
       denominator = 2.0f * a;
       insideSqrt = (b * b) - (4.0f * a * c);
       if (insideSqrt < 0) {
@@ -269,7 +269,7 @@ void Voronoi::draw(sf::RenderWindow* window){
       float y3 = (-b + sqrt(insideSqrt)) / denominator;
       float y4 = (-b - sqrt(insideSqrt)) / denominator;
       sf::Vector2<float> p1 = { (float)x,  y1 };
-      sf::Vector2<float> p2 = { (float)x+1, y3 };
+      sf::Vector2<float> p2 = { (float)x + 1, y3 };
       sf::Vertex linepp[] =
       {
           sf::Vertex(p1),
@@ -289,7 +289,7 @@ void Voronoi::draw(sf::RenderWindow* window){
       window->draw(linepp, 2, sf::Lines);
       window->draw(linepn, 2, sf::Lines);
     }
-    
+
   }
 
   for (int l = 0; l < (int)lines.size(); l++) {
@@ -303,7 +303,7 @@ void Voronoi::draw(sf::RenderWindow* window){
     window->draw(line, 2, sf::Lines);
   }
 
-  for(int p = 0; p < (int)sites.size(); p++){
+  for (int p = 0; p < (int)sites.size(); p++) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::White);
     rect.setFillColor(sf::Color::White);
@@ -336,21 +336,22 @@ void Voronoi::draw(sf::RenderWindow* window){
       line[1].color = sites[p].color;
       window->draw(line, 2, sf::Lines);
 
-      
+
     }
 
-  } 
-  
-  for (int p = 0; p < (int)solutionsVoronoi.size(); p++) {
-    sf::RectangleShape rect;
-    rect.setOutlineColor(sf::Color::Green);
-    rect.setFillColor(sf::Color::Green);
-    rect.setSize(sf::Vector2f(6.0f, 6.0f));
+  }
+  if (drawIPoints) {
+    for (int p = 0; p < (int)solutionsVoronoi.size(); p++) {
+      sf::RectangleShape rect;
+      rect.setOutlineColor(sf::Color::Green);
+      rect.setFillColor(sf::Color::Green);
+      rect.setSize(sf::Vector2f(6.0f, 6.0f));
 
-    rect.setPosition(sf::Vector2f(solutionsVoronoi[p].point.x - 3, solutionsVoronoi[p].point.y - 3));
-    window->draw(rect);
+      rect.setPosition(sf::Vector2f(solutionsVoronoi[p].point.x - 3, solutionsVoronoi[p].point.y - 3));
+      window->draw(rect);
 
 
+    }
   }
 
  /* for (int p = 0; p < (int)paraboleIPoints.size(); p++) {
@@ -444,6 +445,7 @@ void Voronoi::calculateParabola(){
  
   bool firstSol = true;
   bool not  = true;
+  float marginSamePoint = 0.25f;
   
   for (int i = 0; i < (int)sites.size(); ++i) {
     sites[i].perimetralLines.clear();
@@ -487,7 +489,6 @@ void Voronoi::calculateParabola(){
     for (int p = 0; p < (int)parabole.size(); ++p) {
       //Corte con los cuatro bordes
       { //x = 0
-        float marging = 0.1f;
         { 
           float x1 = 0;
           float a = parabole[p].parabole.x;
@@ -516,7 +517,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
                 if (sameSol) {
                   solutions[s].n++;
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
@@ -555,7 +556,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
                 if (sameSol) {
                   solutions[s].n++;    
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
@@ -606,7 +607,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
                 if (sameSol) {
                   solutions[s].n++;
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
@@ -644,7 +645,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y2, y, marging));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
                 if (sameSol) {
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
                     solutions[s].sites[2] = parabole[p].parentPoint;;
@@ -690,7 +691,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, marging));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
                 if (sameSol) {
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
                     solutions[s].sites[2] = parabole[p].parentPoint;;
@@ -728,7 +729,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, marging));
+                bool sameSol = (compareMargin(x2, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
                 if (sameSol) {
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
                     solutions[s].sites[2] = parabole[p].parentPoint;;
@@ -792,7 +793,7 @@ void Voronoi::calculateParabola(){
               for(int s = 0; s < (int)solutions.size() && !alreadySol; ++s){
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x1, x, 0.1f) && compareMargin(y1, y, 0.1f));
+                bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
                 if (sameSol) {
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
                     solutions[s].sites[2] = parabole[p].parentPoint;
@@ -834,7 +835,7 @@ void Voronoi::calculateParabola(){
               for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
                 float x = solutions[s].point.x;
                 float y = solutions[s].point.y;
-                bool sameSol = (compareMargin(x2, x, 0.1f) && compareMargin(y2, y, 0.1f));
+                bool sameSol = (compareMargin(x2, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
                 if (sameSol) {
 
                   if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
@@ -872,7 +873,7 @@ void Voronoi::calculateParabola(){
   }
 
   // Delete unecessary points
-
+  float sameSolMargin = 1.0f;
   for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
 
     if (solutionsVoronoi.empty()) {
@@ -881,8 +882,8 @@ void Voronoi::calculateParabola(){
     else {
       bool samePoint = false;
       for (int j = 0; j < (int)solutionsVoronoi.size() && !samePoint; ++j) {
-        bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, 1.0f);
-        bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, 1.0f);
+        bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, sameSolMargin);
+        bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, sameSolMargin);
         samePoint = sameX && sameY;
       }
         if (!samePoint) {
@@ -910,9 +911,14 @@ void Voronoi::calculateParabola(){
       }
     }
     
+    //QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1, sites[s].point);
+    //QuickSorting(&auxsites[s].bottonPoints, 0, (int)auxsites[s].bottonPoints.size() - 1, sites[s].point);
+    
+  }
+  int s;
+  for(s = 0; s< auxsites.size(); s++){
     QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1, sites[s].point);
     QuickSorting(&auxsites[s].bottonPoints, 0, (int)auxsites[s].bottonPoints.size() - 1, sites[s].point);
-    
   }
 
   //QuickSorting(&auxsites[2].bottonPoints, 0, (int)auxsites[2].bottonPoints.size() - 1, sites[2].point);

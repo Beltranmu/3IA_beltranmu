@@ -230,8 +230,9 @@ void Game::ImguiVoronoi() {
   ImGui::Checkbox("Reduce Poly", &voronoi.reducedPoly);
 
   if (voronoiInitialized) {
-    ImGui::Checkbox("Lines", &voronoi.drawAllLine);
+    ImGui::Checkbox("Sites Info", &voronoi.showSitesInfo);
     ImGui::Checkbox("Sectors", &voronoi.drawSectors);
+    ImGui::Checkbox("Intersection Points", &voronoi.drawIPoints);
     if (ImGui::Button("Check Parbole")) {
       voronoi.calculateParabola();
     } if (ImGui::Button("Clear Parbole")) {
@@ -265,6 +266,35 @@ void Game::ImguiVoronoi() {
   }
 
   ImGui::End();
+
+  if(voronoi.showSitesInfo){
+    ImGui::Begin("Sites Info");   
+    for (int i = 0; i < (int)voronoi.sites.size(); i++) {
+      char name[255];
+      sprintf(name, "Site %d", i);
+      if (ImGui::TreeNode(name))
+      {
+        char name1[255], name2[255];
+        sprintf(name1, "Site %d-> UpperPoints", i);
+        sprintf(name2, "Site %d-> BottomPoints", i);
+        if(ImGui::TreeNode(name1)){
+          int b;
+          for(b = 0; b < (int)voronoi.auxsites[i].upperPoints.size(); b++){
+            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Point &d: (%f,%f)", b, voronoi.auxsites[i].upperPoints[b].x,
+              voronoi.auxsites[i].upperPoints[b].y);
+          }
+        }
+        ImGui::TreePop()
+
+          if (ImGui::TreeNode(name2)) {
+            for ()
+          }
+        ImGui::TreePop();
+        ImGui::TreePop();
+      }
+    }
+    ImGui::End();
+  }
 }
 
 void Game::ImguiPathFinding(){

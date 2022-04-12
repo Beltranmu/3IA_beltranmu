@@ -93,6 +93,9 @@ public:
 
   bool drawAllLine;
   bool drawSectors;
+  bool drawIPoints;
+
+  bool showSitesInfo;
 
 
 };
