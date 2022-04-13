@@ -114,7 +114,7 @@ void Voronoi::customInit(){
   newPoint.y = (float)(469);
   site.point = newPoint;
   site.perimetralLines.clear();
-  site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+  site.color = sf::Color(255, 0, 0, 255);
   points.push_back(newPoint);
   sites.push_back(site);
   AuxCell s;
@@ -126,7 +126,7 @@ void Voronoi::customInit(){
   newPoint.y = (float)(436);
   site.point = newPoint;
   site.perimetralLines.clear();
-  site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+  site.color = sf::Color(0,  255,0 ,255 );
   points.push_back(newPoint);
   sites.push_back(site);
 
@@ -139,7 +139,7 @@ void Voronoi::customInit(){
   newPoint.y = (float)(181);
   site.point = newPoint;
   site.perimetralLines.clear();
-  site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
+  site.color = sf::Color(0, 0, 255, 255);
   points.push_back(newPoint);
   sites.push_back(site);
 
@@ -395,7 +395,7 @@ void Voronoi::init(int32_t nPoints){
     auxsitesLittle.push_back(s);
   }
 
-  maxX = map.size.width + 500.0f;
+  maxX = map.size.width + 1500.0f;
   
 }
 
@@ -648,461 +648,11 @@ void Voronoi::calculateParabolaDraw()
 }
 
 
- void Voronoi::calculateParabola() {
-
-    bool firstSol = true;
-    bool not = true;
-
-
-    for (int i = 0; i < (int)sites.size(); ++i) {
-      sites[i].perimetralLines.clear();
-    }for (int i = 0; i < (int)auxsites.size(); ++i) {
-      auxsites[i].bottonPoints.clear();
-      auxsites[i].upperPoints.clear();
-      auxsitesLittle[i].upperPoints.clear();
-      auxsitesLittle[i].upperPoints.clear();
-    }
-    solutionsVoronoi.clear();
-    paraboleIPoints.clear();
-    float di = 378.3f;
-   // for (di = 0; di < w + 1000; di += 0.005f) {
-      parabole.clear();
-
-      solutions.clear();
-      for (int p = 0; p < (int)sites.size(); p++) {
-        float dist = di - sites[p].point.x;
-        if (sites[p].point.x < di) {
-          //Creo parabola  
-          Parabole newParabole;
-
-          float mp = ((float)di - sites[p].point.x) * 0.5f;
-          sf::Vector2<float> V = { sites[p].point.x + mp, sites[p].point.y };
-          float h = V.x;
-          float k = V.y;
-          float xp = (4.0f * h * mp);
-          newParabole.parentPoint = p;
-          newParabole.parabole.x = 1.0f;
-          newParabole.parabole.y = -2.0f * k;
-          newParabole.parabole.z = (k * k) - xp;
-
-          newParabole.parabole /= -4.0f * mp;
-
-
-          parabole.push_back(newParabole);
-        }
-      }
-      int pp = 1;
-      // Calcular puntos de corte 
-      for (int p = 0; p < (int)parabole.size(); ++p) {
-        //Corte con los cuatro bordes
-        { //x = 0
-          {
-            float x1 = 0;
-            float a = parabole[p].parabole.x;
-            float b = parabole[p].parabole.y;
-            float c = parabole[p].parabole.z - x1;
-            float denominator = 2.0f * a;
-            float insideSqrt = (b * b) - (4.0f * a * c);
-
-            float y1 = (-b + sqrt(insideSqrt)) / denominator;
-            float y2 = (-b - sqrt(insideSqrt)) / denominator;
-
-            bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
-            bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
-            bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.point = { x1,y1 };
-                newSol.sites[0] = parabole[p].parentPoint;
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
-                  if (sameSol) {
-                    solutions[s].n++;
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;
-                    }
-
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;
-                  newSol.point = { x1,y1 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-            solutionXInRange = ((x1 >= -1) && (x1 <= 960));
-            solutionYInRange = ((y2 >= -1) && (y2 <= 704));
-            validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y2 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.point = { x1,y2 };
-                newSol.sites[0] = parabole[p].parentPoint;
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
-                  if (sameSol) {
-                    solutions[s].n++;
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;
-                    }
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;
-                  newSol.point = { x1,y2 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-          }
-          // x = 960
-          {
-            float x1 = 960;
-            float a = parabole[p].parabole.x;
-            float b = parabole[p].parabole.y;
-            float c = parabole[p].parabole.z - x1;
-            float denominator = 2.0f * a;
-            float insideSqrt = (b * b) - (4.0f * a * c);
-
-            float y1 = (-b + sqrt(insideSqrt)) / denominator;
-            float y2 = (-b - sqrt(insideSqrt)) / denominator;
-
-            bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
-            bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
-            bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.sites[0] = parabole[p].parentPoint;
-                newSol.point = { x1,y1 };
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
-                  if (sameSol) {
-                    solutions[s].n++;
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;
-                    }
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;
-                  newSol.point = { x1,y1 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-            solutionXInRange = ((x1 >= -1) && (x1 <= 960));
-            solutionYInRange = ((y2 >= -1) && (y2 <= 704));
-            validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y2 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.sites[0] = parabole[p].parentPoint;
-                newSol.point = { x1,y2 };
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
-                  if (sameSol) {
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;;
-                    }
-                    solutions[s].n++;
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;;
-                  newSol.point = { x1,y2 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-          }
-          // y = 0 y = 704
-          {
-            float y1 = 0;
-            float y2 = 704;
-            float x1 = y1 * y1 * parabole[p].parabole.x + y1 * parabole[p].parabole.y + parabole[p].parabole.z;
-            float x2 = y2 * y2 * parabole[p].parabole.x + y2 * parabole[p].parabole.y + parabole[p].parabole.z;
-
-            bool solutionXInRange = ((x1 >= -1) && (x1 <= 960));
-            bool solutionYInRange = ((y1 >= -1) && (y1 <= 704));
-            bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.sites[0] = parabole[p].parentPoint;;
-                newSol.point = { x1,y1 };
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
-                  if (sameSol) {
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;;
-                    }
-                    solutions[s].n++;
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;;
-                  newSol.point = { x1,y1 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-            solutionXInRange = ((x2 >= -1) && (x2 <= 960));
-            solutionYInRange = ((y2 >= -1) && (y2 <= 704));
-            validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x2,y2 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.sites[0] = parabole[p].parentPoint;;
-                newSol.point = { x2,y2 };
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x2, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
-                  if (sameSol) {
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;;
-                    }
-                    else {
-                      solutions[s].sites[1] = parabole[p].parentPoint;;
-                    }
-                    solutions[s].n++;
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;;
-                  newSol.point = { x2,y2 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-          }
-        }
-
-        // Corte con parablolas
-        for (int p1 = pp; p1 < (int)parabole.size(); ++p1) {
-
-          if (p != p1) {
-            float a = parabole[p].parabole.x - parabole[p1].parabole.x;
-            float b = parabole[p].parabole.y - parabole[p1].parabole.y;
-            float c = parabole[p].parabole.z - parabole[p1].parabole.z;
-            float denominator = 2.0f * a;
-            float insideSqrt = (b * b) - (4.0f * a * c);
-            float y1 = (-b + sqrt(insideSqrt)) / denominator;
-            float y2 = (-b - sqrt(insideSqrt)) / denominator;
-
-            a = parabole[p].parabole.x * y1 * y1;
-            b = parabole[p].parabole.y * y1;
-            c = parabole[p].parabole.z;
-            float x1 = a + b + c;
-
-            a = parabole[p].parabole.x * y2 * y2;
-            b = parabole[p].parabole.y * y2;
-            float x2 = a + b + c;
-
-            bool solutionXInRange = ((x1 >= -1) && (x1 <= 961));
-            bool solutionYInRange = ((y1 >= -1) && (y1 <= 705));
-            bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x1,y1 })));
-
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.point = { x1,y1 };
-                newSol.sites[0] = parabole[p].parentPoint;
-                newSol.sites[1] = parabole[p1].parentPoint;
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x1, x, marginSamePoint) && compareMargin(y1, y, marginSamePoint));
-                  if (sameSol) {
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;
-                    }
-                    else {
-                      solutions[s].sites[2] = parabole[p1].parentPoint;
-                    }
-
-
-                    solutions[s].n++;
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.point = { x1,y1 };
-                  newSol.sites[0] = parabole[p].parentPoint;
-                  newSol.sites[1] = parabole[p1].parentPoint;
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-            solutionXInRange = ((x2 >= -1) && (x2 <= 961));
-            solutionYInRange = ((y2 >= -1) && (y2 <= 705));
-            validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x2,y2 })));
-            if (validSolution) {
-              if (firstSol) {
-                Solution newSol;
-                newSol.n = 1;
-                newSol.sites[0] = parabole[p].parentPoint;
-                newSol.sites[1] = parabole[p1].parentPoint;
-                newSol.point = { x2,y2 };
-                solutions.push_back(newSol);
-                firstSol = false;
-              }
-              else {
-                bool alreadySol = false;
-                for (int s = 0; s < (int)solutions.size() && !alreadySol; ++s) {
-                  float x = solutions[s].point.x;
-                  float y = solutions[s].point.y;
-                  bool sameSol = (compareMargin(x2, x, marginSamePoint) && compareMargin(y2, y, marginSamePoint));
-                  if (sameSol) {
-
-                    if (solutions[s].sites[0] != parabole[p].parentPoint && solutions[s].sites[1] != parabole[p].parentPoint) {
-                      solutions[s].sites[2] = parabole[p].parentPoint;
-                    }
-                    else {
-                      solutions[s].sites[2] = parabole[p1].parentPoint;
-                    }
-                    solutions[s].n++;
-                    alreadySol = true;
-                  }
-                }
-                if (!alreadySol) {
-                  Solution newSol;
-                  newSol.n = 1;
-                  newSol.sites[0] = parabole[p].parentPoint;
-                  newSol.sites[1] = parabole[p1].parentPoint;
-                  newSol.point = { x2,y2 };
-                  solutions.push_back(newSol);
-                }
-              }
-            }
-          }
-        }
-        pp++;
-      }
-      // Check for a valid sol
-      for (int i = 0; i < (int)solutions.size(); ++i) {
-        if (solutions[i].n >= 2) {
-          paraboleIPoints.push_back(solutions[i]);
-        }
-
-      }
-
-    //}
-
-    // Delete unecessary points
-
-    for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
-
-      if (solutionsVoronoi2.empty()) {
-        solutionsVoronoi2.push_back(paraboleIPoints[i]);
-      }
-      else {
-        bool samePoint = false;
-        for (int j = 0; j < (int)solutionsVoronoi2.size() && !samePoint; ++j) {
-          bool sameX = compareMargin(solutionsVoronoi2[j].point.x, paraboleIPoints[i].point.x, sameSolMargin);
-          bool sameY = compareMargin(solutionsVoronoi2[j].point.y, paraboleIPoints[i].point.y, sameSolMargin);
-          samePoint = sameX && sameY;
-        }
-        if (!samePoint) {
-          solutionsVoronoi2.push_back(paraboleIPoints[i]);
-        }
-      }
-    }
-}
+ 
 
 
 
-void Voronoi::addSolution(float x, float y, uint32_t paraboleIndex, uint32_t parabole2Index){
+void Voronoi::addSolution(float x, float y, int32_t paraboleIndex, int32_t parabole2Index){
 
 
   bool solutionXInRange = ((x >= -1) && (x <= 960));
@@ -1189,7 +739,14 @@ void Voronoi::intersectionParaboleHLine(Parabole p, float y){
   addSolution(x1, y2, p.parentPoint);
 }
 
-void Voronoi::intersectionParaboleVLine(Parabole p, float x){ }
+void Voronoi::intersectionParaboleVLine(Parabole p, float x){
+
+  float y1 = x;
+  
+  float x1 = y1 * y1 * p.parabole.x + y1 * p.parabole.y + p.parabole.z;
+  addSolution(x1, y1, p.parentPoint);
+
+}
 
 void Voronoi::intersectionParaboleParabole(Parabole p, Parabole q){
 
@@ -1234,7 +791,7 @@ void Voronoi::calculateSites(){
 
   
   float directrizLine = 378.3f;
- // for (directrizLine = 0.0f; directrizLine < maxX; directrizLine += stepParabole) {
+  for (directrizLine = 0.0f; directrizLine < maxX; directrizLine += stepParabole) {
     solutions.clear();
     parabole.clear();
     firstSol = false;
@@ -1289,33 +846,167 @@ void Voronoi::calculateSites(){
       }
 
     }
- // }
+  }
   
 
 
-
-
-
-
 // Delete unecessary points
+  {
+    for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
 
-for (int i = 0; i < (int)paraboleIPoints.size(); ++i) {
+      if (solutionsVoronoi.empty()) {
+        solutionsVoronoi.push_back(paraboleIPoints[i]);
+      }
+      else {
+        bool samePoint = false;
+        for (int j = 0; j < (int)solutionsVoronoi.size() && !samePoint; ++j) {
+          bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, sameSolMargin);
+          bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, sameSolMargin);
+          samePoint = sameX && sameY;
+        }
+        if (!samePoint) {
+          solutionsVoronoi.push_back(paraboleIPoints[i]);
+        }
+      }
+    }
+  }
 
-  if (solutionsVoronoi.empty()) {
-    solutionsVoronoi.push_back(paraboleIPoints[i]);
-  }
-  else {
-    bool samePoint = false;
-    for (int j = 0; j < (int)solutionsVoronoi.size() && !samePoint; ++j) {
-      bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, sameSolMargin);
-      bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, sameSolMargin);
-      samePoint = sameX && sameY;
+
+  // Sort the points and classify them in each site
+  {
+    for (int s = 0; s < (int)sites.size(); s++) {
+
+      for (int vs = 0; vs < (int)solutionsVoronoi.size(); vs++) {
+        bool alreadyInCell = false;
+        for (int i = 0; i < (int)solutionsVoronoi[vs].parentSites.size() && !alreadyInCell; ++i) {
+          if (solutionsVoronoi[vs].parentSites[i] == s) {
+            alreadyInCell = true;
+            if (sites[s].point.y > solutionsVoronoi[vs].point.y) {
+              auxsites[s].bottonPoints.push_back(solutionsVoronoi[vs].point);
+            }
+            else {
+              auxsites[s].upperPoints.push_back(solutionsVoronoi[vs].point);
+            }
+          }
+
+          QuickSorting(&auxsites[s].upperPoints, 0, (int)auxsites[s].upperPoints.size() - 1, sites[s].point);
+          QuickSorting(&auxsites[s].bottonPoints, 0, (int)auxsites[s].bottonPoints.size() - 1, sites[s].point);
+
+        }
+      }
     }
-    if (!samePoint) {
-      solutionsVoronoi.push_back(paraboleIPoints[i]);
+  }
+
+
+  //Reduce The Poly
+  {
+    /*sf::Vector2<float> reducedP;
+    sf::Vector2<float> reduceDirection;
+    sf::Vector2<float> P;
+    sf::Vector2<float> Vnext;
+    sf::Vector2<float> Vprev;
+    float desp = (float)kwidthStreet * 0.5f;
+    for (int i = 0; i < (int)auxsites.size(); ++i) {
+      LineP newPLine;
+      int sizeBotton = (int)auxsites[i].bottonPoints.size();
+      int sizeUpper = (int)auxsites[i].upperPoints.size();
+
+      for (int b = 0; b < sizeBotton - 1; ++b) {
+        P = auxsites[i].bottonPoints[b];
+        Vnext = auxsites[i].bottonPoints[b + 1] - P;
+        if (b == 0) {
+          Vprev = auxsites[i].upperPoints[0] - P;
+        }
+        else {
+          Vprev = auxsites[i].bottonPoints[b - 1] - P;
+        }
+        reduceDirection = Vnext + Vprev;
+        normalizeSFVec2(&reduceDirection);
+        reducedP = P + (reduceDirection * desp);
+        auxsitesLittle[i].bottonPoints.push_back(reducedP);
+      }
+
+      P = auxsites[i].bottonPoints[sizeBotton - 1];
+      Vnext = auxsites[i].upperPoints[sizeUpper - 1] - P;
+      if (sizeBotton == 1) {
+        Vprev = auxsites[i].upperPoints[0] - P;
+      }
+      else {
+        Vprev = auxsites[i].bottonPoints[sizeBotton - 2] - P;
+      }
+      reduceDirection = Vnext + Vprev;
+      normalizeSFVec2(&reduceDirection);
+      reducedP = P + (reduceDirection * desp);
+      auxsitesLittle[i].bottonPoints.push_back(reducedP);
+
+      for (int u = 0; u < sizeUpper - 1; u++) {
+        P = auxsites[i].upperPoints[u];
+        Vnext = auxsites[i].upperPoints[u + 1] - P;
+        if (u == 0) {
+          Vprev = auxsites[i].bottonPoints[0] - P;
+        }
+        else {
+          Vprev = auxsites[i].upperPoints[u - 1] - P;
+        }
+        reduceDirection = Vnext + Vprev;
+        normalizeSFVec2(&reduceDirection);
+        reducedP = P + (reduceDirection * desp);
+        auxsitesLittle[i].upperPoints.push_back(reducedP);
+      }
+
+      P = auxsites[i].upperPoints[sizeUpper - 1];
+      Vnext = auxsites[i].bottonPoints[sizeBotton - 1] - P;
+      if (sizeUpper == 1) {
+        Vprev = auxsites[i].bottonPoints[0] - P;
+      }
+      else {
+        Vprev = auxsites[i].upperPoints[sizeUpper - 2] - P;
+      }
+      reduceDirection = Vnext + Vprev;
+      normalizeSFVec2(&reduceDirection);
+      reducedP = P + (reduceDirection * desp);
+      auxsitesLittle[i].upperPoints.push_back(reducedP);
+
+    }*/
+  }
+
+ 
+  // Creation of the polys
+  {
+    std::vector<AuxCell> auxS = auxsites;
+    if (reducedPoly) {
+      auxS = auxsitesLittle;
+    }
+    for (int i = 0; i < (int)auxS.size(); ++i) {
+      LineP newPLine;
+      int sizeBotton = (int)auxS[i].bottonPoints.size();
+      int sizeUpper = (int)auxS[i].upperPoints.size();
+      for (int b = 0; b < sizeBotton - 1; ++b) {
+        newPLine.p1 = auxS[i].bottonPoints[b];
+        newPLine.p2 = auxS[i].bottonPoints[b + 1];
+
+        sites[i].perimetralLines.push_back(newPLine);
+      }
+      newPLine.p1 = auxS[i].bottonPoints[sizeBotton - 1];
+      newPLine.p2 = auxS[i].upperPoints[sizeUpper - 1];
+
+
+      sites[i].perimetralLines.push_back(newPLine);
+
+      for (int u = sizeUpper - 1; u > 0; --u) {
+        newPLine.p1 = auxS[i].upperPoints[u];
+        newPLine.p2 = auxS[i].upperPoints[u - 1];
+
+        sites[i].perimetralLines.push_back(newPLine);
+      }
+
+      newPLine.p1 = auxS[i].upperPoints[0];
+      newPLine.p2 = auxS[i].bottonPoints[0];
+
+      sites[i].perimetralLines.push_back(newPLine);
+
     }
   }
-}
 
   
 }

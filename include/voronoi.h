@@ -112,7 +112,7 @@ public:
 
   void intersectionParaboleHLine(Parabole p, float y);
   void intersectionParaboleVLine(Parabole p, float x);
-  void addSolution(float x, float y,  uint32_t paraboleIndex, uint32_t parabole2Index = -1);
+  void addSolution(float x, float y,  int32_t paraboleIndex, int32_t parabole2Index = -1);
   void intersectionParaboleParabole(Parabole p, Parabole q);
 
 

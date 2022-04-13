@@ -243,8 +243,8 @@ void Game::ImguiVoronoi() {
     ImGui::InputFloat("Step Parabole", &voronoi.stepParabole);
     ImGui::InputFloat("Max range X parabole", &voronoi.maxX);
     if (ImGui::Button("Check Parbole")) {
+      //voronoi.calculateParabola();
       voronoi.calculateSites();
-      voronoi.calculateParabola();
     } 
     if (ImGui::Button("Clear Parbole")) {
       for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
@@ -294,7 +294,7 @@ void Game::ImguiVoronoi() {
         color[2] = voronoi.sites[i].color.b;
         color[3] = voronoi.sites[i].color.a;
         ImGui::ColorEdit4(colorLabel,color);
-        voronoi.sites[i].color = sf::Color(color[0], color[1], color[2], color[3]);
+        voronoi.sites[i].color = sf::Color(color[0]*255.0f, color[1] * 255.0f, color[2] * 255.0f, color[3] * 255.0f);
         if (ImGui::TreeNode(name3)) {
           int b;
           for (b = 0; b < (int)voronoi.sites[i].perimetralLines.size(); b++) {
