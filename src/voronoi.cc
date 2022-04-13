@@ -13,10 +13,10 @@ Voronoi::Voronoi()
   reducedPoly = false;
   maxDistance = -1;
   firstSol = true;
-  marginSamePoint = 0.15f;
+  marginSamePoint = 2.0f;
   sameSolMargin = 4.0f;
   maxX = 0.0f;
-  stepParabole = 0.005f;
+  stepParabole = 0.001f;
 
  
 }
@@ -79,7 +79,7 @@ void QuickSorting(std::vector<sf::Vector2<float>> *v, int index_start, int index
 
 
 
-void Voronoi::customInit(){
+void Voronoi::customInit2(){
 
   Line newLine;
   newLine.p1.x = 0.0f;
@@ -115,7 +115,6 @@ void Voronoi::customInit(){
   site.point = newPoint;
   site.perimetralLines.clear();
   site.color = sf::Color(255, 0, 0, 255);
-  points.push_back(newPoint);
   sites.push_back(site);
   AuxCell s;
   auxsites.push_back(s);
@@ -127,7 +126,6 @@ void Voronoi::customInit(){
   site.point = newPoint;
   site.perimetralLines.clear();
   site.color = sf::Color(0,  255,0 ,255 );
-  points.push_back(newPoint);
   sites.push_back(site);
 
   auxsites.push_back(s);
@@ -140,7 +138,6 @@ void Voronoi::customInit(){
   site.point = newPoint;
   site.perimetralLines.clear();
   site.color = sf::Color(0, 0, 255, 255);
-  points.push_back(newPoint);
   sites.push_back(site);
 
   auxsites.push_back(s);
@@ -150,7 +147,7 @@ void Voronoi::customInit(){
 
 }
 
-void Voronoi::customInit2(){
+void Voronoi::customInit(){
   Line newLine;
   newLine.p1.x = 0.0f;
   newLine.p1.y = 0.0f;
@@ -183,10 +180,8 @@ void Voronoi::customInit2(){
     newPoint.x = (float)(159);
     newPoint.y = (float)(533);
     site.point = newPoint;
-    site.perimetralLines.clear();
-    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
+    site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
     AuxCell s;
     auxsites.push_back(s);
     auxsitesLittle.push_back(s);
@@ -197,7 +192,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
     
     auxsites.push_back(s);
@@ -210,7 +204,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -221,7 +214,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -232,7 +224,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -244,7 +235,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -255,7 +245,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -266,7 +255,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -277,7 +265,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -288,7 +275,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -296,11 +282,10 @@ void Voronoi::customInit2(){
 
 
     newPoint.x = (float)(701);
-    newPoint.y = (float)(3);
+    newPoint.y = (float)(10); //3
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -311,7 +296,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -322,7 +306,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -333,7 +316,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -344,7 +326,6 @@ void Voronoi::customInit2(){
     site.point = newPoint;
     site.perimetralLines.clear();
     site.color = sf::Color(rand() % 255, rand() % 255, rand() % 255, rand() % 255);
-    points.push_back(newPoint);
     sites.push_back(site);
 
     auxsites.push_back(s);
@@ -388,7 +369,6 @@ void Voronoi::init(int32_t nPoints){
     site.point = newPoint;  
     site.perimetralLines.clear();
     site.color = sf::Color((rand() % 155 )+100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
-    points.push_back(newPoint);
     sites.push_back(site);
     AuxCell s;
     auxsites.push_back(s);
@@ -545,45 +525,19 @@ void Voronoi::draw(sf::RenderWindow* window) {
 
 
 
- if(drawAllLine){
-
-    for (int p = 0; p < (int)linesBisector.size(); p++) {
-      sf::RectangleShape rect;
-      rect.setOutlineColor(sf::Color(188, 117, 255));
-      rect.setFillColor(sf::Color(188, 117, 255));
-      float size = 4.0f;
-      rect.setSize(sf::Vector2f(size, size));
-      rect.setPosition(sf::Vector2f(linesBisector[p].p1.x - size * 0.5f, linesBisector[p].p1.y - size * 0.5f));
-      window->draw(rect);
-      rect.setPosition(sf::Vector2f(linesBisector[p].p2.x - size * 0.5f, linesBisector[p].p2.y - size * 0.5f));
-      window->draw(rect);
-
-      sf::Vertex line[] =
-      {
-          linesBisector[p].p1,
-          linesBisector[p].p2,
-      };
-      line[0].color = (sf::Color(255, 255, 0));
-      line[1].color = (sf::Color(255, 255, 0));
-      window->draw(line, 2, sf::Lines);
-    }
-  }
+ 
 
 
 }
 
 void Voronoi::clear()
 {
-  points.clear();
-  Mpoints.clear();
-  Spoints.clear();
+ 
   parabole.clear();
   paraboleDraw.clear();
   paraboleIPoints.clear();
-  bisector.clear();
+
   lines.clear();
-  linesBisector.clear();
-  goodLinesBisector.clear();
   int c = 0;
   for (c; c < (int)sites.size(); c++) {
     sites[c].perimetralLines.clear();
@@ -625,13 +579,13 @@ void Voronoi::calculateParabolaDraw()
   
   paraboleDraw.clear();
   
-  for (int p = 0; p < (int)points.size(); p++) {
-    if (points[p].x < di) {
+  for (int p = 0; p < (int)sites.size(); p++) {
+    if (sites[p].point.x < di) {
       //Creo parabola  
       sf::Vector3<float> newParabole;
 
-      float mp = ((float)di - points[p].x) * 0.5f;
-      sf::Vector2<float> V = { points[p].x + mp, points[p].y };
+      float mp = ((float)di - sites[p].point.x) * 0.5f;
+      sf::Vector2<float> V = { sites[p].point.x + mp, sites[p].point.y };
       float h = V.x;
       float k = V.y;
       float xp = (4.0f * h * mp);
@@ -655,8 +609,8 @@ void Voronoi::calculateParabolaDraw()
 void Voronoi::addSolution(float x, float y, int32_t paraboleIndex, int32_t parabole2Index){
 
 
-  bool solutionXInRange = ((x >= -1) && (x <= 960));
-  bool solutionYInRange = ((y >= -1) && (y <= 704));
+  bool solutionXInRange = ((x >= -1) && (x <= map.size.width));
+  bool solutionYInRange = ((y >= -1) && (y <= map.size.height));
   bool validSolution = ((solutionXInRange) && (solutionYInRange) && (isBeachLine({ x,y })));
   if (validSolution) {
     if (firstSol) {
@@ -684,7 +638,7 @@ void Voronoi::addSolution(float x, float y, int32_t paraboleIndex, int32_t parab
           int a;
           bool noParentSiteAlready = true;
           bool noParent2SiteAlready = true;
-          for (a = 0; a < solutions[s].parentSites.size() && (noParentSiteAlready || noParent2SiteAlready); ++a){
+          for (a = 0; a < (int) solutions[s].parentSites.size() && (noParentSiteAlready || noParent2SiteAlready); ++a){
             if (solutions[s].parentSites[a] == paraboleIndex) {
               noParentSiteAlready = false;
             }
@@ -823,7 +777,7 @@ void Voronoi::calculateSites(){
 
     // Once parabole are calculated, we have to calculate each possible intersection point
     int p, pp;
-    for(p = 0; p <parabole.size(); ++p){
+    for(p = 0; p < (int)parabole.size(); ++p){
 
     //Border of the map
       {
@@ -834,7 +788,7 @@ void Voronoi::calculateSites(){
       }
       //Parabole with the other paraboles
       {
-        for(pp = p+1; pp < parabole.size(); ++pp){
+        for(pp = p+1; pp < (int)parabole.size(); ++pp){
           intersectionParaboleParabole(parabole[p], parabole[pp]);
         }
       }
@@ -859,13 +813,29 @@ void Voronoi::calculateSites(){
       }
       else {
         bool samePoint = false;
+        int indexalreadySol = 0;
         for (int j = 0; j < (int)solutionsVoronoi.size() && !samePoint; ++j) {
           bool sameX = compareMargin(solutionsVoronoi[j].point.x, paraboleIPoints[i].point.x, sameSolMargin);
           bool sameY = compareMargin(solutionsVoronoi[j].point.y, paraboleIPoints[i].point.y, sameSolMargin);
           samePoint = sameX && sameY;
+          indexalreadySol = j;
         }
         if (!samePoint) {
           solutionsVoronoi.push_back(paraboleIPoints[i]);
+        }else{
+          //Check thier parents
+          int l, k;
+          // the new sol parents
+          for (l = 0; l < (int) paraboleIPoints[i].parentSites.size(); ++l){
+            bool alreadyThisParent = false;
+            //check if it is in the current sol
+            for(k = 0; k < ((int)solutionsVoronoi[indexalreadySol].parentSites.size() && !alreadyThisParent); ++k){
+              alreadyThisParent = paraboleIPoints[i].parentSites[l] != solutionsVoronoi[indexalreadySol].parentSites[k];
+            }
+            if(!alreadyThisParent){
+              solutionsVoronoi[indexalreadySol].parentSites.push_back(paraboleIPoints[i].parentSites[l]);
+            }
+          }
         }
       }
     }
@@ -1021,198 +991,6 @@ float dotProtduct(sf::Vector2<float> v1, sf::Vector2<float> v2){
 }
 
 
-void Voronoi::calculateBisector()
-{
-  int p = 0;
-  //int j = 1;
-  bisector.clear();
-  Mpoints.clear();
-  Spoints.clear();
-  linesBisector.clear();
-  goodLinesBisector.clear();
-  int ii = 1;
-  for (int p = 0; p < (int)points.size(); p++) {
-    for(int j = ii; j < (int)points.size(); j++){
-
-      if(p!=j){
-        sf::Vector2<float> newPoint;
-        sf::Vector2<float> vDirector = points[j] - points[p];
-        newPoint = points[p] + vDirector*0.5f;
-        Mpoints.push_back(newPoint);
-
-        Bisector n;
-        n.Spoint = newPoint;
-        n.vDirector = { vDirector.y, -vDirector.x };
-        //bisector.push_back(n);
-        bool firstPoint = false;
-        Line newBisector;
-        newBisector.mp = newPoint;
-        sf::Vector2<float> vdir1 = { -vDirector.y, vDirector.x };
-        sf::Vector3<float> e1, e2, sol;
-        normalizeSFVec2(&vdir1);
-      
-        float m = 0;
-        if(vdir1.x !=0){
-            m = vdir1.y / vdir1.x;
-            e1.x = -m;
-            e1.y = 1;
-
-            e1.z = -m * newPoint.x + newPoint.y;
-        }else {
-          e1.x = 1;
-          e1.y = 0;
-
-          e1.z = newPoint.y;
-        }
-        for(int l = 0; l < (int)lines.size(); l++){
-          sf::Vector2<float> vdir2 = lines[l].p2 - lines[l].p1;
-          normalizeSFVec2(&vdir2);
-
-
-          if (vdir2.x != 0) {
-            m = vdir2.y / vdir2.x;
-            e2.x = -m;
-            e2.y = 1;
-
-            e2.z = -m * lines[l].p1.x + lines[l].p1.y;
-          }else{
-            e2.x = 1;
-            e2.y = 0;
-
-            e2.z =  lines[l].p1.x;
-          }
-
-          sol = ecuationSystem(e1, e2);
-          bool solutionXInRange = ((sol.x >= -1) && (sol.x <= 961));
-          bool solutionYInRange = ((sol.y >= -1) && (sol.y <= 705));
-          bool validSolution = ((sol.z == 1) && (solutionXInRange) && (solutionYInRange));
-
-          if (validSolution) {
-            if(!firstPoint){
-              firstPoint = true;
-              newBisector.p1 = { sol.x, sol.y };
-            }else{
-
-              newBisector.p2 = { sol.x, sol.y };
-              linesBisector.push_back(newBisector);
-              goodLinesBisector.push_back(newBisector);
-            }
-            Bisector n;
-            n.Spoint.x = sol.x;
-            n.Spoint.y = sol.y;
-            n.vDirector = {vdir1.x * 2000, vdir1.y * 2000 };
-            bisector.push_back(n);
-          }
-      
-          
-        }
-        
-        
-      }
-   }
-    ii++;
-  }
-
-  ii = 1;
-  for(int i = 0; i < (int)linesBisector.size(); ++ i){
-
-    for(int j = ii; j < (int)linesBisector.size(); ++ j){
-
-      if (i != j) {
-        sf::Vector3<float> e1, e2, sol;
-        sf::Vector2<float> vdir1 = linesBisector[i].p2 - linesBisector[i].p1;
-        normalizeSFVec2(&vdir1);
-        sf::Vector2<float> vdir2 = linesBisector[j].p2 - linesBisector[j].p1;
-        normalizeSFVec2(&vdir2);
-
-        float m = 0;
-        if (vdir1.x != 0) {
-          m = vdir1.y / vdir1.x;
-          e1.x = -m;
-          e1.y = 1;
-
-          e1.z = -m * linesBisector[i].p1.x + linesBisector[i].p1.y;
-        }
-        else {
-          e1.x = 1;
-          e1.y = 0;
-
-          e1.z = linesBisector[i].p1.x;;
-        }
-
-        if (vdir2.x != 0) {
-          m = vdir2.y / vdir2.x;
-          e2.x = -m;
-          e2.y = 1;
-
-          e2.z = -m * linesBisector[j].p1.x + linesBisector[j].p1.y;
-        }
-        else {
-          e2.x = 1;
-          e2.y = 0;
-
-          e2.z = linesBisector[j].p1.x;
-        }
-
-        sol = ecuationSystem(e1, e2);
-        bool solutionXInRange = ((sol.x >= -1) && (sol.x <= 961));
-        bool solutionYInRange = ((sol.y >= -1 ) && (sol.y <= 705));
-        bool validSolution = ((sol.z == 1) && (solutionXInRange) && (solutionYInRange));
-
-        if (validSolution) {
-          //Line i
-          sf::Vector2<float> V1, V2, p;
-          p.x = sol.x;
-          p.y = sol.y;
-          V1 = linesBisector[i].mp - linesBisector[i].p1;
-          V2 = linesBisector[i].mp - p;
-          float dotvalue = dotProtduct(V1,V2);
-
-          if (compareMargin(dotvalue, 1.0f, 0.1f)){
-            //Cambiar el 1
-            if (module(goodLinesBisector[i].p1 - goodLinesBisector[i].p2) >= module(p - goodLinesBisector[i].p2)) {
-              //Cambiamos
-              goodLinesBisector[i].p1 = p;
-            }
-          }else if(compareMargin(dotvalue, -1.0f, 0.1f)){
-            //Cambiar el 2
-            if (module(goodLinesBisector[i].p1 - goodLinesBisector[i].p2) >= module(p - goodLinesBisector[i].p1)) {
-              //Cambiamos
-              goodLinesBisector[i].p2 = p;
-            }
-          }
-
-          V1 = linesBisector[j].mp - linesBisector[j].p1;
-          V2 = linesBisector[j].mp - p;
-          dotvalue = dotProtduct(V1, V2);
-
-          if (compareMargin(dotvalue, 1.0f, 0.1f)) {
-            //Cambiar el 1
-            if (module(goodLinesBisector[j].p1 - goodLinesBisector[j].p2) >= module(p - goodLinesBisector[j].p2)) {
-              //Cambiamos
-              goodLinesBisector[j].p1 = p;
-            }
-          }
-          else if (compareMargin(dotvalue, -1.0f, 0.1f)) {
-            //Cambiar el 2
-            if (module(goodLinesBisector[j].p1 - goodLinesBisector[j].p2) >= module(p - goodLinesBisector[j].p1)) {
-              //Cambiamos
-              goodLinesBisector[j].p2 = p;
-            }
-          }
-
-
-
-          //Line j
-          Spoints.push_back({ sol.x, sol.y });
-          //Change segments
-        }
-      }
-    }
-    ii++;
-  }
-
-}
 
 bool Voronoi::isBeachLine(sf::Vector2<float> p)
 {

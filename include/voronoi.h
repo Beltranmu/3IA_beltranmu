@@ -19,12 +19,6 @@ struct Map{
   float widthStreets;
 };
 
-struct Bisector {
-  sf::Vector2<float> Spoint;
-  sf::Vector2<float> vDirector;
-  sf::Vector2<float> p1;
-  sf::Vector2<float> p2;
-};
 
 struct Line {
   sf::Vector2<float> mp, p1, p2;
@@ -74,33 +68,22 @@ public:
   void init(int32_t nPoints);
   void draw(sf::RenderWindow* window);
   void clear();
-  void calculateParabola();
   void calculateParabolaDraw();
-
-  void calculateBisector();
 
   bool isBeachLine(sf::Vector2<float> p);
   
   sf::Vector3<float> ecuationSystem(sf::Vector3<float>, sf::Vector3<float>);
 
-  std::vector<sf::Vector2<float>> points;
-  std::vector<sf::Vector2<float>> Mpoints;
-  std::vector<sf::Vector2<float>> Spoints;
-  std::vector<sf::Vector3<float>> paraboleDraw; // x = Ay^2 + By + C
-  std::vector<Solution> paraboleIPoints;
-  std::vector<Bisector> bisector;
-  std::vector<Line> lines;
-  std::vector<Line> linesBisector;
-  std::vector<Line> goodLinesBisector;
-  std::vector<Solution> solutionsVoronoi2;
-  
+ 
 
 
   //std::map<sf::Vector2<float>, uint32_t> solutionsVoronoid;
   std::vector<Solution> solutions;
   std::vector<Solution> solutionsVoronoi;
 
-
+  std::vector<sf::Vector3<float>> paraboleDraw; // x = Ay^2 + By + C
+  std::vector<Solution> paraboleIPoints;
+  std::vector<Line> lines;
 
   // Good one
   std::vector<Cells> sites;
