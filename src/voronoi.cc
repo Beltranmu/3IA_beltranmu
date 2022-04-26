@@ -16,7 +16,7 @@ Voronoi::Voronoi()
   marginSamePoint = 2.0f;
   sameSolMargin = 4.0f;
   maxX = 0.0f;
-  stepParabole = 0.001f;
+  stepParabole = 0.0005f;
 
  
 }
@@ -108,38 +108,100 @@ void Voronoi::customInit2(){
 
 
 
+
+
+
+
   Cells site;
   sf::Vector2<float> newPoint;
-  newPoint.x = (float)(595);
-  newPoint.y = (float)(469);
-  site.point = newPoint;
-  site.perimetralLines.clear();
-  site.color = sf::Color(255, 0, 0, 255);
-  sites.push_back(site);
   AuxCell s;
+  newPoint.x = (float)(41);
+  newPoint.y = (float)(163);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
   auxsites.push_back(s);
   auxsitesLittle.push_back(s);
 
-
-  newPoint.x = (float)(267);
-  newPoint.y = (float)(436);
+  newPoint.x = (float)(918);
+  newPoint.y = (float)(494);
   site.point = newPoint;
   site.perimetralLines.clear();
-  site.color = sf::Color(0,  255,0 ,255 );
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
   sites.push_back(site);
-
   auxsites.push_back(s);
   auxsitesLittle.push_back(s);
 
-
-
-  newPoint.x = (float)(442);
-  newPoint.y = (float)(181);
+  newPoint.x = (float)(241);
+  newPoint.y = (float)(635);
   site.point = newPoint;
   site.perimetralLines.clear();
-  site.color = sf::Color(0, 0, 255, 255);
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
   sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
 
+  newPoint.x = (float)(27);
+  newPoint.y = (float)(508);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(292);
+  newPoint.y = (float)(414);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(647);
+  newPoint.y = (float)(606);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(707);
+  newPoint.y = (float)(251);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(602);
+  newPoint.y = (float)(61);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(413);
+  newPoint.y = (float)(532);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
+  auxsites.push_back(s);
+  auxsitesLittle.push_back(s);
+
+  newPoint.x = (float)(837);
+  newPoint.y = (float)(187);
+  site.point = newPoint;
+  site.perimetralLines.clear();
+  site.color = sf::Color((rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100, (rand() % 155) + 100);
+  sites.push_back(site);
   auxsites.push_back(s);
   auxsitesLittle.push_back(s);
 
@@ -392,18 +454,20 @@ void Voronoi::draw(sf::RenderWindow* window) {
   window->draw(directriz, 2, sf::Lines);
 
   sf::Vector2<float> p3 = { 0.0f, horizontal };
-  sf::Vector2<float> p4 = { (float)w,horizontal };
+  sf::Vector2<float> p4 = { (float)map.size.width,horizontal };
   sf::Vertex ho[] =
   {
       sf::Vertex(p3),
       sf::Vertex(p4)
 
   };
+  ho[0].color = (sf::Color(255, 255, 255));
+  ho[1].color = (sf::Color(255, 255, 255));
 
   window->draw(ho, 2, sf::Lines);
 
   for (int p = 0; p < (int)paraboleDraw.size(); ++p) {
-    for (int x = 0; x < w; x++) {
+    for (int x = 0; x < map.size.width; x++) {
       float a = paraboleDraw[p].x;
       float b = paraboleDraw[p].y;
       float c = paraboleDraw[p].z - x;
@@ -443,6 +507,12 @@ void Voronoi::draw(sf::RenderWindow* window) {
 
       };
 
+      linepp[0].color = (sf::Color(255, 255, 255));
+      linepp[1].color = (sf::Color(255, 255, 255));
+
+
+      linepn[0].color = (sf::Color(255, 255, 255));
+      linepn[1].color = (sf::Color(255, 255, 255));
       window->draw(linepp, 2, sf::Lines);
       window->draw(linepn, 2, sf::Lines);
     }

@@ -222,7 +222,7 @@ void Game::ImguiVoronoi() {
   ImGui::InputInt("Number of points", (int*)&numberVPoint);
   if (ImGui::Button("Custom Init (TEST)")) {
     voronoi.clear();
-    voronoi.customInit();
+    voronoi.customInit2();
     voronoiInitialized = true;
   }
   if (ImGui::Button("Create Points")) {
