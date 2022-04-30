@@ -18,11 +18,13 @@ Game::Game(){
   fps.ai = 1;
   fps.world = 1;
   fps.draw_ = -1;
+  imguifps = 0;
 
   fps.second_per_frame = 1/(float)fps.main_game;
 
   selectedAgentID = -1;
   targetRow = 0;
+  targetCol = 0;
   possibleNextTarget = -1;
   startAddPattern = false;
   number_movement = 0; 
@@ -104,7 +106,7 @@ void Game::fixedUpdate(float fixed_delta_time) {}
 
 void Game::draw() {
   if(gmType != VORONOI_TYPE){
-    board_.drawBoard(&w_, possibleNextTarget);
+    board_.drawBoard(&w_, possibleNextTarget, gmType);
   }else{
 
   voronoi.draw(&w_);
@@ -120,29 +122,67 @@ void Game::end() {
   ImGui::SFML::Shutdown();
 }
 
+void Game::ImguiGame(){
+
+  
+
+  ImGui::Begin("FPS Controller");
+
+  ImGui::TextColored(ImVec4(1, 0, 1, 1), "FPS:%d", imguifps);
+  ImGui::SliderInt("Input", &fps.input_, -1, 60);
+  if (fps.input_ == 0) fps.input_ = -1;
+  ImGui::SliderInt("AI", &fps.ai, -1, 60.0f);
+  if (fps.ai == 0) fps.ai = -1;
+  ImGui::SliderInt("World", &fps.world, -1, 60);
+  if (fps.world == 0) fps.world = -1;
+  ImGui::SliderInt("Draw", &fps.draw_, -1, 60);
+  if (fps.draw_ == 0) fps.draw_ = -1;
 
 
-void Game::ImguiSandBox(){
 
-  ImGui::Begin("Sandbox Agents");
+  const char* elems_names[MAX_TYPE] = { "SandBox", "Voronoi", "PathFinding" };
+  const char* elem_name = (intgmType >= 0 && intgmType < MAX_TYPE) ? elems_names[intgmType] : "Unknown";
+  ImGui::SliderInt("Mode", &intgmType, 0, MAX_TYPE - 1, elem_name);
+  gmType = (GameModeType)intgmType;
 
+  
 
-  //ImGui::TextColored(ImVec4(1, 1, 1, 1), "Position %d", board_.units_[0].currentPos);
- //ImGui::TextColored(ImVec4(1, 1, 1, 1), "Target %d", board_.units_[0].currentTarget);
+  switch (gmType)
+  {
+  case Game::NORMAL_TYPE: ImguiSandBox(); voronoiInitialized = false; break;
+  case Game::VORONOI_TYPE: ImguiVoronoi(); break;
+  case Game::PATHFINDING_TYPE: ImguiPathFinding(); voronoiInitialized = false; break;
 
-
+  default: break;
+  }
 
   ImGui::End();
 
+}
+
+void Game::ImguiSandBox(){
+
+
 
   ImGui::Begin("Agent Controller");
+
+  ImGui::TextColored(ImVec4(0, 1, 0, 1), "CONTROLS");
+  ImGui::Text("Right click on a agent to select it");
 
   if (selectedAgentID == -1) {
     ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: None");  // Agent
   }
   else {
     ImGui::TextColored(ImVec4(1, 0, 1, 1), "Agent: %d", selectedAgentID);  // Agent
-    ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track);
+
+  ImGui::Text("Movement Type:");
+    const char* elems_names[MAX_TYPE] = { "Random", "Patrol", "Track(Pac Man)" };
+    const char* elem_name = (board_.units_[selectedAgentID].movementType >= 0 
+      && board_.units_[selectedAgentID].movementType < Agent::Movement::kMovement_None) ? 
+      elems_names[board_.units_[selectedAgentID].movementType] : "Unknown";
+    //ImGui::SliderInt("Mode", &intgmType, 0, MAX_TYPE - 1, elem_name);
+
+    ImGui::SliderInt("Movement", (int*)&board_.units_[selectedAgentID].movementType, Agent::Movement::kMovement_Random, Agent::Movement::kMovement_Track, elem_name);
 
     if (board_.units_[selectedAgentID].movementType == Agent::Movement::kMovement_Pattern) {
       if (ImGui::Button("Start Addition Pattern mode")) {
@@ -155,7 +195,7 @@ void Game::ImguiSandBox(){
         if (ImGui::Button("Turn 180")) { movement_type = Agent::PatternMovement::kPatternMovement_Turn180; }
         if (ImGui::Button("Turn Left 90")) { movement_type = Agent::PatternMovement::kPatternMovement_TurnLeft90; }
         if (ImGui::Button("Turn Right 90")) { movement_type = Agent::PatternMovement::kPatternMovement_TurnRight90; }
-        ImGui::SliderInt("Number Movements", &number_movement, 1, 20);
+        ImGui::InputInt("Number Movements", &number_movement);
         if (ImGui::Button("Add Pattern")) {
           board_.units_[selectedAgentID].addMovement2Patern(movement_type, number_movement);
           number_movement = 1;
@@ -335,6 +375,11 @@ void Game::ImguiPathFinding(){
 
   ImGui::Begin("Path Finding");
 
+  ImGui::Text("1-.");
+  ImGui::Text("Choose the start cell ->"); ImGui::SameLine(); ImGui::TextColored(ImVec4(0, 0, 1, 1), " Blue S");
+  ImGui::Text("Choose the end cell ->"); ImGui::SameLine(); ImGui::TextColored(ImVec4(1, 0, 0, 1), " Red M ");
+
+  ImGui::Text("2-. Choose only one type of distance");
   ImGui::SliderInt("InitPosRow", &board_.targetRowI, 0, board_.height_ - 1);
   ImGui::SliderInt("InitPosCol", &board_.targetColI, 0, board_.width_ - 1);
 
@@ -347,8 +392,7 @@ void Game::ImguiPathFinding(){
   //ImGui::Checkbox("Allow Diagonals", &board_.aPath_.allowDiagonals);
   ImGui::Checkbox("Draw Board", &board_.drawLogical);
 
-
-
+  ImGui::Text("3-. Choose only one type of distance");
   if (ImGui::Button("Check A Star")) {
     int origin = board_.targetColI + board_.targetRowI * board_.width_;
     int dst = board_.targetColD + board_.targetRowD * board_.width_;
@@ -394,13 +438,13 @@ void Game::ImguiPathFinding(){
 
 void Game::mainLoop(){
 
-  init(960, 704);
+  init(1280, 704);
 
   sf::Clock sec_clock, main_clock, ia_clock, input_clock;
   sf::Clock world_clock, draw_clock, imgui_clock;
 
   int frames=0;
-  int imguifps = 0;
+  
 
   while(w_.isOpen()){
 
@@ -426,34 +470,9 @@ void Game::mainLoop(){
     }
     //voronoi.calculateParabolaDraw();
     ImGui::SFML::Update(w_, imgui_clock.restart());
-    ImGui::Begin("FPS Controller");
- 
-    ImGui::TextColored(ImVec4(1, 1, 1, 1),"FPS panel");
-    ImGui::TextColored(ImVec4(1, 0, 1, 1),"FPS:%d", imguifps);
-    ImGui::SliderInt("Input", &fps.input_, -1, 60);
-    if (fps.input_ == 0) fps.input_ = -1;
-    ImGui::SliderInt("AI", &fps.ai, -1, 60.0f);
-    if (fps.ai== 0) fps.ai = -1;
-    ImGui::SliderInt("World", &fps.world, -1, 60);
-    if (fps.world == 0) fps.world = -1;
-    ImGui::SliderInt("Draw", &fps.draw_, -1, 60);
-    if(fps.draw_ == 0) fps.draw_ = -1;
-    ImGui::SliderInt("Mode", &intgmType, 0, MAX_TYPE - 1);
-    gmType = (GameModeType)intgmType;
-
-    switch (gmType)
-    {
-    case Game::NORMAL_TYPE: ImguiSandBox(); voronoiInitialized = false; break;
-    case Game::VORONOI_TYPE: ImguiVoronoi(); break;
-    case Game::PATHFINDING_TYPE: ImguiPathFinding(); voronoiInitialized = false; break;
-
-    default: break;
-    }
-
-    ImGui::End();
 
 
-
+    ImguiGame();
 
 
     //Draw

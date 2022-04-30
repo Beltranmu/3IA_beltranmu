@@ -51,6 +51,12 @@ void Board::initBoard(int width, int height){
   player_t.loadFromFile("../../data/gfx/agents/player.png");
   player_s = sf::Sprite(player_t);
 
+
+  goal_t.loadFromFile("../../data/gfx/agents/axis_medic.bmp");
+  goal_s = sf::Sprite(goal_t);
+  start_t.loadFromFile("../../data/gfx/agents/axis_soldier.bmp");
+  start_s = sf::Sprite(start_t);
+
 }
 
 void Board::initUnits(){
@@ -358,97 +364,78 @@ void Board::drawLBoard(sf::RenderWindow* window){
  
 }
 
-void Board::drawBoard(sf::RenderWindow* window, int selected_cell) {
-
+void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
+  if(!drawLogical)
   window->draw(board_sprite);
 
-  for (int i = 0; i < kBoardMaxUnits; ++i) {
+  //SandBox Mode
+  if(mode == 0){
 
-    int row = 0, col = 0;
-    index2RowCol(&row, &col, units_[i].currentPos);
-    float posx = col * width_tile_ + desp_x_tile_;
-    float posy = row * height_tile_ + desp_y_tile_;
-    agent_s_.setPosition(posx, posy);
-    if (i > 0) {
-      if (!units_[i].agentSelected) {
-        window->draw(agent_s_);
+
+    for (int i = 0; i < kBoardMaxUnits; ++i) {
+
+      int row = 0, col = 0;
+      index2RowCol(&row, &col, units_[i].currentPos);
+      float posx = col * width_tile_ + desp_x_tile_;
+      float posy = row * height_tile_ + desp_y_tile_;
+      agent_s_.setPosition(posx, posy);
+      if (i > 0) {
+        if (!units_[i].agentSelected) {
+          window->draw(agent_s_);
+        }
+        else {
+          agent_not_selected_.setPosition(posx, posy);
+          window->draw(agent_not_selected_);
+        }
       }
       else {
-        agent_not_selected_.setPosition(posx, posy);
-        window->draw(agent_not_selected_);
+        player_s.setPosition(posx, posy);
+        window->draw(player_s);
       }
+
     }
-    else {
-      player_s.setPosition(posx, posy);
-      window->draw(player_s);
+
+    if (selected_cell >= 0) {
+      sf::RectangleShape rect;
+      rect.setOutlineColor(sf::Color::Green);
+      rect.setFillColor(sf::Color::Green);
+      rect.setSize(sf::Vector2f(8.0f, 8.0f));
+
+      int x = (selected_cell % width_) * 8;
+      int y = (selected_cell / width_) * 8;
+
+      rect.setPosition(sf::Vector2f(x, y));
+      window->draw(rect);
     }
-    //     Draw forward
-    //         int r_forward = 0;
-    //         int c_forward = 0;
-    //         if(units_[i].currentForwardX == 0){
-    //           if(units_[i].currentForwardY == 1){//South
-    //             index2RowCol(&r_forward, &c_forward, south(units_[i].currentPos));
-    //           }else{ //North
-    //             index2RowCol(&r_forward, &c_forward, north(units_[i].currentPos));
-    //           }
-    //         }
-    //         else if(units_[i].currentForwardX == 1){
-    //           index2RowCol(&r_forward, &c_forward, east(units_[i].currentPos));
-    //         }
-    //         else{
-    //           index2RowCol(&r_forward, &c_forward, west(units_[i].currentPos));
-    //         }
-    //         sf::RectangleShape rect;
-    //         rect.setOutlineColor(sf::Color::Blue);
-    //         rect.setFillColor(sf::Color::Blue);
-    //         rect.setSize(sf::Vector2f(10.0f, 10.0f));
-    //     
-    //         int x = c_forward * 8;
-    //         int y = r_forward * 8;
-    //     
-    //         rect.setPosition(sf::Vector2f(x, y));
-    //         window->draw(rect);
+
+    //Draw Treasure
+
+    sf::RectangleShape treasure;
+    treasure.setOutlineColor(sf::Color::Red);
+    treasure.setFillColor(sf::Color::Red);
+    treasure.setSize(sf::Vector2f(8.0f, 8.0f));
+
+    int xt = (treasureLocation % width_) * 8;
+    int yt = (treasureLocation / width_) * 8;
+
+    treasure.setPosition(sf::Vector2f(xt, yt));
+    window->draw(treasure);
+
   }
-  if (selected_cell >= 0) {
-    sf::RectangleShape rect;
-    rect.setOutlineColor(sf::Color::Green);
-    rect.setFillColor(sf::Color::Green);
-    rect.setSize(sf::Vector2f(8.0f, 8.0f));
-
-    int x = (selected_cell % width_) * 8;
-    int y = (selected_cell / width_) * 8;
-
-    rect.setPosition(sf::Vector2f(x, y));
-    window->draw(rect);
-  }
-
-  //Draw Treasure
-
-  sf::RectangleShape treasure;
-  treasure.setOutlineColor(sf::Color::Red);
-  treasure.setFillColor(sf::Color::Red);
-  treasure.setSize(sf::Vector2f(8.0f, 8.0f));
-
-  int xt = (treasureLocation % width_) * 8;
-  int yt = (treasureLocation / width_) * 8;
-
-  treasure.setPosition(sf::Vector2f(xt, yt));
-  window->draw(treasure);
-
 
   //Logical Board
 
   if (drawLogical) {
     sf::RectangleShape rect;
     rect.setOutlineColor(sf::Color::Black);
-    rect.setSize(sf::Vector2f(8.0f, 8.0f));
+    rect.setSize(sf::Vector2f(7.0f, 7.0f));
 
     for (int i = 0; i < width_ * height_; ++i) {
 
       //window->draw();
-      rect.setFillColor(sf::Color::Red);
+      rect.setFillColor(sf::Color(150,0,0,255));
       if (cell_[i].value == kTileType_Normal)
-        rect.setFillColor(sf::Color::Green);
+        rect.setFillColor(sf::Color(0, 150, 0, 255));
 
       int x = (i % width_) * 8;
       int y = (i / width_) * 8;
@@ -458,7 +445,7 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell) {
 
     }
 
-    for (int i = 0; i < kBoardMaxUnits; ++i) {
+    /*for (int i = 0; i < kBoardMaxUnits; ++i) {
 
       int row = 0, col = 0;
       index2RowCol(&row, &col, units_[i].currentPos);
@@ -467,7 +454,7 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell) {
       agent_s_.setPosition(posx, posy);
       window->draw(agent_s_);
 
-    }
+    }*/
   }
 
 
@@ -475,53 +462,58 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell) {
 
 
   //Draw Origin and destination for the A*
-  sf::RectangleShape origin;
-  sf::RectangleShape destination;
+
+  if(mode > 1){
+
+  
+    sf::RectangleShape origin;
+    sf::RectangleShape destination;
 
 
-  origin.setOutlineColor(sf::Color::Green);
-  origin.setFillColor(sf::Color::Green);
-  origin.setSize(sf::Vector2f(8.0f, 8.0f));
+    origin.setOutlineColor(sf::Color::White);
+    origin.setFillColor(sf::Color::White);
+    origin.setSize(sf::Vector2f(8.0f, 8.0f));
 
-  destination.setOutlineColor(sf::Color::Red);
-  destination.setFillColor(sf::Color::Red);
-  destination.setSize(sf::Vector2f(8.0f, 8.0f));
+    destination.setOutlineColor(sf::Color::Black);
+    destination.setFillColor(sf::Color::Black);
+    destination.setSize(sf::Vector2f(8.0f, 8.0f));
 
-  int xo = targetColI * 8;
-  int yo = targetRowI * 8;
-  int xd = targetColD * 8;
-  int yd = targetRowD * 8;
+    int xo = targetColI * 8;
+    int yo = targetRowI * 8;
+    int xd = targetColD * 8;
+    int yd = targetRowD * 8;
 
-  origin.setPosition(sf::Vector2f(xo, yo));
-  destination.setPosition(sf::Vector2f(xd, yd));
-  window->draw(origin);
-  window->draw(destination);
+    origin.setPosition(sf::Vector2f(xo, yo));
+    destination.setPosition(sf::Vector2f(xd, yd));
+    //window->draw(origin);
+    //window->draw(destination);
+    agent_s_.setPosition(sf::Vector2f(xo, yo));
+    goal_s.setPosition(sf::Vector2f(xd, yd));
+    window->draw(agent_s_);
+    window->draw(goal_s);
 
+    //**Draw Path for A*
+    for (int p = 0; p < aPath_.currentPaths.size(); ++p) {
 
+      if(aPath_.currentPaths[p].draw){
+        for(int c = 0; c < (int) aPath_.currentPaths[p].path.size(); ++c){
+          sf::RectangleShape cellPath;
+          cellPath.setOutlineColor(sf::Color::Black);
+          cellPath.setFillColor(aPath_.pathColors[aPath_.currentPaths[p].type]);
+          cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
 
+          int xc = (aPath_.currentPaths[p].path[c].cellID % width_) * 8;
+          int yc = (aPath_.currentPaths[p].path[c].cellID / width_) * 8;
 
-
-
-  //**Draw Path for A*
-  for (int p = 0; p < aPath_.currentPaths.size(); ++p) {
-
-    if(aPath_.currentPaths[p].draw){
-      for(int c = 0; c < (int) aPath_.currentPaths[p].path.size(); ++c){
-        sf::RectangleShape cellPath;
-        cellPath.setOutlineColor(sf::Color::Black);
-        cellPath.setFillColor(aPath_.pathColors[aPath_.currentPaths[p].type]);
-        cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
-
-        int xc = (aPath_.currentPaths[p].path[c].cellID % width_) * 8;
-        int yc = (aPath_.currentPaths[p].path[c].cellID / width_) * 8;
-
-        cellPath.setPosition(sf::Vector2f(xc, yc));
-        window->draw(cellPath);
+          cellPath.setPosition(sf::Vector2f(xc, yc));
+          window->draw(cellPath);
+          
+        }
       }
     }
+   
 
   }
-   
 }
 
 uint32_t Board::manhantanDistance(int32_t origin_cell, int32_t dst_cell){

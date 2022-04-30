@@ -27,6 +27,7 @@ class Game
     void update(float delta_time);
     void fixedUpdate(float fixed_delta_time);
 
+    void ImguiGame();
     void ImguiSandBox();
     void ImguiVoronoi();
     void ImguiPathFinding();
@@ -48,6 +49,7 @@ class Game
       int ai;
       float second_per_frame;
     };
+    int imguifps;
 
     FramesPerModule fps;
     GameModeType gmType;
