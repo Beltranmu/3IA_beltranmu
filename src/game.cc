@@ -150,7 +150,13 @@ void Game::ImguiGame(){
   switch (gmType)
   {
   case Game::NORMAL_TYPE: ImguiSandBox(); voronoiInitialized = false; break;
-  case Game::VORONOI_TYPE: ImguiVoronoi(); break;
+  case Game::VORONOI_TYPE: 
+    ImGui::TextColored(ImVec4(0, 1, 0, 1), "INFO");
+    ImGui::Text("Firts you decided the number of points\nyou want to do the voronoi and\nthen click in Create Points");
+    ImGui::Text("After that, you click on \nCalculate Voronoi and you only have \nto wait");
+    
+    
+    ImguiVoronoi(); break;
   case Game::PATHFINDING_TYPE: ImguiPathFinding(); voronoiInitialized = false; break;
 
   default: break;
@@ -278,21 +284,22 @@ void Game::ImguiVoronoi() {
     ImGui::Checkbox("Sites Info", &voronoi.showSitesInfo);
     ImGui::Checkbox("Sectors", &voronoi.drawSectors);
     ImGui::Checkbox("Intersection Points", &voronoi.drawIPoints);
-    ImGui::InputFloat("Precision", &voronoi.marginSamePoint);
+    ImGui::Text("That values use to calculate \n Voronoi polygons if you change\nthem it does not may work properly");
+    ImGui::InputFloat("Precision", &voronoi.marginSamePoint );
     ImGui::InputFloat("Same solutions", &voronoi.sameSolMargin);
-    ImGui::InputFloat("Step Parabole", &voronoi.stepParabole);
+    ImGui::InputFloat("Step Parabole", &voronoi.stepParabole, 0.00001f, 0.0001f, "%1.6f");
     ImGui::InputFloat("Max range X parabole", &voronoi.maxX);
-    if (ImGui::Button("Check Parbole")) {
+    if (ImGui::Button("Calculate Voronoi")) {
       //voronoi.calculateParabola();
       voronoi.calculateSites();
     } 
-    if (ImGui::Button("Clear Parbole")) {
+    if (ImGui::Button("Reset")) {
       for (int i = 0; i < (int)voronoi.sites.size(); ++i) {
         voronoi.sites[i].perimetralLines.clear();
       };
       voronoi.solutionsVoronoi.clear();
     }
-    if (ImGui::Button("Pause Parabola")) {
+    if (ImGui::Button("Pause  Draw Parabola")) {
       pausedParabola = !pausedParabola;
     }
     for (int i = 0; i < (int)voronoi.paraboleDraw.size(); ++i) {

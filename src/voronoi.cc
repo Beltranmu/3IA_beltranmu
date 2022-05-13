@@ -16,7 +16,7 @@ Voronoi::Voronoi()
   marginSamePoint = 2.0f;
   sameSolMargin = 4.0f;
   maxX = 0.0f;
-  stepParabole = 0.0005f;
+  stepParabole = 0.005f;
 
  
 }
