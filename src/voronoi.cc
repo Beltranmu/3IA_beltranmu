@@ -4,14 +4,13 @@
 
 Voronoi::Voronoi()
 {
+  pausedParabola = false;
   horizontal = 0;
-  w = 0;
-  h = 0;
+
   d = 0;
   drawAllLine = false;
   showSitesInfo= false;
   reducedPoly = false;
-  maxDistance = -1;
   firstSol = true;
   marginSamePoint = 2.0f;
   sameSolMargin = 4.0f;
@@ -84,24 +83,24 @@ void Voronoi::customInit2(){
   Line newLine;
   newLine.p1.x = 0.0f;
   newLine.p1.y = 0.0f;
-  newLine.p2.x = (float)w;
+  newLine.p2.x = (float)map.size.width;
   newLine.p2.y = 0.0f;
   lines.push_back(newLine);
 
-  newLine.p1.x = (float)w;
+  newLine.p1.x = (float)map.size.width;
   newLine.p1.y = 0.0f;
-  newLine.p2.x = (float)w;
-  newLine.p2.y = (float)h;
+  newLine.p2.x = (float)map.size.width;
+  newLine.p2.y = (float)map.size.height;
   lines.push_back(newLine);
 
-  newLine.p1.x = (float)w;
-  newLine.p1.y = (float)h - 1;
+  newLine.p1.x = (float)map.size.width;
+  newLine.p1.y = (float)map.size.height - 1;
   newLine.p2.x = 0.0f;
-  newLine.p2.y = (float)h - 1;
+  newLine.p2.y = (float)map.size.height - 1;
   lines.push_back(newLine);
 
   newLine.p1.x = 0.0f;
-  newLine.p1.y = (float)h;
+  newLine.p1.y = (float)map.size.height;
   newLine.p2.x = 0.0f;
   newLine.p2.y = 0.0f;
   lines.push_back(newLine);
@@ -213,24 +212,24 @@ void Voronoi::customInit(){
   Line newLine;
   newLine.p1.x = 0.0f;
   newLine.p1.y = 0.0f;
-  newLine.p2.x = (float)w;
+  newLine.p2.x = (float)map.size.width;
   newLine.p2.y = 0.0f;
   lines.push_back(newLine);
 
-  newLine.p1.x = (float)w;
+  newLine.p1.x = (float)map.size.width;
   newLine.p1.y = 0.0f;
-  newLine.p2.x = (float)w;
-  newLine.p2.y = (float)h;
+  newLine.p2.x = (float)map.size.width;
+  newLine.p2.y = (float)map.size.height;
   lines.push_back(newLine);
 
-  newLine.p1.x = (float)w;
-  newLine.p1.y = (float)h - 1;
+  newLine.p1.x = (float)map.size.width;
+  newLine.p1.y = (float)map.size.height - 1;
   newLine.p2.x = 0.0f;
-  newLine.p2.y = (float)h - 1;
+  newLine.p2.y = (float)map.size.height - 1;
   lines.push_back(newLine);
 
   newLine.p1.x = 0.0f;
-  newLine.p1.y = (float)h;
+  newLine.p1.y = (float)map.size.height;
   newLine.p2.x = 0.0f;
   newLine.p2.y = 0.0f;
   lines.push_back(newLine);
@@ -443,7 +442,7 @@ void Voronoi::init(int32_t nPoints){
 
 void Voronoi::draw(sf::RenderWindow* window) {
   sf::Vector2<float> p1 = { (float)d, 0.0f };
-  sf::Vector2<float> p2 = { (float)d, (float)h };
+  sf::Vector2<float> p2 = { (float)d, (float)map.size.height };
   sf::Vertex directriz[] =
   {
       sf::Vertex(p1),
@@ -899,7 +898,7 @@ void Voronoi::calculateSites(){
           for (l = 0; l < (int) paraboleIPoints[i].parentSites.size(); ++l){
             bool alreadyThisParent = false;
             //check if it is in the current sol
-            for(k = 0; k < ((int)solutionsVoronoi[indexalreadySol].parentSites.size() && !alreadyThisParent); ++k){
+            for(k = 0; ((k < (int)solutionsVoronoi[indexalreadySol].parentSites.size()) && (!alreadyThisParent)); ++k){
               alreadyThisParent = paraboleIPoints[i].parentSites[l] != solutionsVoronoi[indexalreadySol].parentSites[k];
             }
             if(!alreadyThisParent){
@@ -940,7 +939,7 @@ void Voronoi::calculateSites(){
 
   //Reduce The Poly
   {
-    /*sf::Vector2<float> reducedP;
+    sf::Vector2<float> reducedP;
     sf::Vector2<float> reduceDirection;
     sf::Vector2<float> P;
     sf::Vector2<float> Vnext;
@@ -1007,7 +1006,7 @@ void Voronoi::calculateSites(){
       reducedP = P + (reduceDirection * desp);
       auxsitesLittle[i].upperPoints.push_back(reducedP);
 
-    }*/
+    }
   }
 
  
@@ -1077,41 +1076,4 @@ bool Voronoi::isBeachLine(sf::Vector2<float> p)
   }
    
   return true;
-}
-
-
-sf::Vector3<float> Voronoi::ecuationSystem(sf::Vector3<float> ec1, sf::Vector3<float> ec2)
-{
-  float aux = 1;
-  sf::Vector3<float> sol = { 0.0f, 0.0f, -1.0f };
-  if (ec1.x == ec2.x && ec1.y == ec2.y)
-  {
-    if (ec1.z == ec2.z)//Las rectas son la misma
-    {
-      sol.y = 0.5;
-      sol.x = 0.5;
-      sol.z = 0.5f;
-    }
-    else {// las rectas son parelesas no hay sol
-      sol.y = 100.0;
-      sol.x = 100.0;
-      sol.z = 100.0;
-    }
-  }
-  else {
-
-    aux = (-1) * (ec2.x / ec1.x);
-    ec2.x = ec1.x * aux + ec2.x;
-    ec2.y = ec1.y * aux + ec2.y;
-    ec2.z = ec1.z * aux + ec2.z;
-
-
-
-    sol.y = ec2.z / ec2.y;
-    sol.x = (ec1.z - sol.y * ec1.y) / ec1.x;
-    sol.z = 1;
-
-    //printf("X= %f, Y= %f", sol.x,sol.y);
-  }
-  return sol;
 }

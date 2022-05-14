@@ -22,7 +22,7 @@ Astar::Astar(){
   manhattanD = true;
   euclideanD = false;
   chebyshovD = false;
-  allowDiagonals = false;
+  //allowDiagonals = false;
 
   pathColors[0] = sf::Color(255,0,0,85);
   pathColors[1] = sf::Color(0,255,0,85);
@@ -57,7 +57,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     bool samePath = currentPaths[i].destination == endPosition;
     samePath = samePath && currentPaths[i].origin == initPostition;
     samePath = samePath && currentPaths[i].type == currenttype;
-    samePath = samePath && currentPaths[i].diagonal == allowDiagonals;
+    //samePath = samePath && currentPaths[i].diagonal == allowDiagonals;
     if(samePath){
       printf("Path already calculated\n");
       return;
@@ -118,13 +118,13 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
     neighbourdCells[2] = board->west(lowestScoreCell.cellID);  //West
     neighbourdCells[3] = board->east(lowestScoreCell.cellID);  //East
     
-    if (allowDiagonals) { 
-      numberNeighbourd = numberPoints; 
-      neighbourdCells[4] = board->east(neighbourdCells[0]); //North -> East
-      neighbourdCells[5] = board->west(neighbourdCells[0]); //North -> West
-      neighbourdCells[6] = board->east(neighbourdCells[1]);  //South -> East
-      neighbourdCells[7] = board->west(neighbourdCells[1]);  //South -> West
-    }
+    //if (allowDiagonals) { 
+    //  numberNeighbourd = numberPoints; 
+    //  neighbourdCells[4] = board->east(neighbourdCells[0]); //North -> East
+    //  neighbourdCells[5] = board->west(neighbourdCells[0]); //North -> West
+    //  neighbourdCells[6] = board->east(neighbourdCells[1]);  //South -> East
+    //  neighbourdCells[7] = board->west(neighbourdCells[1]);  //South -> West
+    //}
 
     for(int j = 0; j< numberNeighbourd && !pathFound; j++){
       if(board->checkUnitMovement(neighbourdCells[j])){
@@ -140,7 +140,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
 
         if(!isInCloseList){
 
-          for (int q = 0; q < openList.size() && !isInOpenList; ++q) {
+          for (int q = 0; ((q < (int)openList.size()) && !isInOpenList); ++q) {
             it = openList.begin();
             advance(it, q);
             if (it->cellID == neighbourdCells[j]) {
@@ -155,7 +155,7 @@ void Astar::calculatePath(Board* board, int initPostition, int endPosition){
           if (manhattanD) { HScore = initCell.g + board->manhantanDistance(neighbourdCells[j], endPosition); }
           if (euclideanD) { HScore = initCell.g + board->euclidianDistance(neighbourdCells[j], endPosition); }
           if (chebyshovD) { HScore = initCell.g + board->chebyshovDistance(neighbourdCells[j], endPosition); }
-          uint32_t FScore = GScore + HScore;
+          float FScore = GScore + HScore;
           if (!isInOpenList) {
             ACell newCell;
             newCell.cellID = neighbourdCells[j];

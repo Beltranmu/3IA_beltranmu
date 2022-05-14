@@ -9,8 +9,7 @@
 Game::Game(){
 
   delta_time_ = 0.0f;
-  pausedParabola = false;
-  fixed_delta_time_ = fps.second_per_frame;
+  
   intgmType = 0;
 
   fps.main_game = 60;
@@ -42,21 +41,14 @@ void Game::init(uint32_t w_width, uint32_t w_height) {
  // srand(time(NULL));
   w_width_ = w_width;
   w_height_ = w_height;
-  voronoi.map.size.width = w_width_;
-  voronoi.map.size.height = w_height_;
+  voronoi.map.size.width = (float)w_width_;
+  voronoi.map.size.height = (float)w_height_;
   voronoi.map.widthStreets = 20;
-  //voronoi.init(10);
-  //voronoi.calculateBisector();
-  //voronoi.calculateParabola();
+
   w_.create(sf::VideoMode(w_width_, w_height_), "AI WINDOW");
   srand(time(NULL));
 
-  if(!tex_.loadFromFile("../../data/textures/ricky.png")){
-    printf("Failed to load image\n");
-  }
 
-  sprite_ = sf::Sprite(tex_);
-  sprite_.setPosition(100, 100);
   ImGui::SFML::Init(w_);
 
   map_texture_.loadFromFile("../../data/gfx/maps/map_03_960x704_layout ABGS.png");
@@ -95,13 +87,13 @@ void Game::input() {
 }
 
 void Game::update(float delta_time) {
-  if(pausedParabola){
+  if(voronoi.pausedParabola){
     voronoi.d += 0.5f;
 
   }
 }
 
-void Game::fixedUpdate(float fixed_delta_time) {}
+
 
 
 void Game::draw() {
@@ -131,7 +123,7 @@ void Game::ImguiGame(){
   ImGui::TextColored(ImVec4(1, 0, 1, 1), "FPS:%d", imguifps);
   ImGui::SliderInt("Input", &fps.input_, -1, 60);
   if (fps.input_ == 0) fps.input_ = -1;
-  ImGui::SliderInt("AI", &fps.ai, -1, 60.0f);
+  ImGui::SliderInt("AI", &fps.ai, -1, 60);
   if (fps.ai == 0) fps.ai = -1;
   ImGui::SliderInt("World", &fps.world, -1, 60);
   if (fps.world == 0) fps.world = -1;
@@ -300,7 +292,7 @@ void Game::ImguiVoronoi() {
       voronoi.solutionsVoronoi.clear();
     }
     if (ImGui::Button("Pause  Draw Parabola")) {
-      pausedParabola = !pausedParabola;
+      voronoi.pausedParabola = !voronoi.pausedParabola;
     }
     for (int i = 0; i < (int)voronoi.paraboleDraw.size(); ++i) {
       ImGui::TextColored(ImVec4(1, 1, 1, 1), "Ecuacion: x = %fy^2 %fy %f", voronoi.paraboleDraw[i].x, voronoi.paraboleDraw[i].y, voronoi.paraboleDraw[i].z);
@@ -341,7 +333,7 @@ void Game::ImguiVoronoi() {
         color[2] = voronoi.sites[i].color.b;
         color[3] = voronoi.sites[i].color.a;
         ImGui::ColorEdit4(colorLabel,color);
-        voronoi.sites[i].color = sf::Color(color[0]*255.0f, color[1] * 255.0f, color[2] * 255.0f, color[3] * 255.0f);
+        voronoi.sites[i].color = sf::Color(color[0]*255, color[1] * 255, color[2] * 255, color[3] * 255);
         if (ImGui::TreeNode(name3)) {
           int b;
           for (b = 0; b < (int)voronoi.sites[i].perimetralLines.size(); b++) {

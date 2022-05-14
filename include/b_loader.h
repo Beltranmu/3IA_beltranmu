@@ -1,14 +1,35 @@
+/**
+ * @brief B_Loader , Artificial intelligence demo , ESAT - 2022
+ * @file b_loader.h
+ * @author Ricardo Beltrán Muriel <beltranmu@esat-alumni.com> and Javier Benito Abolafio <benitoab@esat-alumni.com>
+ * demo video
+ */
+
+
+
+
 #ifndef __B_LOADER_H__
 #define __B_LOADER_H__ 1
 
 #include "SFML/Graphics.hpp"
 #include "board.h"
 
+ //! Error Type Enum.
+      /*! Type of the cells of the board. */
 typedef enum {
-  kErrorCode_SRCNullPointer,
-  kErrorCode_DataNullPointer,
-  kErrorCode_File
+  kErrorCode_SRCNullPointer,       /*!< File name null. */
+  kErrorCode_DataNullPointer,      /*!< Board null. */
+  kErrorCode_File,                 /*!< Error to read file. */
+  kErrorCode_OKAY                  /*!< OK. */ 
 } ErrorCode;
+
+/**
+ *@brief load a board read from a image.
+ *@param Board* board where to load all the information.
+ *@param const char* filename. path of the image to read to load the logical board.
+ *@return error code kErrorCode_SRCNullPointer if the filename is nullptr, kErrorCode_DataNullPointer if the board is nullptr,
+ * kErrorCode_File if there is a problem reading the file.kErrorCode_OKAY -> Everything okay.
+ */
 
 static ErrorCode BoardFromImage(Board* board, const char* filename)  {
 
@@ -46,6 +67,7 @@ static ErrorCode BoardFromImage(Board* board, const char* filename)  {
     }
   }
   board->initUnits();
+  return kErrorCode_OKAY;
 }
 
 #endif //__B_LOADER_H__

@@ -55,12 +55,6 @@
     if (movementArray[i_movement] == kPatternMovement_None) {
       i_movement = 0;
     }
-/*
-    printf("Data Before:\n");
-    printf("i_movement: %d\n", i_movement);
-    printf("movementArray[%d]%d",  i_movement, movementArray[i_movement]);
-    printf("i_counterMov: %d\n", i_counterMov);
-    printf("movementCounterArray[%d]%d\n",  i_movement, movementCounterArray[i_movement]);*/
       
     switch (movementArray[i_movement])
     {
@@ -101,13 +95,8 @@
       i_movement &= 63;
       i_counterMov = 0;
     }
-/*
-    printf("Data After:\n");
-    printf("i_movement: %d\n", i_movement);
-    printf("movementArray[%d]%d", i_movement, movementArray[i_movement]);
-    printf("i_counterMov: %d\n", i_counterMov);
-    printf("movementCounterArray[%d]%d\n\n", i_movement, movementCounterArray[i_movement]);
-*/
+
+
     //Translate the movement
     next_mov = 0;
     if (currentForwardX == 0 && currentForwardY == 1) { next_mov = 1; }   // South

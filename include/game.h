@@ -1,3 +1,12 @@
+/**
+ * @brief Game Class, Artificial intelligence demo , ESAT - 2022
+ * @file game.h
+ * @author Ricardo Beltrán Muriel <beltranmu@esat-alumni.com> and Javier Benito Abolafio <benitoab@esat-alumni.com>
+ * demo video 
+ */
+
+
+
 #ifndef __GAME_H__
 #define __GAME_H__ 1
 
@@ -6,87 +15,127 @@
 #include "board.h"
 #include "voronoi.h"
 
+  /**
+    *@brief Game class with the main loop of the game, and the controller of the demo
+  */
+
 class Game
 {
   public:
-    void mainLoop();
     Game();
     ~Game();
 
+    /**
+    *@brief Function to call in the c main to open the demo.
+    */
+    void mainLoop();
+
+    //! GameModeType Enum.
+      /*! Each of the different demos. */
     enum GameModeType{
-      NORMAL_TYPE = 0,
-      VORONOI_TYPE,
-      PATHFINDING_TYPE,
-      MAX_TYPE 
+      NORMAL_TYPE = 0,     /*!< Sandbox mode, with agent with different types of movements. */ 
+      VORONOI_TYPE,        /*!< Voronoi mode, You can create a voronoi distribution with the points you want. */ 
+      PATHFINDING_TYPE,    /*!< Sandbox mode, calculate the path finding using three different types of distances. */ 
+      MAX_TYPE           
     };
 
 
   protected:   
-    void init(uint32_t w_width, uint32_t w_height);
-    void input();
-    void update(float delta_time);
-    void fixedUpdate(float fixed_delta_time);
 
+    /**
+    *@brief init the screen and all the default values for the demo.
+    *@param uint32_t w_width, width of the window to open.
+    *@param uint32_t w_height, height of the window to open.
+    */
+    void init(uint32_t w_width, uint32_t w_height);
+
+    /**
+    *@brief  where the inputs are caught.
+    */
+    void input();
+
+    /**
+    *@brief  update of our demo
+    *@param float delta_time, time of each frame.
+    */
+    void update(float delta_time);
+
+    /**
+    *@brief  Collect all the imgui code of the demo.
+    */
     void ImguiGame();
+    /**
+    *@brief  Collect all the imgui code of the sandbox mode.
+    */
     void ImguiSandBox();
+    /**
+    *@brief  Collect all the imgui code of the voronoi mode.
+    */
     void ImguiVoronoi();
+    /**
+    *@brief  Collect all the imgui code of the Path finding mode.
+    */
     void ImguiPathFinding();
 
-
+    /**
+    *@brief  Collect all the draw functions of the demo.
+    */
     void draw();
+
+    /**
+    *@brief  make all the necessary to close the demo properly.
+    */
     void end();
     
-    Voronoi voronoi;
-    bool voronoiInitialized;
-    uint32_t numberVPoint;
+    Voronoi voronoi;          ///< Used to calculate and the Voronoi distribution.
+    bool voronoiInitialized;  ///< Used to know if all voronoi data are initialized.
+    uint32_t numberVPoint;    ///< How many cells/sites/points is going to be to calculate voronoi.
 
     //FrameControl
+    //! FrameControl strut.
+    /*! collect all the deferent variables to have a control of deferent updates of the game. */
     struct FramesPerModule {
-      int main_game;
-      int world;
-      int input_;
-      int draw_;
-      int ai;
-      float second_per_frame;
+      int main_game;            /*!< FPS of the main update. */ 
+      int world;                /*!< FPS of the world update. */
+      int input_;               /*!< FPS of the input . */
+      int draw_;                /*!< FPS of the draw. */
+      int ai;                   /*!< FPS of the AI update. */
+      float second_per_frame;   /*!< How many second per frame  will have our application. */
     };
-    int imguifps;
+    int imguifps;               ///<  Counter to show on imgui how many frames are on the demo. 
 
-    FramesPerModule fps;
-    GameModeType gmType;
-    int intgmType;
+    FramesPerModule fps;        ///<  Controls of fps of the game.
+    GameModeType gmType;        ///<  Controls the gamemode of the demo. 
+    int intgmType;              ///<  Controls the gamemode of the demo,but used on the imgui::intslider. 
     //Window
-    sf::RenderWindow w_;
-    int32_t w_width_;
-    int32_t w_height_;
+    sf::RenderWindow w_;        ///<  SFML window.
+    int32_t w_width_;           ///<  With of the window.
+    int32_t w_height_;          ///<  Height of the window.
 
     //Events
-    sf::Event events_;
+    sf::Event events_;          ///<  SFML events.
 
     //Texture
-    sf::Texture tex_;
-    sf::Sprite sprite_;
-
     
     //Board
-    Board board_;
-    sf::Texture map_texture_;
-    sf::Sprite map_sprite_;
+    Board board_;              ///<  Board of the sandbox and path finding modes.
+    sf::Texture map_texture_;  ///<  Texture of the board.
+    sf::Sprite map_sprite_;    ///<  Sprite of the board.
+      
+    float delta_time_;         ///<  Delta time.
 
-    float delta_time_;
-    float fixed_delta_time_;
-    bool pausedParabola;
 
     // ImGUI
-    int32_t selectedAgentID;
-    int32_t targetRow;
-    int32_t targetCol;
+    int32_t selectedAgentID;  ///<  ID of the selected agent you want to modify.
+    int32_t targetRow;        ///<  Row target of the agent.
+    int32_t targetCol;        ///<  Column target of the agent.
 
 
 
-    int32_t possibleNextTarget;
-    bool startAddPattern;
-    int32_t number_movement;
-    Agent::PatternMovement movement_type;;
+    int32_t possibleNextTarget;             ///<  New possible target for the agents.
+    bool startAddPattern;                   ///<  true -> Show the start pattern options otherwise not.
+    int32_t number_movement;                ///<  Number of movement you want to add to the agent.
+    Agent::PatternMovement movement_type;;  ///<  Type of movement you want to add to the agent.
  
   private:
 

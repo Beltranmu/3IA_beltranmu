@@ -179,7 +179,6 @@ void Board::checkForPlayer(uint32_t playerToSearch, Agent* e){
   if(manhantanDistance(units_[playerToSearch].currentPos, e->currentPos) < e->distanceToCatch){
     e->movementType = Agent::Movement::kMovement_Track;
     e->currentTarget = units_[playerToSearch].currentPos;
-    units_[playerToSearch].speed += 0.5f;
   }
   
 }
@@ -376,8 +375,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
 
       int row = 0, col = 0;
       index2RowCol(&row, &col, units_[i].currentPos);
-      float posx = col * width_tile_ + desp_x_tile_;
-      float posy = row * height_tile_ + desp_y_tile_;
+      float posx = (float)(col * width_tile_ + desp_x_tile_);
+      float posy = (float)(row * height_tile_ + desp_y_tile_);
       agent_s_.setPosition(posx, posy);
       if (i > 0) {
         if (!units_[i].agentSelected) {
@@ -401,8 +400,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
       rect.setFillColor(sf::Color::Green);
       rect.setSize(sf::Vector2f(8.0f, 8.0f));
 
-      int x = (selected_cell % width_) * 8;
-      int y = (selected_cell / width_) * 8;
+      float  x = (float)(selected_cell % width_) * 8.0f;
+      float  y = (float)(selected_cell / width_) * 8.0f;
 
       rect.setPosition(sf::Vector2f(x, y));
       window->draw(rect);
@@ -415,8 +414,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
     treasure.setFillColor(sf::Color::Red);
     treasure.setSize(sf::Vector2f(8.0f, 8.0f));
 
-    int xt = (treasureLocation % width_) * 8;
-    int yt = (treasureLocation / width_) * 8;
+    float  xt = (float)(treasureLocation % width_) * 8.0f;
+    float  yt = (float)(treasureLocation / width_) * 8.0f;
 
     treasure.setPosition(sf::Vector2f(xt, yt));
     window->draw(treasure);
@@ -437,8 +436,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
       if (cell_[i].value == kTileType_Normal)
         rect.setFillColor(sf::Color(0, 150, 0, 255));
 
-      int x = (i % width_) * 8;
-      int y = (i / width_) * 8;
+      float  x = (float)(i % width_) * 8.0f;
+      float  y = (float)(i / width_) * 8.0f;
 
       rect.setPosition(sf::Vector2f(x, y));
       window->draw(rect);
@@ -478,10 +477,10 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
     destination.setFillColor(sf::Color::Black);
     destination.setSize(sf::Vector2f(8.0f, 8.0f));
 
-    int xo = targetColI * 8;
-    int yo = targetRowI * 8;
-    int xd = targetColD * 8;
-    int yd = targetRowD * 8;
+    float xo = (float)targetColI * 8.0f;
+    float yo = (float)targetRowI * 8.0f;
+    float xd = (float)targetColD * 8.0f;
+    float yd = (float)targetRowD * 8.0f;
 
     origin.setPosition(sf::Vector2f(xo, yo));
     destination.setPosition(sf::Vector2f(xd, yd));
@@ -493,7 +492,7 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
     window->draw(goal_s);
 
     //**Draw Path for A*
-    for (int p = 0; p < aPath_.currentPaths.size(); ++p) {
+    for (int p = 0; p < (int)aPath_.currentPaths.size(); ++p) {
 
       if(aPath_.currentPaths[p].draw){
         for(int c = 0; c < (int) aPath_.currentPaths[p].path.size(); ++c){
@@ -502,8 +501,8 @@ void Board::drawBoard(sf::RenderWindow* window, int selected_cell, int mode) {
           cellPath.setFillColor(aPath_.pathColors[aPath_.currentPaths[p].type]);
           cellPath.setSize(sf::Vector2f(8.0f, 8.0f));
 
-          int xc = (aPath_.currentPaths[p].path[c].cellID % width_) * 8;
-          int yc = (aPath_.currentPaths[p].path[c].cellID / width_) * 8;
+          float xc = (float)(aPath_.currentPaths[p].path[c].cellID % width_) * 8.0f;
+          float yc = (float)(aPath_.currentPaths[p].path[c].cellID / width_) * 8.0f;
 
           cellPath.setPosition(sf::Vector2f(xc, yc));
           window->draw(cellPath);
@@ -532,7 +531,7 @@ float Board::euclidianDistance(int32_t origin_cell, int32_t dst_cell){
   int dx = (r2 - r1) * width_tile_;
   int dy = (c2 - c1) * height_tile_;
   
-  return sqrt(dx * dx + dy * dy);
+  return (float)sqrt(dx * dx + dy * dy);
 }
 
 
