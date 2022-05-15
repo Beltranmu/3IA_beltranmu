@@ -2,7 +2,7 @@
  * @brief Game Class, Artificial intelligence demo , ESAT - 2022
  * @file game.h
  * @author Ricardo Beltrán Muriel <beltranmu@esat-alumni.com> and Javier Benito Abolafio <benitoab@esat-alumni.com>
- * demo video 
+ * demo video Sand Box: https://youtu.be/Yjhppwc-JRI Voronoi:https://youtu.be/ssdKqyDNLeA Pathfinding: 
  */
 
 

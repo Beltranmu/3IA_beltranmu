@@ -2,7 +2,6 @@
  * @brief Agent , Artificial intelligence demo , ESAT - 2022
  * @file agent.h
  * @author Ricardo Beltrán Muriel <beltranmu@esat-alumni.com> and Javier Benito Abolafio <benitoab@esat-alumni.com>
- * demo video
  */
 
 
